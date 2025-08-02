@@ -8,5 +8,8 @@
     "deploy": "npm run build && git add . && git commit -m \"Auto-build\" && git push"
   },
   "author": "Pavel",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }
