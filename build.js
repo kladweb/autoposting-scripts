@@ -5,10 +5,10 @@ const SRC_DIR = './src';
 const TEMPLATES_DIR = './templates';
 const DIST_DIR = './dist';
 
-const TEMPLATE_START = '// === TEMPLATE START ===';
-const TEMPLATE_END = '// === TEMPLATE END ===';
-const TEMPLATE_INSERT_START = '// === TEMPLATE INSERT START ===';
-const TEMPLATE_INSERT_END = '// === TEMPLATE INSERT END ===';
+const TEMPLATE_START_MARKER = '// === PART START ===';
+const TEMPLATE_END_MARKER = '// === PART END ===';
+const TEMPLATE_INSERT_START = '// === TEMPLATE START ===';
+const TEMPLATE_INSERT_END = '// === TEMPLATE END ===';
 
 // Получаем имя самого нового шаблона
 function getLatestTemplateFile() {
@@ -32,15 +32,15 @@ function getLatestTemplateFile() {
 function extractTemplate(templatePath) {
   const fullPath = path.join(TEMPLATES_DIR, templatePath);
   const content = fs.readFileSync(fullPath, 'utf-8');
-  const match = content.match(new RegExp(`${TEMPLATE_START}[\\s\\S]*?${TEMPLATE_END}`));
+  const match = content.match(new RegExp(`${TEMPLATE_START_MARKER}[\\s\\S]*?${TEMPLATE_END_MARKER}`));
 
   if (!match) {
     throw new Error(`❌ Шаблонные границы не найдены в ${templatePath}`);
   }
 
   return match[0]
-  .replace(TEMPLATE_START, '')
-  .replace(TEMPLATE_END, '')
+  .replace(TEMPLATE_START_MARKER, '')
+  .replace(TEMPLATE_END_MARKER, '')
   .trim();
 }
 

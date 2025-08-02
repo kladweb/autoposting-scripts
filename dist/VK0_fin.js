@@ -12,14 +12,15 @@
   const posts = {sharavoz: "Sharavoz.tv", russkoetv: 'Русское ТВ'};
   const VKName = "vk0"
 
-  const postingAfter = {
+  // === TEMPLATE START ===
+const postingAfter = {
     all: "all groups",
     my: "Skip my posts",
     id358923511: "Анна Егорова",
     id620542842: "Иван Смирнов",
     satiptv: "Людвиг Ванбетховен"
   };
-  // Здесь будем проверять файл. Версия 002
+  // Здесь будем проверять файл. Версия 003
   const delays = {15: "15 sec", 10: "10 sec", 7: "7 sec"};
   const deeps = {1: 1, 2: 2, 3: 3};
   const [delayM, delayL] = [2000, 3000];
@@ -444,5 +445,6 @@
       }
     }, timer);
   }
+// === TEMPLATE END ===
 
 })();
