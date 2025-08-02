@@ -5,11 +5,12 @@
   "main": "build.js",
   "scripts": {
     "build": "node build.js",
-    "deploy": "npm run build && git add . && git commit -m \"Auto-build\" && git push"
+    "deploy": "npm run build && git add . && git commit -m \"Auto-build\" && git push",
+    "prepare": "husky install"
   },
   "author": "Pavel",
   "license": "MIT",
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^8.0.0"
   }
 }
