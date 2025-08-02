@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AutoRepVK_0_mod04
+// @name         AutoRepVK_6_mod04
 // @author       You
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
@@ -8,9 +8,9 @@
 
 (function () {
   'use strict';
-  const idUser = '476124794';
-  const posts = {sharavoz: "Sharavoz.tv", russkoetv: 'Русское ТВ'};
-  const VKName = "vk0"
+  const idUser = '463839444';
+  const posts = {viplime: "VipLime", ilooktv: 'ILookTV'};
+  const VKName = "vk6";
 
   const postingAfter = {
     all: "all groups",
@@ -19,7 +19,6 @@
     id620542842: "Иван Смирнов",
     satiptv: "Людвиг Ванбетховен"
   };
-  // Здесь будем проверять файл. Версия 002
   const delays = {15: "15 sec", 10: "10 sec", 7: "7 sec"};
   const deeps = {1: 1, 2: 2, 3: 3};
   const [delayM, delayL] = [2000, 3000];

@@ -1,64 +1,69 @@
 const fs = require('fs');
 const path = require('path');
 
-const TEMPLATE_FILE = './template.js';
-const TEMPLATE_START_MARKER = '// === PART START ===';
-const TEMPLATE_END_MARKER = '// === PART END ===';
-
-const INSERTION_START = '// === TEMPLATE START ===';
-const INSERTION_END = '// === TEMPLATE END ===';
-
 const SRC_DIR = './src';
+const TEMPLATES_DIR = './templates';
 const DIST_DIR = './dist';
-const FILE_SUFFIX = '_fin';
 
-const files = [
-  'VK0.js',
-];
+const TEMPLATE_START = '// === TEMPLATE START ===';
+const TEMPLATE_END = '// === TEMPLATE END ===';
+const TEMPLATE_INSERT_START = '// === TEMPLATE INSERT START ===';
+const TEMPLATE_INSERT_END = '// === TEMPLATE INSERT END ===';
 
-// 1. Чтение и извлечение шаблона
-const fullTemplate = fs.readFileSync(TEMPLATE_FILE, 'utf-8');
+// Получаем имя самого нового шаблона
+function getLatestTemplateFile() {
+  const templateFiles = fs.readdirSync(TEMPLATES_DIR)
+  .filter(f => f.endsWith('.js'))
+  .map(filename => ({
+    name: filename,
+    mtime: fs.statSync(path.join(TEMPLATES_DIR, filename)).mtimeMs
+  }));
 
-const templateRegex = new RegExp(
-  `${TEMPLATE_START_MARKER}[\\s\\S]*?${TEMPLATE_END_MARKER}`,
-  'gm'
-);
-
-const match = fullTemplate.match(templateRegex);
-
-if (!match) {
-  console.error('❌ Не найдены маркеры в template.js');
-  process.exit(1);
-}
-
-// Обрезаем маркеры, чтобы не вставлять их
-const templateCode = match[0]
-.replace(TEMPLATE_START_MARKER, '')
-.replace(TEMPLATE_END_MARKER, '')
-.trim();
-
-files.forEach(filename => {
-  const filePath = path.join(SRC_DIR, filename);
-  let fileContent = fs.readFileSync(filePath, 'utf-8');
-
-  const insertionRegex = new RegExp(
-    `${INSERTION_START}[\\s\\S]*?${INSERTION_END}`,
-    'gm'
-  );
-
-  if (fileContent.match(insertionRegex)) {
-    // Вставляем шаблон **без оборачивающих комментариев**
-    fileContent = fileContent.replace(insertionRegex, templateCode);
-  } else {
-    console.warn(`⚠️ Маркеры вставки не найдены в ${filename}`);
-    return;
+  if (templateFiles.length === 0) {
+    throw new Error('Нет файлов шаблонов в папке templates');
   }
 
-  // Создаём новое имя: acc1.js → acc1_fin.js
-  const parsed = path.parse(filename);
-  const newFileName = `${parsed.name}${FILE_SUFFIX}${parsed.ext}`;
-  const outputPath = path.join(DIST_DIR, newFileName);
+  templateFiles.sort((a, b) => b.mtime - a.mtime); // Последний по дате вверх
 
-  fs.writeFileSync(outputPath, fileContent, 'utf-8');
-  console.log(`✅ Файл ${filename} → ${newFileName}`);
+  return templateFiles[0].name;
+}
+
+// Читаем и извлекаем шаблонную часть
+function extractTemplate(templatePath) {
+  const fullPath = path.join(TEMPLATES_DIR, templatePath);
+  const content = fs.readFileSync(fullPath, 'utf-8');
+  const match = content.match(new RegExp(`${TEMPLATE_START}[\\s\\S]*?${TEMPLATE_END}`));
+
+  if (!match) {
+    throw new Error(`❌ Шаблонные границы не найдены в ${templatePath}`);
+  }
+
+  return match[0]
+  .replace(TEMPLATE_START, '')
+  .replace(TEMPLATE_END, '')
+  .trim();
+}
+
+// Сборка
+fs.mkdirSync(DIST_DIR, { recursive: true });
+
+const latestTemplateFile = getLatestTemplateFile();
+console.log(`📦 Используется шаблон: ${latestTemplateFile}`);
+
+const templateCode = extractTemplate(latestTemplateFile);
+
+const files = fs.readdirSync(SRC_DIR).filter(f => f.endsWith('.js'));
+
+files.forEach(filename => {
+  const srcPath = path.join(SRC_DIR, filename);
+  const content = fs.readFileSync(srcPath, 'utf-8');
+
+  const newContent = content.replace(
+    new RegExp(`${TEMPLATE_INSERT_START}[\\s\\S]*?${TEMPLATE_INSERT_END}`, 'm'),
+    `${TEMPLATE_INSERT_START}\n${templateCode}\n${TEMPLATE_INSERT_END}`
+  );
+
+  const distPath = path.join(DIST_DIR, filename.replace('.js', '_fin.js'));
+  fs.writeFileSync(distPath, newContent);
+  console.log(`✅ Обновлён: ${distPath}`);
 });
