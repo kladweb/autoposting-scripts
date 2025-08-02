@@ -6,32 +6,6 @@ Instead of editing each script manually, you can now update a single template, a
 
 ---
 
-## ⚙️ How It Works
-
-- You edit shared logic inside the `templates/` folder.
-- The **most recently modified** template file is selected automatically.
-- Each file inside the `headers/` folder contains a unique Tampermonkey header (first ~13 lines of code).
-- On build, each header is combined with the selected template (excluding wrapping comments like `// === TEMPLATE START ===` and `// === TEMPLATE END ===`).
-- Final scripts are saved into `dist/` with `_fin` suffix (e.g., `scriptA_fin.js`).
-
----
-
-## 📦 Example
-
-If you have:
-
-- `headers/scriptA.js`
-- `headers/scriptB.js`
-
-and the latest modified template is `templates/template2.js`, then `dist/` will contain:
-
-- `scriptA_fin.js`
-- `scriptB_fin.js`
-
-Each file will contain its original header plus the shared template code.
-
----
-
 ## 🚀 Usage
 
 ### 1. Install dependencies
@@ -57,9 +31,6 @@ To activate Husky:
 ```bash
 npm run prepare
 ```
-
-After that, every `git commit` will automatically trigger a rebuild.  
-If you want to customize or disable this behavior, edit the file: `.husky/pre-commit`.
 
 ### 4. Push changes
 ```bash
