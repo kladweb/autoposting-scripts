@@ -265,9 +265,9 @@
   //NecessityPosting
   function checkNecessityPosting() {
     if (isSkipCurrPost) {
-      startNewCycle(delayM);
-      buttonStop.removeAttribute('disabled');
       isSkipCurrPost = false;
+      buttonStop.removeAttribute('disabled');
+      startNewCycle(delayM);
       return;
     }
     let postingAfterItem = null;
@@ -298,8 +298,7 @@
     }
     checkingPosts.splice(deepAmount);
 
-    let isThereMyPost = false;
-    let isThereStrangePost = false;
+    let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
@@ -311,17 +310,17 @@
       if (postingAfterItem === "my") {
         console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
         if (postUserId.substring(3) === idUser) {
-          isThereMyPost = true;
-          break;
+          isNecessityPosting = true;
         }
+        break;
       }
       console.log("02 Сравниваем ", postingAfterItem, " и ", postUserId.substring(1));
       if (postingAfterItem === postUserId.substring(1)) {
-        isThereStrangePost = true;
+        isNecessityPosting = true;
         break;
       }
     }
-    if (!isThereMyPost || isThereStrangePost) {
+    if (isNecessityPosting) {
       delayAct(clickCreatePost, delayM);
     } else {
       startNewCycle(delayM);
