@@ -4,8 +4,6 @@
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-body
-// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/dist/VK0_fin.js
-// @downloadURL  https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/dist/VK0_fin.js
 // ==/UserScript==
 
 (function () {
@@ -21,6 +19,7 @@
     id620542842: "Иван Смирнов",
     satiptv: "Людвиг Ванбетховен"
   };
+  // Здесь будем проверять файл. Версия 001.
   const delays = {15: "15 sec", 10: "10 sec", 7: "7 sec"};
   const deeps = {1: 1, 2: 2, 3: 3};
   const [delayM, delayL] = [2000, 3000];
@@ -447,4 +446,3 @@
   }
 
 })();
-

@@ -1,5 +1,13 @@
-/node_modules
+# IDE
+.vscode/
 .idea/
-.env
 
-/src
+# system
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Optional: exclude dist from source control
+# dist/
