@@ -12,9 +12,7 @@ const SRC_DIR = './src';
 const DIST_DIR = './dist';
 const FILE_SUFFIX = '_fin';
 
-const files = [
-  'VK0.js',
-];
+const files = fs.readdirSync(SRC_DIR).filter(file => file.endsWith('.js'));
 
 // 1. Чтение и извлечение шаблона
 const fullTemplate = fs.readFileSync(TEMPLATE_FILE, 'utf-8');
