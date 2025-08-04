@@ -71,18 +71,18 @@
     ["132602273", "club132602273"],// https://vk.com/club132602273
     ["218718758", "club218718758"],// https://vk.com/club218718758
     ["86617505", "club86617505"],// https://vk.com/club86617505  1101
-    // PART 1
-    // ["44971717", "club44971717"],// https://vk.com/club44971717  868
-    // ["64610320", "iptvworld"],// https://vk.com/iptvworld
-    // ["183716378", "4at_biz"],// https://vk.com/4at_biz
-    // ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
-    // ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
-    // ["106165979", "club106165979"],// https://vk.com/club106165979  74
-    // ["129904512", "club129904512"],// https://vk.com/club129904512  138
-    // ["87564019", "club87564019"],// https://vk.com/club87564019  214
-    // ["182272329", "club182272329"],// https://vk.com/club182272329  677
-    // ["85473521", "club85473521"],// https://vk.com/club85473521  363
     // PART 2
+    ["44971717", "club44971717"],// https://vk.com/club44971717  868
+    ["64610320", "iptvworld"],// https://vk.com/iptvworld
+    ["183716378", "4at_biz"],// https://vk.com/4at_biz
+    ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
+    ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
+    ["106165979", "club106165979"],// https://vk.com/club106165979  74
+    ["129904512", "club129904512"],// https://vk.com/club129904512  138
+    ["87564019", "club87564019"],// https://vk.com/club87564019  214
+    ["182272329", "club182272329"],// https://vk.com/club182272329  677
+    ["85473521", "club85473521"],// https://vk.com/club85473521  363
+    // PART 3
     // ["97046131", "club97046131"],// https://vk.com/club97046131  268
     // ["181633050", "iptvarmenia"],// https://vk.com/iptvarmenia  274
     // ["119225474", "aromashopvl"],// https://vk.com/aromashopvl  197
@@ -93,7 +93,7 @@
     // ["88877831", "iptv15"],// https://vk.com/iptv15  76
     // ["133932827", "club133932827"],// https://vk.com/club133932827  115
     // ["114358721", "iptvmen"],// https://vk.com/iptvmen  125
-    // PART 3
+    // PART 4
     // ["125907101", "club125907101"],// https://vk.com/club125907101  129
     // ["100749987", "club100749987"],// https://vk.com/club100749987  128
     // ["211817792", "freeiptvplaylist"],// https://vk.com/freeiptvplaylist  121
@@ -104,7 +104,7 @@
     // ["139627862", "clubiptv2017"],// https://vk.com/clubiptv2017  100
     // ["92481281", "club92481281"],// https://vk.com/club92481281  80
     // ["69750941", "online.iptv"],// https://vk.com/online.iptv  76
-    // PART 4
+    // PART 5
     // ["33418379", "club33418379"],// https://vk.com/club33418379  71
     // ["60125045", "club60125045"],// https://vk.com/club60125045  68
     // ["75004959", "club75004959"],// https://vk.com/club75004959  63
@@ -116,7 +116,7 @@
     // ["113453722", "club113453722"],// https://vk.com/club113453722  53
     // ["72770953", "club72770953"],// https://vk.com/club72770953  50
     // ["66538865", "club66538865"],// https://vk.com/club66538865  47
-    // PART 5
+    // PART 6
     // ["92609310", "club92609310"],// https://vk.com/club92609310  47
     // ["39933599", "ip_tv_player"],// https://vk.com/ip_tv_player  46
     // ["16982510", "club16982510"],// https://vk.com/club16982510  41
@@ -129,7 +129,7 @@
     // ["20716313", "club20716313"],// https://vk.com/club20716313  32
     // ["24096858", "club24096858"],// https://vk.com/club24096858  32
     // ["50585401", "club50585401"],// https://vk.com/club50585401  31
-    // PART 6
+    // PART 7
     // ["224475216", "iptvbrestt"],// https://vk.com/iptvbrestt  30
     // ["69583842", "club169583842"],// https://vk.com/club169583842  30
     // ["200371453", "club200371453"],// https://vk.com/club200371453 29
@@ -143,6 +143,12 @@
     // ["182276122", "sharaclub_sat_iptv"],// https://vk.com/sharaclub_sat_iptv  18
     // ["112843747", "club112843747"],// https://vk.com/club112843747  14
   ];
+
+  //Shuffle array using the Fisher–Yates shuffle
+  for (let i = groupsAll.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [groupsAll[i], groupsAll[j]] = [groupsAll[j], groupsAll[i]];
+  }
 
   //Color Palette #4694
   const colors = {
@@ -417,6 +423,10 @@
       startNewCycle(delayM);
       return;
     }
+    if (currentNumberPost > 0) {
+      delayAct(clickCreatePost, delayM);
+      return;
+    }
     let strategyItem = null;
     const subMenu01Elements = strategyMenu.querySelectorAll('.strategy');
     console.log("BBB: ", subMenu01Elements);
@@ -452,7 +462,7 @@
     const checkingPostsNode = document.querySelectorAll('.post');
     const checkingPosts = Array.from(checkingPostsNode);
 
-    //проверяем наличие "pinned" в группе, если да, то deep увеличиваем на 1;
+    //check "pinned" in the group, if yes, then we increase deepAmount by 1;
     if (groupsAll[currentNumberGr][2]) {
       deepAmount++;
     }
@@ -489,6 +499,9 @@
     if (isNecessityPosting) {
       delayAct(clickCreatePost, delayM);
     } else {
+      if (currentNumberPost === 0) {
+        groupsAll.splice(currentNumberGr, 1);
+      }
       startNewCycle(delayM);
     }
   }
