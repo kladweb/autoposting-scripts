@@ -73,16 +73,16 @@
     ["218718758", "club218718758"],// https://vk.com/club218718758
     ["86617505", "club86617505"],// https://vk.com/club86617505  1101
     // PART 2
-    // ["44971717", "club44971717"],// https://vk.com/club44971717  868
-    // ["64610320", "iptvworld"],// https://vk.com/iptvworld
-    // ["183716378", "4at_biz"],// https://vk.com/4at_biz
-    // ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
-    // ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
-    // ["106165979", "club106165979"],// https://vk.com/club106165979  74
-    // ["129904512", "club129904512"],// https://vk.com/club129904512  138
-    // ["87564019", "club87564019"],// https://vk.com/club87564019  214
-    // ["182272329", "club182272329"],// https://vk.com/club182272329  677
-    // ["85473521", "club85473521"],// https://vk.com/club85473521  363
+    ["44971717", "club44971717"],// https://vk.com/club44971717  868
+    ["64610320", "iptvworld"],// https://vk.com/iptvworld
+    ["183716378", "4at_biz"],// https://vk.com/4at_biz
+    ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
+    ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
+    ["106165979", "club106165979"],// https://vk.com/club106165979  74
+    ["129904512", "club129904512"],// https://vk.com/club129904512  138
+    ["87564019", "club87564019"],// https://vk.com/club87564019  214
+    ["182272329", "club182272329"],// https://vk.com/club182272329  677
+    ["85473521", "club85473521"],// https://vk.com/club85473521  363
     // PART 3
     // ["97046131", "club97046131"],// https://vk.com/club97046131  268
     // ["181633050", "iptvarmenia"],// https://vk.com/iptvarmenia  274
