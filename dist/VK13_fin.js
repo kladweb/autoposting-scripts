@@ -487,8 +487,10 @@
       if (strategyItem === "my") {
         console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
         if (postUserId.substring(3) === idUser) {
+          isNecessityPosting = true;
+          break;
         }
-        break;
+        continue;
       }
       console.log("02 Сравниваем ", rival, " и ", postUserId.substring(1));
       if (rival === postUserId.substring(1)) {
