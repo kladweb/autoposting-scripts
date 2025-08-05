@@ -10,4 +10,4 @@ Thumbs.db
 node_modules/
 
 # Optional: exclude dist from source control
-# dist/
+# build/

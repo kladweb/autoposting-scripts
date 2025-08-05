@@ -9,7 +9,7 @@ const INSERTION_START = '// === TEMPLATE START ===';
 const INSERTION_END = '// === TEMPLATE END ===';
 
 const SRC_DIR = './src';
-const DIST_DIR = './dist';
+const DIST_DIR = './build';
 const FILE_SUFFIX = '_fin';
 
 const files = fs.readdirSync(SRC_DIR).filter(file => file.endsWith('.js'));

@@ -40,6 +40,7 @@
   let isSkipCurrPost = false;
   let buttonStart = null;
   let buttonStop = null;
+  let deepAmount = 0;
 
   const groupsAll = [
     // ["14875387", "club14875387"], //Bel https://vk.com/club14875387
@@ -73,7 +74,7 @@
     ["218718758", "club218718758"],// https://vk.com/club218718758
     ["86617505", "club86617505"],// https://vk.com/club86617505  1101
     // PART 2
-    ["44971717", "club44971717"],// https://vk.com/club44971717  868
+    ["44971717", "club44971717", "pinned"],// https://vk.com/club44971717  868
     ["64610320", "iptvworld"],// https://vk.com/iptvworld
     ["183716378", "4at_biz"],// https://vk.com/4at_biz
     ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
@@ -196,6 +197,8 @@
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
+  const htmlDoc = document.querySelector(`html`);
+  htmlDoc.style.scrollBehavior = "smooth";
 
   function createMenuBlock(menuType, items, name, styleInput) {
     const subMenu = document.createElement('div');
@@ -410,7 +413,15 @@
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
       delayAct(checkCurrentGroup, delayM);
     } else {
-      delayAct(checkNecessityPosting, delayM);
+      console.log("deepItems: ", deepItems);
+      deepItems.forEach((element) => {
+        if (element.checked) {
+          deepAmount = +element.id;
+        }
+      });
+      console.log("deepAmount: ", deepAmount);
+      window.scrollBy(0, deepAmount * 500);
+      delayAct(checkNecessityPosting, delayL);
     }
   }
 
@@ -418,6 +429,7 @@
    * NECESSITY POSTING
    **/
   function checkNecessityPosting() {
+    window.scrollTo(0, 500);
     if (isSkipCurrPost) {
       isSkipCurrPost = false;
       buttonStop.removeAttribute('disabled');
@@ -428,17 +440,15 @@
       delayAct(clickCreatePost, delayM);
       return;
     }
+
     let strategyItem = null;
     const subMenu01Elements = strategyMenu.querySelectorAll('.strategy');
-    console.log("BBB: ", subMenu01Elements);
     subMenu01Elements.forEach((element) => {
       if (element.checked) {
         strategyItem = element.id;
       }
     });
 
-    console.log("AAA: ", strategyItem);
-    //
     if (strategyItem === "all") {
       delayAct(clickCreatePost, delayM);
       return;
@@ -454,14 +464,9 @@
       });
     }
 
-    let deepAmount = 0;
-    deepItems.forEach((element) => {
-      if (element.checked) {
-        deepAmount = +element.id;
-      }
-    });
     const checkingPostsNode = document.querySelectorAll('.post');
     const checkingPosts = Array.from(checkingPostsNode);
+    console.log("AMOUNT POSTS !!! : ", checkingPosts.length);
 
     //check "pinned" in the group, if yes, then we increase deepAmount by 1;
     if (groupsAll[currentNumberGr][2]) {
@@ -479,18 +484,20 @@
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
       if (strategyItem === "aftermy") {
-        console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
+        console.log("00 Сравниваем ", postUserId.substring(3), " и ", idUser);
         if (postUserId.substring(3) === idUser) {
           isNecessityPosting = true;
           break;
         }
+        continue;
       }
       if (strategyItem === "my") {
         console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
         if (postUserId.substring(3) === idUser) {
-          isNecessityPosting = true;
+          isNecessityPosting = false;
           break;
         }
+        isNecessityPosting = true;
         continue;
       }
       console.log("02 Сравниваем ", rival, " и ", postUserId.substring(1));
