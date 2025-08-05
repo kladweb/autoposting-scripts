@@ -52,12 +52,12 @@
     // ["106796170", "club106796170"],//25 https://vk.com/club106796170
     // ["52218536", "club52218536"],//21 https://vk.com/club52218536
     // ["84120000", "club84120000"], //18 https://vk.com/club84120000
-    // ["176994995", "tvlisty", "pinned"], //29 https://vk.com/tvlisty
+    // ["176994995", "tvlisty", "pin"], //29 https://vk.com/tvlisty
     // ["167018774", "club167018774"], //30 https://vk.com/club167018774
-    // ["171843329", "ru_iptv", "pinned"], //31 https://vk.com/ru_iptv
-    // ["131638330", "galaktik_iptv", "pinned"], //33 https://vk.com/galaktik_iptv
+    // ["171843329", "ru_iptv", "pin"], //31 https://vk.com/ru_iptv
+    // ["131638330", "galaktik_iptv", "pin"], //33 https://vk.com/galaktik_iptv
     // ["186442856", "iptv_bt"], //35 https://vk.com/iptv_bt
-    // ["120034509", "club120034509", "pinned"], //32 https://vk.com/club120034509
+    // ["120034509", "club120034509", "pin"], //32 https://vk.com/club120034509
     // ["99770042", "club99770042"], //17 https://vk.com/club99770042
     // ["138553819", "club138553819"],//16 https://vk.com/club138553819
     //NEW
@@ -73,7 +73,7 @@
     ["218718758", "club218718758"],// https://vk.com/club218718758
     ["86617505", "club86617505"],// https://vk.com/club86617505  1101
     // PART 2
-    ["44971717", "club44971717", "pinned"],// https://vk.com/club44971717  868
+    ["44971717", "club44971717", "pin"],// https://vk.com/club44971717  868
     ["64610320", "iptvworld"],// https://vk.com/iptvworld
     ["183716378", "4at_biz"],// https://vk.com/4at_biz
     ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
@@ -109,7 +109,7 @@
     // ["33418379", "club33418379"],// https://vk.com/club33418379  71
     // ["60125045", "club60125045"],// https://vk.com/club60125045  68
     // ["75004959", "club75004959"],// https://vk.com/club75004959  63
-    // ["191496548", "club191496548"],// https://vk.com/club191496548  62
+    // ["191496548", "club191496548", "pin"],// https://vk.com/club191496548  62
     // ["67319747", "club67319747"],// https://vk.com/club67319747  58
     // ["88265046", "club88265046"],// https://vk.com/club88265046  58
     // ["116759968", "obstv"],// https://vk.com/obstv  54
@@ -467,9 +467,9 @@
     const checkingPosts = Array.from(checkingPostsNode);
     console.log("AMOUNT POSTS !!! : ", checkingPosts.length);
 
-    //check "pinned" in the group, if yes, then we increase deepAmount by 1;
+    //check "pin" in the group, if yes, then we increase deepAmount by 1;
     if (groupsAll[currentNumberGr][2]) {
-      deepAmount++;
+      checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
 
@@ -490,6 +490,7 @@
         }
         continue;
       }
+
       if (strategyItem === "my") {
         console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
         if (postUserId.substring(3) === idUser) {
@@ -499,6 +500,12 @@
         isNecessityPosting = true;
         continue;
       }
+
+      console.log("011 Сравниваем (только для 1-го цикла ", postUserId.substring(3), " и ", idUser);
+      if (i === 0 && postUserId.substring(3) === idUser) {
+        break;
+      }
+
       console.log("02 Сравниваем ", rival, " и ", postUserId.substring(1));
       if (rival === postUserId.substring(1)) {
         isNecessityPosting = true;
