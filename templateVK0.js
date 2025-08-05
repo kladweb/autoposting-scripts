@@ -41,6 +41,7 @@
   let buttonStart = null;
   let buttonStop = null;
   let deepAmount = 0;
+  let functionRepetitions = 0;
 
   const groupsAll = [
     // ["14875387", "club14875387"], //Bel https://vk.com/club14875387
@@ -401,8 +402,8 @@
       linkGroup.click();
       delayAct(checkCurrentGroup, delayM);
     } else {
-      console.log("Не найдена группа: ", groupHref);
-      console.log("Скроллим...");
+      console.log("Didn't find group: ", groupHref);
+      console.log("Scrolling page...");
       window.scrollBy(0, 1500);
       delayAct(enterToCurrentGroup, delayM);
     }
@@ -449,11 +450,6 @@
       }
     });
 
-    if (strategyItem === "all") {
-      delayAct(clickCreatePost, delayM);
-      return;
-    }
-
     //competitorsMenuItems
     let rival = null;
     if (strategyItem === "rivals") {
@@ -475,16 +471,18 @@
     checkingPosts.splice(deepAmount);
 
     let isNecessityPosting = false;
+
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
-        console.log("Не найден AvatarRich. checkingPosts: ", checkingPosts);
+        console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
         continue;
       }
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
+
       if (strategyItem === "aftermy") {
-        console.log("00 Сравниваем ", postUserId.substring(3), " и ", idUser);
+        console.log("00 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
           isNecessityPosting = true;
           break;
@@ -493,7 +491,7 @@
       }
 
       if (strategyItem === "my") {
-        console.log("01 Сравниваем ", postUserId.substring(3), " и ", idUser);
+        console.log("01 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
           isNecessityPosting = false;
           break;
@@ -502,13 +500,18 @@
         continue;
       }
 
-      console.log("011 Сравниваем (только для 1-го цикла ", postUserId.substring(3), " и ", idUser);
+      console.log("011 Compare (check presence of our post only for the 1st cycle) ", postUserId.substring(3), " и ", idUser);
       if (i === 0 && postUserId.substring(3) === idUser) {
         break;
       }
 
-      console.log("02 Сравниваем ", rival, " и ", postUserId.substring(1));
+      console.log("02 Compare ", rival, " and ", postUserId.substring(1));
       if (rival === postUserId.substring(1)) {
+        isNecessityPosting = true;
+        break;
+      }
+
+      if (strategyItem === "all") {
         isNecessityPosting = true;
         break;
       }
@@ -540,8 +543,14 @@
       openDraft.click();
       delayAct(clickContinuePost, delayM);
     } else {
-      console.log('Кнопка Открыть черновик не найдена!');
-      delayAct(clickOpenDraftPost, delayM);
+      console.log('Button Открыть черновик didn\'t find!');
+      if (functionRepetitions > 5) {
+        functionRepetitions = 0;
+        loadPost();
+      } else {
+        functionRepetitions++;
+        delayAct(clickOpenDraftPost, delayM);
+      }
     }
   }
 
