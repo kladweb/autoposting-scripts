@@ -10,7 +10,7 @@
   'use strict';
   const idUser = '476124794';
   const posts = {sharavoz: "Sharavoz.tv", russkoetv: 'Русское ТВ'};
-  const VKName = "vk0"
+  const VKName = "vk0";
 
   // === TEMPLATE START ===
   // insert here

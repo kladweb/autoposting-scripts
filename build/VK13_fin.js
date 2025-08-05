@@ -13,6 +13,7 @@
   const VKName = "vk13";
 
   // version 1.1.3
+  const urlBaseDataStat = "https://689069c9944bf437b595d196.mockapi.io/vkstat";
   const strategy = {
     all: "All groups",
     aftermy: "After my posts",
@@ -32,8 +33,10 @@
   let inputAllGroups = null;
   let inputCompetitors = null;
   const competitorsMenuItems = [];
+  const infoPosts = {};
   const deepItems = [];
   let currentNumberPost = 0;
+  let currentNamePost = null;
   let currentNumberGr = 0;
   let currentPost = null;
   let isSkipCurrPost = false;
@@ -41,6 +44,7 @@
   let buttonStop = null;
   let deepAmount = 0;
   let functionRepetitions = 0;
+  let loadedFetchPosts = {};
 
   const groupsAll = [
     // ["14875387", "club14875387"], //Bel https://vk.com/club14875387
@@ -62,28 +66,28 @@
     // ["99770042", "club99770042"], //17 https://vk.com/club99770042
     // ["138553819", "club138553819"],//16 https://vk.com/club138553819
     //NEW
-    // PART 1
-    ["141086755", "club141086755"],// https://vk.com/club141086755
-    ["136708898", "play_53"],// https://vk.com/play_53
-    ["24950442", "club24950442"],// https://vk.com/club24950442
-    ["206061686", "club206061686"],// https://vk.com/club206061686
-    ["35875023", "sputnikovetv"],// https://vk.com/sputnikovetv
-    ["175865636", "iplist"],// https://vk.com/iplist
-    ["148105703", "club148105703"],// https://vk.com/club148105703
-    ["132602273", "club132602273"],// https://vk.com/club132602273
-    ["218718758", "club218718758"],// https://vk.com/club218718758
-    ["86617505", "club86617505"],// https://vk.com/club86617505  1101
-    // PART 2
-    ["44971717", "club44971717", "pin"],// https://vk.com/club44971717  868
-    ["64610320", "iptvworld"],// https://vk.com/iptvworld
-    ["183716378", "4at_biz"],// https://vk.com/4at_biz
-    ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
-    ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
-    ["106165979", "club106165979"],// https://vk.com/club106165979  74
-    ["129904512", "club129904512"],// https://vk.com/club129904512  138
-    ["87564019", "club87564019"],// https://vk.com/club87564019  214
-    ["182272329", "club182272329"],// https://vk.com/club182272329  677
-    ["85473521", "club85473521"],// https://vk.com/club85473521  363
+    // // PART 1
+    // ["141086755", "club141086755"],// https://vk.com/club141086755
+    // ["136708898", "play_53"],// https://vk.com/play_53
+    // ["24950442", "club24950442"],// https://vk.com/club24950442
+    // ["206061686", "club206061686"],// https://vk.com/club206061686
+    // ["35875023", "sputnikovetv"],// https://vk.com/sputnikovetv
+    // ["175865636", "iplist"],// https://vk.com/iplist
+    // ["148105703", "club148105703"],// https://vk.com/club148105703
+    // ["132602273", "club132602273"],// https://vk.com/club132602273
+    // ["218718758", "club218718758"],// https://vk.com/club218718758
+    // ["86617505", "club86617505"],// https://vk.com/club86617505  1101
+    // // PART 2
+    // ["44971717", "club44971717", "pin"],// https://vk.com/club44971717  868
+    // ["64610320", "iptvworld"],// https://vk.com/iptvworld
+    // ["183716378", "4at_biz"],// https://vk.com/4at_biz
+    // ["114193852", "iptvstar"],// https://vk.com/iptvstar  237
+    // ["220867147", "neoniptv"],// https://vk.com/neoniptv  146
+    // ["106165979", "club106165979"],// https://vk.com/club106165979  74
+    // ["129904512", "club129904512"],// https://vk.com/club129904512  138
+    // ["87564019", "club87564019"],// https://vk.com/club87564019  214
+    // ["182272329", "club182272329"],// https://vk.com/club182272329  677
+    // ["85473521", "club85473521"],// https://vk.com/club85473521  363
     // PART 3
     // ["97046131", "club97046131"],// https://vk.com/club97046131  268
     // ["181633050", "iptvarmenia"],// https://vk.com/iptvarmenia  274
@@ -109,8 +113,8 @@
     // PART 5
     // ["33418379", "club33418379"],// https://vk.com/club33418379  71
     // ["60125045", "club60125045"],// https://vk.com/club60125045  68
-    // ["75004959", "club75004959"],// https://vk.com/club75004959  63
-    // ["191496548", "club191496548", "pin"],// https://vk.com/club191496548  62
+    ["75004959", "club75004959"],// https://vk.com/club75004959  63
+    ["191496548", "club191496548", "pin"],// https://vk.com/club191496548  62
     // ["67319747", "club67319747"],// https://vk.com/club67319747  58
     // ["88265046", "club88265046"],// https://vk.com/club88265046  58
     // ["116759968", "obstv"],// https://vk.com/obstv  54
@@ -133,7 +137,7 @@
     // ["24096858", "club24096858"],// https://vk.com/club24096858  32
     // ["50585401", "club50585401"],// https://vk.com/club50585401  31
     // ["224475216", "iptvbrestt"],// https://vk.com/iptvbrestt  30
-    // ["69583842", "club169583842"],// https://vk.com/club169583842  30
+    // ["169583842", "club169583842"],// https://vk.com/club169583842  30
     // ["200371453", "club200371453"],// https://vk.com/club200371453 29
     // ["133880267", "club133880267"],// https://vk.com/club133880267 29
     // ["138208217", "club138208217"],// https://vk.com/club138208217 27
@@ -141,16 +145,20 @@
     // ["17837395", "club17837395"],// https://vk.com/club17837395 22
     // ["80802384", "club80802384"],// https://vk.com/club80802384 20
     // ["178793178", "iptvsfera"],// https://vk.com/iptvsfera 19
-    // ["129923189", "azimuth_tv"],// https://vk.com/azimuth_tv  18
+    // ["129923189", "azimuth_tv", "pin"],// https://vk.com/azimuth_tv  18
     // ["182276122", "sharaclub_sat_iptv"],// https://vk.com/sharaclub_sat_iptv  18
     // ["112843747", "club112843747"],// https://vk.com/club112843747  14
   ];
 
+  console.log("*********");
+  console.log("Кол-во групп до: ", groupsAll.length);
   //Shuffle array using the Fisher–Yates shuffle
   for (let i = groupsAll.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1));
     [groupsAll[i], groupsAll[j]] = [groupsAll[j], groupsAll[i]];
   }
+  console.log("Кол-во групп после: ", groupsAll.length);
+  console.log("*********");
 
   //Color Palette #4694
   const colors = {
@@ -161,8 +169,8 @@
   }
 
   const buttonsSet = [
-    {name: "START POSTING", handler: startScript},
     {name: "SKIP", handler: skipCurrPost},
+    {name: "START POSTING", handler: startScript},
   ];
 
   const menuVK = document.createElement('div');
@@ -184,25 +192,45 @@
   z-index: 5000;
   `;
 
+  const styleMenu1 = `width: 45%; margin: 4px 10px; border: 1px solid ${colors.border01};`
+  const styleMenu2 = `width: 95%; margin: 4px auto; border: 1px solid ${colors.border01};`
+  const styleMenu3 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01}; overflow: hidden;`
   const stylesInpType1 = "text-align: left; padding: 4px;";
   const stylesInpType2 = "display: inline-block; padding: 4px;";
+  const stylesInpType3 = stylesInpType1 + " height: 50px; overflow: hidden;";
 
-  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', stylesInpType1);
-  const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', stylesInpType1);
-  const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', stylesInpType1);
-  const delaysMenu = createMenuBlock('radio', delays, 'DELAY', stylesInpType1);
-  const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', stylesInpType2);
+  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType1);
+  const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', styleMenu1, stylesInpType1);
+  const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', styleMenu1, stylesInpType1);
+  const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu1, stylesInpType1);
+  const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', styleMenu1, stylesInpType2);
+  const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu3, stylesInpType1);
+  const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu3, stylesInpType1);
   const buttonsBlock = createButtonsBlock(buttonsSet);
-  menuVK.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, buttonsBlock);
+  menuVK.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, infoPanel, currentInfo, buttonsBlock);
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
   const htmlDoc = document.querySelector(`html`);
   htmlDoc.style.scrollBehavior = "smooth";
 
-  function createMenuBlock(menuType, items, name, styleInput) {
+  for (const key in posts) {
+    const postEl = document.createElement('p');
+    postEl.style.cssText = "margin: 4px; text-align: left;";
+    const postDivSpan = document.createElement('span');
+    postDivSpan.style.cssText = "color: green; font-weight: bold;";
+    postEl.append(document.createTextNode(`${posts[key]}:  `));
+    postEl.append(postDivSpan);
+    // const infoEl = {namePost: key, namePostEl: postDivSpan, amount: 0};
+    // infoPosts.push(infoEl);
+    infoPosts[key] = {namePostEl: postDivSpan, amount: 0};
+    loadRenderData(key, postDivSpan);
+    infoPanel.append(postEl);
+  }
+
+  function createMenuBlock(menuType, items, name, styleMenu, styleInput) {
     const subMenu = document.createElement('div');
-    subMenu.style.cssText = `width: 45%; margin: 4px 10px; border: 1px solid ${colors.border01};`;
+    subMenu.style.cssText = styleMenu;
     const head = document.createElement('div');
     head.append(document.createTextNode(name));
     subMenu.append(head);
@@ -246,19 +274,15 @@
     if (name === "STRATEGY") {
       subMenu.append(competitorsSubMenu);
     }
-    if (name === "COMPETITORS") {
-      subMenu.style.width = "95%";
-      subMenu.style.margin = "4px auto";
-    }
     return subMenu;
   }
 
   function createButtonsBlock(buttons) {
     const buttonsBlock = document.createElement('div');
-    buttonsBlock.style.cssText = `width: 45%; margin: 4px 10px;`
+    buttonsBlock.style.cssText = `width: 95%; margin: 4px 10px;`
     buttons.forEach((btn) => {
       const buttonAct = document.createElement('button');
-      buttonAct.style.cssText = `display: block; margin: 20px auto; color: ${colors.color01};`;
+      buttonAct.style.cssText = `display: inline-block; margin: 20px 10px; color: ${colors.color01};`;
       buttonAct.append(document.createTextNode(btn.name));
       buttonAct.addEventListener('click', btn.handler);
       buttonsBlock.append(buttonAct);
@@ -299,6 +323,62 @@
     }
   }
 
+  window.onbeforeunload = function (e) {
+    //TODO save amount posts;
+  };
+
+
+  function loadRenderData(namePost, postEl) {
+    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+      method: 'GET',
+      headers: {'content-type': 'application/json'},
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("0: Something went wrong!");
+      }
+    })
+    .then(renderInfo => {
+      const result = renderInfo.posts;
+      result.filter((pack) => {
+        const currentDate = new Date();
+        const packDate = new Date(pack.date);
+        return (currentDate - packDate) / 3600000 < 12;
+      });
+      loadedFetchPosts[namePost] = result;
+      const summArr = result.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+      console.log(summArr);
+      infoPosts[currentNamePost].amount = summArr;
+      postEl.innerText = infoPosts[currentNamePost].amount;
+    })
+    .catch(error => {
+      console.log("0: Что-то пошло не так! ", error);
+    })
+  }
+
+  function updateRenderData(namePost, amount) {
+    const newData = {
+      posts: [{amount: amount, date: new Date()}, ...loadedFetchPosts[namePost]],
+    };
+
+    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+      method: 'PUT',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify(newData)
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("2: Something went wrong!");
+    }).then(task => {
+      console.log("2: Данные на сервере обновлены!");
+    }).catch(error => {
+      console.log("2: Что-то пошло не так! ", error);
+    })
+  }
+
   /**
    * START SCRIPT
    **/
@@ -312,6 +392,7 @@
         isAllowStarting = true;
       }
     });
+    currentNamePost = subMenu02posting[currentNumberPost];
     const subMenu03elements = delaysMenu.querySelectorAll('input');
     subMenu03elements.forEach((element) => {
       if (element.checked) {
@@ -320,7 +401,7 @@
     });
     if (isAllowStarting) {
       console.log('Запускаем скрипты: ', subMenu02posting);
-      console.log('buttonStart: ', buttonStart);
+      // console.log('buttonStart: ', buttonStart);
       buttonStart.setAttribute('disabled', '');
       loadPost();
     } else {
@@ -328,8 +409,8 @@
     }
   }
 
-  async function loadPost() {
-    fetch(`https://642dd59966a20ec9cea70c6c.mockapi.io/tasks/${VKName}_${subMenu02posting[currentNumberPost]}`, {
+  function loadPost() {
+    fetch(`https://642dd59966a20ec9cea70c6c.mockapi.io/tasks/${VKName}_${currentNamePost}`, {
       method: 'GET',
       headers: {'content-type': 'application/json'},
     })
@@ -341,6 +422,7 @@
       }
     }).then(post => {
       currentPost = post;
+      console.log("CURRENT POST: ", currentPost);
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
@@ -582,6 +664,19 @@
   function checkPostSubmit() {
     const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
     if (createPost) {
+      console.log("infoPosts ДО: ", infoPosts);
+      console.log(subMenu02posting);
+      console.log(infoPosts);
+
+      // infoPosts.forEach((post) => {
+      //   if (currentNamePost === post.namePost) {
+      //     post.amount = post.amount + 1;
+      //     post.namePostEl.innerText = post.amount;
+      //   }
+      // });
+      infoPosts[currentNamePost].amount = infoPosts[currentNamePost].amount + 1;
+      infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amount;
+      console.log("infoPosts ПОСЛЕ: ", infoPosts);
       delayAct(startNewCycle, delayM);
     } else {
       delayAct(checkPostSubmit, delayM);
@@ -602,6 +697,11 @@
   function updateCycleData() {
     const isLastSmallCycle = currentNumberPost >= subMenu02posting.length - 1;
     const isLastBigCycle = currentNumberGr >= groupsAll.length - 1;
+
+    //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
+    if (isLastBigCycle && infoPosts[currentNamePost].amount) {
+      updateRenderData(currentNamePost, infoPosts[currentNamePost].amount);
+    }
     if (isLastSmallCycle && isLastBigCycle) {
       // buttonStart.removeAttribute('disabled');
       delayAct(enterNews, delayM);
@@ -609,6 +709,7 @@
     }
     if (isLastBigCycle) {
       currentNumberPost++;
+      currentNamePost = subMenu02posting[currentNumberPost];
       currentNumberGr = 0;
       loadPost();
       return;
