@@ -116,8 +116,8 @@
     // ["24890840", "club24890840"],// https://vk.com/club24890840  54
     // ["113453722", "club113453722"],// https://vk.com/club113453722  53
     // ["72770953", "club72770953"],// https://vk.com/club72770953  50
-    // ["66538865", "club66538865"],// https://vk.com/club66538865  47
     // PART 6
+    // ["66538865", "club66538865"],// https://vk.com/club66538865  47
     // ["92609310", "club92609310"],// https://vk.com/club92609310  47
     // ["39933599", "ip_tv_player"],// https://vk.com/ip_tv_player  46
     // ["16982510", "club16982510"],// https://vk.com/club16982510  41
@@ -127,10 +127,10 @@
     // ["18046120", "club18046120"],// https://vk.com/club18046120  37
     // ["205480134", "club205480134"],// https://vk.com/club205480134  35
     // ["111331547", "club111331547"],// https://vk.com/club111331547  32
+    // PART 7
     // ["20716313", "club20716313"],// https://vk.com/club20716313  32
     // ["24096858", "club24096858"],// https://vk.com/club24096858  32
     // ["50585401", "club50585401"],// https://vk.com/club50585401  31
-    // PART 7
     // ["224475216", "iptvbrestt"],// https://vk.com/iptvbrestt  30
     // ["69583842", "club169583842"],// https://vk.com/club169583842  30
     // ["200371453", "club200371453"],// https://vk.com/club200371453 29
