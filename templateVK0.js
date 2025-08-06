@@ -15,7 +15,7 @@
   const VKName = "vk0"
 
   // === PART START ===
-  // version 1.1.3
+  // version 1.1.5
   const urlBaseDataStat = "https://689069c9944bf437b595d196.mockapi.io/vkstat";
   const strategy = {
     all: "All groups",
@@ -163,13 +163,6 @@
       ["112843747", "club112843747"],// https://vk.com/club112843747  14
     ]
   };
-
-  // Shuffle array using the Fisher–Yates shuffle
-  // for (let i = groupsAll.length - 1; i > 0; i--) {
-  //   let j = Math.floor(Math.random() * (i + 1));
-  //   [groupsAll[i], groupsAll[j]] = [groupsAll[j], groupsAll[i]];
-  // }
-
 
   //Color Palette #4694
   const colors = {
@@ -344,7 +337,6 @@
     }
   };
 
-
   function loadRenderData(namePost, postEl) {
     fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
       method: 'GET',
@@ -359,14 +351,13 @@
     })
     .then(renderInfo => {
       const result = renderInfo.posts;
-      result.filter((pack) => {
+      const resultFilter = result.filter((pack) => {
         const currentDate = new Date();
         const packDate = new Date(pack.date);
         return (currentDate - packDate) / 3600000 < 12;
       });
-      loadedFetchPosts[namePost] = result;
-      const summArr = result.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-      console.log(summArr);
+      loadedFetchPosts[namePost] = resultFilter;
+      const summArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
       infoPosts[namePost].amountLast = summArr;
       postEl.innerText = infoPosts[namePost].amountLast + infoPosts[namePost].amountCurr;
     })
@@ -578,7 +569,6 @@
 
     const checkingPostsNode = document.querySelectorAll('.post');
     const checkingPosts = Array.from(checkingPostsNode);
-    console.log("AMOUNT POSTS !!! : ", checkingPosts.length);
 
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     if (groupsAll[currentNumberGr][2]) {
@@ -695,16 +685,8 @@
   function checkPostSubmit() {
     const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
     if (createPost) {
-      console.log("infoPosts ДО: ", infoPosts);
-      // infoPosts.forEach((post) => {
-      //   if (currentNamePost === post.namePost) {
-      //     post.amount = post.amount + 1;
-      //     post.namePostEl.innerText = post.amount;
-      //   }
-      // });
       infoPosts[currentNamePost].amountCurr = infoPosts[currentNamePost].amountCurr + 1;
       infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amountCurr + infoPosts[currentNamePost].amountLast;
-      console.log("infoPosts ПОСЛЕ: ", infoPosts);
       delayAct(startNewCycle, delayM);
     } else {
       delayAct(checkPostSubmit, delayM);
@@ -713,7 +695,6 @@
 
   function startNewCycle(newDelay = delayXL) {
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
-    console.log('linkGroups: ', linkGroups);
     if (linkGroups) {
       linkGroups.click();
       delayAct(updateCycleData, newDelay);
