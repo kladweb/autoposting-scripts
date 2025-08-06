@@ -112,16 +112,16 @@
     // ["92481281", "club92481281"],// https://vk.com/club92481281  80
     // ["69750941", "online.iptv"],// https://vk.com/online.iptv  76
     // PART 5
-    // ["33418379", "club33418379"],// https://vk.com/club33418379  71
-    // ["60125045", "club60125045"],// https://vk.com/club60125045  68
+    ["33418379", "club33418379"],// https://vk.com/club33418379  71
+    ["60125045", "club60125045"],// https://vk.com/club60125045  68
     ["75004959", "club75004959"],// https://vk.com/club75004959  63
     ["191496548", "club191496548", "pin"],// https://vk.com/club191496548  62
-    // ["67319747", "club67319747"],// https://vk.com/club67319747  58
-    // ["88265046", "club88265046"],// https://vk.com/club88265046  58
-    // ["116759968", "obstv"],// https://vk.com/obstv  54
-    // ["24890840", "club24890840"],// https://vk.com/club24890840  54
-    // ["113453722", "club113453722"],// https://vk.com/club113453722  53
-    // ["72770953", "club72770953"],// https://vk.com/club72770953  50
+    ["67319747", "club67319747"],// https://vk.com/club67319747  58
+    ["88265046", "club88265046"],// https://vk.com/club88265046  58
+    ["116759968", "obstv"],// https://vk.com/obstv  54
+    ["24890840", "club24890840"],// https://vk.com/club24890840  54
+    ["113453722", "club113453722"],// https://vk.com/club113453722  53
+    ["72770953", "club72770953"],// https://vk.com/club72770953  50
     // PART 6
     // ["66538865", "club66538865"],// https://vk.com/club66538865  47
     // ["92609310", "club92609310"],// https://vk.com/club92609310  47
@@ -212,8 +212,8 @@
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
-  const htmlDoc = document.querySelector(`html`);
-  htmlDoc.style.scrollBehavior = "smooth";
+  // const htmlDoc = document.querySelector(`html`);
+  // htmlDoc.style.scrollBehavior = "smooth";
 
   for (const key in posts) {
     const postEl = document.createElement('p');
@@ -224,7 +224,7 @@
     postEl.append(postDivSpan);
     // const infoEl = {namePost: key, namePostEl: postDivSpan, amount: 0};
     // infoPosts.push(infoEl);
-    infoPosts[key] = {namePostEl: postDivSpan, amount: 0};
+    infoPosts[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
     loadRenderData(key, postDivSpan);
     infoPanel.append(postEl);
   }
@@ -326,6 +326,7 @@
 
   window.onbeforeunload = function (e) {
     //TODO save amount posts;
+    updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
   };
 
 
@@ -351,8 +352,8 @@
       loadedFetchPosts[namePost] = result;
       const summArr = result.reduce((accum, currentValue) => accum + currentValue.amount, 0);
       console.log(summArr);
-      infoPosts[currentNamePost].amount = summArr;
-      postEl.innerText = infoPosts[currentNamePost].amount;
+      infoPosts[namePost].amountLast = summArr;
+      postEl.innerText = infoPosts[namePost].amountLast + infoPosts[namePost].amountCurr;
     })
     .catch(error => {
       console.log("0: Что-то пошло не так! ", error);
@@ -503,7 +504,8 @@
         }
       });
       console.log("deepAmount: ", deepAmount);
-      window.scrollBy(0, deepAmount * 500);
+      // window.scrollBy(0, deepAmount * 500);
+      window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
       delayAct(checkNecessityPosting, delayL);
     }
   }
@@ -512,7 +514,8 @@
    * NECESSITY POSTING
    **/
   function checkNecessityPosting() {
-    window.scrollTo(0, 500);
+    // window.scrollTo(0, 500);
+    window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
     if (isSkipCurrPost) {
       isSkipCurrPost = false;
       buttonStop.removeAttribute('disabled');
@@ -675,8 +678,8 @@
       //     post.namePostEl.innerText = post.amount;
       //   }
       // });
-      infoPosts[currentNamePost].amount = infoPosts[currentNamePost].amount + 1;
-      infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amount;
+      infoPosts[currentNamePost].amountCurr = infoPosts[currentNamePost].amountCurr + 1;
+      infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amountCurr + infoPosts[currentNamePost].amountLast;
       console.log("infoPosts ПОСЛЕ: ", infoPosts);
       delayAct(startNewCycle, delayM);
     } else {
@@ -700,8 +703,8 @@
     const isLastBigCycle = currentNumberGr >= groupsAll.length - 1;
 
     //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
-    if (isLastBigCycle && infoPosts[currentNamePost].amount) {
-      updateRenderData(currentNamePost, infoPosts[currentNamePost].amount);
+    if (isLastBigCycle && infoPosts[currentNamePost].amountCurr) {
+      updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
     }
     if (isLastSmallCycle && isLastBigCycle) {
       // buttonStart.removeAttribute('disabled');
@@ -741,7 +744,8 @@
     const b = 700;
     const dist = Math.floor(Math.random() * (b - a + 1)) + a;
     setTimeout(() => {
-      window.scrollBy(0, dist);
+      // window.scrollBy(0, dist);
+      window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
       if (k <= 0) {
         alert('ВСЕ СДЕЛАНО !!!');
       } else {
