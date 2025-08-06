@@ -4,6 +4,8 @@
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-body
+// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK2_fin.js
+// @downloadURL  hhttps://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK2_fin.js
 // ==/UserScript==
 
 (function () {
@@ -25,7 +27,7 @@
     id620542842: "Иван Смирнов",
     satiptv: "Людвиг Ванбетховен"
   }
-  const delays = {15: "15 sec", 10: "10 sec", 7: "7 sec"};
+  const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
@@ -91,14 +93,14 @@
     // PART 3
     // ["97046131", "club97046131"],// https://vk.com/club97046131  268
     // ["181633050", "iptvarmenia"],// https://vk.com/iptvarmenia  274
-    // ["119225474", "aromashopvl"],// https://vk.com/aromashopvl  197
+    // ["119225474", "aromashopvl", "pin"],// https://vk.com/aromashopvl  197
     // ["163108884", "club_playlistsiptv"],// https://vk.com/club_playlistsiptv  177
     // ["163420799", "club163420799"],// https://vk.com/club163420799  165
     // ["119462518", "club119462518"],// https://vk.com/club119462518  155*
     // ["85129289", "club85129289"],// https://vk.com/club85129289  153
     // ["88877831", "iptv15"],// https://vk.com/iptv15  76
     // ["133932827", "club133932827"],// https://vk.com/club133932827  115
-    // ["114358721", "iptvmen"],// https://vk.com/iptvmen  125
+    // ["114358721", "iptvmen", "pin"],// https://vk.com/iptvmen  125
     // PART 4
     // ["125907101", "club125907101"],// https://vk.com/club125907101  129
     // ["100749987", "club100749987"],// https://vk.com/club100749987  128
@@ -603,9 +605,6 @@
     if (isNecessityPosting) {
       delayAct(clickCreatePost, delayM);
     } else {
-      if (currentNumberPost === 0) {
-        groupsAll.splice(currentNumberGr, 1);
-      }
       startNewCycle(delayM);
     }
   }
@@ -622,7 +621,6 @@
 
   function clickOpenDraftPost() {
     const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
-    console.log(openDraft);
     if (openDraft) {
       openDraft.click();
       delayAct(clickContinuePost, delayM);
@@ -668,9 +666,6 @@
     const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
     if (createPost) {
       console.log("infoPosts ДО: ", infoPosts);
-      console.log(subMenu02posting);
-      console.log(infoPosts);
-
       // infoPosts.forEach((post) => {
       //   if (currentNamePost === post.namePost) {
       //     post.amount = post.amount + 1;
