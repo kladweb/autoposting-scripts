@@ -34,11 +34,13 @@
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
+  const currentInfoItems = {missedposts: "Missed posts"};
   let subMenu02posting = [];
   let inputAllGroups = null;
   let inputCompetitors = null;
   const competitorsMenuItems = [];
   const infoPosts = {};
+  const infoContent = {};
   const deepItems = [];
   let currentNumberPost = 0;
   let currentNamePost = null;
@@ -79,7 +81,7 @@
       ["24950442", "club24950442"],// https://vk.com/club24950442
       ["206061686", "club206061686"],// https://vk.com/club206061686
       ["35875023", "sputnikovetv"],// https://vk.com/sputnikovetv
-      ["175865636", "iplist"],// https://vk.com/iplist
+      ["175865636", "iplist", "pin"],// https://vk.com/iplist
       ["148105703", "club148105703"],// https://vk.com/club148105703
       ["132602273", "club132602273"],// https://vk.com/club132602273
       ["218718758", "club218718758"],// https://vk.com/club218718758
@@ -138,7 +140,7 @@
       ["92609310", "club92609310"],// https://vk.com/club92609310  47
       ["39933599", "ip_tv_player"],// https://vk.com/ip_tv_player  46
       ["16982510", "club16982510"],// https://vk.com/club16982510  41
-      ["183858399", "tvbox_vk"],// https://vk.com/tvbox_vk  39
+      ["183858399", "tvbox_vk", "pin"],// https://vk.com/tvbox_vk  39
       ["65587412", "plattexpod"],// https://vk.com/plattexpod  38
       ["23943593", "club23943593"],// https://vk.com/club23943593  38
       ["18046120", "club18046120"],// https://vk.com/club18046120  37
@@ -149,7 +151,7 @@
       ["20716313", "club20716313"],// https://vk.com/club20716313  32
       ["24096858", "club24096858"],// https://vk.com/club24096858  32
       ["50585401", "club50585401"],// https://vk.com/club50585401  31
-      ["224475216", "iptvbrestt"],// https://vk.com/iptvbrestt  30
+      ["224475216", "iptvbrestt", "pin"],// https://vk.com/iptvbrestt  30
       ["169583842", "club169583842"],// https://vk.com/club169583842  30
       ["200371453", "club200371453"],// https://vk.com/club200371453 29
       ["133880267", "club133880267"],// https://vk.com/club133880267 29
@@ -168,6 +170,7 @@
   const colors = {
     color01: '#816460',
     color02: '#B27D6A',
+    color03: '#403F26',
     background01: '#FEF1C5',
     border01: '#F1C196',
   }
@@ -219,21 +222,49 @@
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
-  // const htmlDoc = document.querySelector(`html`);
-  // htmlDoc.style.scrollBehavior = "smooth";
 
-  for (const key in posts) {
-    const postEl = document.createElement('p');
-    postEl.style.cssText = "margin: 4px; text-align: left;";
-    const postDivSpan = document.createElement('span');
-    postDivSpan.style.cssText = "color: green; font-weight: bold;";
-    postEl.append(document.createTextNode(`${posts[key]}:  `));
-    postEl.append(postDivSpan);
-    // const infoEl = {namePost: key, namePostEl: postDivSpan, amount: 0};
-    // infoPosts.push(infoEl);
-    infoPosts[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
-    loadRenderData(key, postDivSpan);
-    infoPanel.append(postEl);
+  // for (const key in posts) {
+  //   const postEl = document.createElement('p');
+  //   postEl.style.cssText = "margin: 4px; text-align: left;";
+  //   const postDivSpan = document.createElement('span');
+  //   postDivSpan.style.cssText = "color: green; font-weight: bold;";
+  //   postEl.append(document.createTextNode(`${posts[key]}:  `));
+  //   postEl.append(postDivSpan);
+  //   infoPosts[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
+  //   loadRenderData(key, postDivSpan);
+  //   infoPanel.append(postEl);
+  // }
+  //
+  // for (const key in currentInfoItems) {
+  //   const postEl = document.createElement('p');
+  //   postEl.style.cssText = "margin: 4px; text-align: left;";
+  //   const postDivSpan = document.createElement('span');
+  //   postDivSpan.style.cssText = "color: green; font-weight: bold;";
+  //   postEl.append(document.createTextNode(`${currentInfoItems[key]}:  `));
+  //   postEl.append(postDivSpan);
+  //   infoContent[key] = {namePostEl: postDivSpan, amountCurr: 0};
+  //   currentInfo.append(postEl);
+  // }
+  createInfoPanelContent(posts, infoPosts, infoPanel, "green");
+  createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "red");
+
+  function createInfoPanelContent(infoItemsObj, contentObj, menuPanel, spanColor) {
+    for (const key in infoItemsObj) {
+      const postEl = document.createElement('p');
+      postEl.style.cssText = "margin: 4px; text-align: left;";
+      const postDivSpan = document.createElement('span');
+      postDivSpan.style.cssText = `color: ${spanColor}; font-weight: bold;`;
+      postEl.append(document.createTextNode(`${infoItemsObj[key]}:  `));
+      postEl.append(postDivSpan);
+      contentObj[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
+      if (JSON.stringify(infoItemsObj) === JSON.stringify(posts)) {
+        loadRenderData(key, postDivSpan);
+      }
+      if (JSON.stringify(infoItemsObj) === JSON.stringify(currentInfoItems)) {
+        contentObj[key].namePostEl.innerText = "0";
+      }
+      menuPanel.append(postEl);
+    }
   }
 
   function createMenuBlock(menuType, items, name, styleMenu, styleInput) {
@@ -420,9 +451,6 @@
       [groupsAll[i], groupsAll[j]] = [groupsAll[j], groupsAll[i]];
     }
 
-    console.log("*/*/*/*/*//*/*/*/*/*/");
-    console.log("groupsAll: ", groupsAll);
-
     if (isAllowStarting) {
       console.log('Запускаем скрипты: ', subMenu02posting);
       // console.log('buttonStart: ', buttonStart);
@@ -541,6 +569,7 @@
     if (isSkipCurrPost) {
       isSkipCurrPost = false;
       buttonStop.removeAttribute('disabled');
+      infoContent.missedposts.amountCurr++
       startNewCycle(delayM);
       return;
     }
@@ -625,6 +654,7 @@
     if (isNecessityPosting) {
       delayAct(clickCreatePost, delayM);
     } else {
+      infoContent.missedposts.amountCurr++;
       startNewCycle(delayM);
     }
   }
@@ -694,6 +724,7 @@
   }
 
   function startNewCycle(newDelay = delayXL) {
+    infoContent.missedposts.namePostEl.innerText = infoContent.missedposts.amountCurr;
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
     if (linkGroups) {
       linkGroups.click();
