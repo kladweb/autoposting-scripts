@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         AutoRepVK_6_mod04
+// @name         AutoRepVK_6_mod05_remote
 // @author       kladweb
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
