@@ -698,9 +698,10 @@
 
   function clickSavePost() {
     if (isSkipCurrPost) {
-      startNewCycle(delayM);
+      infoContent.missedposts.amountCurr++;
       buttonStop.removeAttribute('disabled');
       isSkipCurrPost = false;
+      startNewCycle(delayM);
       return;
     }
     const buttonSubmit = document.querySelector('[data-testid="posting_submit_button"]');
