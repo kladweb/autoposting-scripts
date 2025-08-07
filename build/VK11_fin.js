@@ -569,7 +569,7 @@
     if (isSkipCurrPost) {
       isSkipCurrPost = false;
       buttonStop.removeAttribute('disabled');
-      infoContent.missedposts.amountCurr++
+      infoContent.missedposts.amountCurr++;
       startNewCycle(delayM);
       return;
     }
@@ -715,7 +715,7 @@
   function checkPostSubmit() {
     const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
     if (createPost) {
-      infoPosts[currentNamePost].amountCurr = infoPosts[currentNamePost].amountCurr + 1;
+      infoPosts[currentNamePost].amountCurr++;
       infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amountCurr + infoPosts[currentNamePost].amountLast;
       delayAct(startNewCycle, delayM);
     } else {

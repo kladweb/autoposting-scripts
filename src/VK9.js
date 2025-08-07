@@ -12,7 +12,7 @@
   'use strict';
   const idUser = '550973432';
   const posts = {cbilling: "CBILLING", kineskop: 'Kineskop'};
-  const VKName = "vk13";
+  const VKName = "vk9";
 
   // === TEMPLATE START ===
   // insert here
