@@ -177,6 +177,7 @@
   }
 
   const buttonsSet = [
+    {name: "SAVE", handler: savePosted},
     {name: "SKIP", handler: skipCurrPost},
     {name: "START POSTING", handler: startScript},
   ];
@@ -312,6 +313,14 @@
       }
     });
     return buttonsBlock;
+  }
+
+  function savePosted() {
+    if (infoPosts[currentNamePost] && infoPosts[currentNamePost].amountCurr) {
+      updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
+      infoPosts[currentNamePost].amountLast += infoPosts[currentNamePost].amountCurr;
+      infoPosts[currentNamePost].amountCurr = 0
+    }
   }
 
   function skipCurrPost() {
@@ -698,6 +707,7 @@
     if (createPost) {
       infoPosts[currentNamePost].amountCurr++;
       infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amountCurr + infoPosts[currentNamePost].amountLast;
+      infoPosts[currentNamePost].namePostEl.style.color = "green";
       delayAct(startNewCycle, delayM);
     } else {
       delayAct(checkPostSubmit, delayM);
