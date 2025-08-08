@@ -666,7 +666,9 @@
       console.log('Button Открыть черновик didn\'t find!');
       if (functionRepetitions > 5) {
         functionRepetitions = 0;
-        loadPost();
+        groupsAll.push(groupsAll[currentNumberGr]);
+        startNewCycle(delayM);
+        // loadPost();
       } else {
         functionRepetitions++;
         delayAct(clickOpenDraftPost, delayM);
