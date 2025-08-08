@@ -224,28 +224,6 @@
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
 
-  // for (const key in posts) {
-  //   const postEl = document.createElement('p');
-  //   postEl.style.cssText = "margin: 4px; text-align: left;";
-  //   const postDivSpan = document.createElement('span');
-  //   postDivSpan.style.cssText = "color: green; font-weight: bold;";
-  //   postEl.append(document.createTextNode(`${posts[key]}:  `));
-  //   postEl.append(postDivSpan);
-  //   infoPosts[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
-  //   loadRenderData(key, postDivSpan);
-  //   infoPanel.append(postEl);
-  // }
-  //
-  // for (const key in currentInfoItems) {
-  //   const postEl = document.createElement('p');
-  //   postEl.style.cssText = "margin: 4px; text-align: left;";
-  //   const postDivSpan = document.createElement('span');
-  //   postDivSpan.style.cssText = "color: green; font-weight: bold;";
-  //   postEl.append(document.createTextNode(`${currentInfoItems[key]}:  `));
-  //   postEl.append(postDivSpan);
-  //   infoContent[key] = {namePostEl: postDivSpan, amountCurr: 0};
-  //   currentInfo.append(postEl);
-  // }
   createInfoPanelContent(posts, infoPosts, infoPanel, "green");
   createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "red");
 
@@ -413,6 +391,7 @@
       }
       throw new Error("2: Something went wrong!");
     }).then(task => {
+      infoPosts[currentNamePost].namePostEl.style.color = "blue";
       console.log("2: Данные на сервере обновлены!");
     }).catch(error => {
       console.log("2: Что-то пошло не так! ", error);
@@ -588,11 +567,11 @@
     });
 
     //competitorsMenuItems
-    let rival = null;
+    let rivals = [];
     if (strategyItem === "rivals") {
       competitorsMenuItems.forEach((element) => {
         if (element.checked) {
-          rival = element.id;
+          rivals.push(element.id);
         }
       });
     }
@@ -641,8 +620,8 @@
         break;
       }
 
-      console.log("02 Compare ", rival, " and ", postUserId.substring(1));
-      if (rival === postUserId.substring(1)) {
+      console.log("02 Compare ", rivals, " and ", postUserId.substring(1));
+      if (rivals.some(element => postUserId.substring(1).includes(element))) {
         isNecessityPosting = true;
         break;
       }
