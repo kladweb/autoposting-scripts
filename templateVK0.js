@@ -35,7 +35,7 @@
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
-  const currentInfoItems = {missedposts: "Missed posts"};
+  const currentInfoItems = {myip: "IP", missedposts: "Missed posts"};
   let subMenu02posting = [];
   let inputAllGroups = null;
   let inputCompetitors = null;
@@ -177,7 +177,7 @@
   }
 
   const buttonsSet = [
-    {name: "SAVE", handler: savePosted},
+    {name: "SAVE POSTS", handler: savePosted},
     {name: "SKIP", handler: skipCurrPost},
     {name: "START POSTING", handler: startScript},
   ];
@@ -226,14 +226,24 @@
   strategyMenu.addEventListener('click', changeCompInputs);
 
   createInfoPanelContent(posts, infoPosts, infoPanel, "green");
-  createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "red");
+  createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "green", "red");
+  getIp().then((res) => {
+      infoContent.myip.namePostEl.innerText = res;
+    }
+  );
 
-  function createInfoPanelContent(infoItemsObj, contentObj, menuPanel, spanColor) {
+  infoContent.myip.namePostEl.style.cursor = 'pointer';
+  infoContent.myip.namePostEl.addEventListener('click', saveIPAddress);
+
+  function createInfoPanelContent(infoItemsObj, contentObj, menuPanel, spanColor, specColor) {
     for (const key in infoItemsObj) {
       const postEl = document.createElement('p');
       postEl.style.cssText = "margin: 4px; text-align: left;";
       const postDivSpan = document.createElement('span');
-      postDivSpan.style.cssText = `color: ${spanColor}; font-weight: bold;`;
+      postDivSpan.style.cssText = `color: ${key !== 'missedposts' ? spanColor : specColor}; font-weight: bold;`;
+      if (key === 'myip') {
+        postDivSpan.style.fontWeight = 'normal';
+      }
       postEl.append(document.createTextNode(`${infoItemsObj[key]}:  `));
       postEl.append(postDivSpan);
       contentObj[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
@@ -241,7 +251,7 @@
         loadRenderData(key, postDivSpan);
       }
       if (JSON.stringify(infoItemsObj) === JSON.stringify(currentInfoItems)) {
-        contentObj[key].namePostEl.innerText = "0";
+        contentObj[key].namePostEl.innerText = "-";
       }
       menuPanel.append(postEl);
     }
@@ -301,7 +311,7 @@
     buttonsBlock.style.cssText = `width: 95%; margin: 4px 10px;`
     buttons.forEach((btn) => {
       const buttonAct = document.createElement('button');
-      buttonAct.style.cssText = `display: inline-block; margin: 20px 10px; color: ${colors.color01};`;
+      buttonAct.style.cssText = `display: inline-block; margin: 20px 10px; color: ${colors.color01}; cursor: pointer;`;
       buttonAct.append(document.createTextNode(btn.name));
       buttonAct.addEventListener('click', btn.handler);
       buttonsBlock.append(buttonAct);
@@ -407,10 +417,35 @@
     })
   }
 
+  async function getIp() {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+  }
+
+  async function saveIPAddress() {
+    try {
+      await navigator.clipboard.writeText(infoContent.myip.namePostEl.innerText)
+      .then(() => {
+        infoContent.myip.namePostEl.style.color = "blue";
+        setTimeout(() => {
+          infoContent.myip.namePostEl.style.color = "green";
+        }, 1500);
+      });
+    } catch (error) {
+      console.error("4: IP адрес не  сохранен! Ошибка: ", error);
+    }
+  }
+
   /**
    * START SCRIPT
    **/
   function startScript() {
+    // navigator.clipboard.writeText("1234567");
     let isAllowStarting = false;
     subMenu02posting = [];
     const subMenu02elements = postsMenu.querySelectorAll('input');
