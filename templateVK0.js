@@ -34,7 +34,7 @@
     id476124794: "VK0: Екатерина Менкина",
     id806571200: "VK2: Татьяна Андреева",
     id463839444: "VK6: Павел Каширский",
-    elenad92: "VK9: Елена Поведайко",
+    id550973432: "VK9: Елена Поведайко",
     id562935165: "VK11: Василий Тис",
     id591910410: "VK13: Andrzey"
   }
@@ -135,7 +135,7 @@
     5: [
       ["33418379", "club33418379"],// https://vk.com/club33418379  71
       ["60125045", "club60125045"],// https://vk.com/club60125045  68
-      ["75004959", "club75004959"],// https://vk.com/club75004959  63
+      ["75004959", "club75004959", "pin"],// https://vk.com/club75004959  63
       ["191496548", "club191496548", "pin"],// https://vk.com/club191496548  62
       ["67319747", "club67319747"],// https://vk.com/club67319747  58
       ["88265046", "club88265046"],// https://vk.com/club88265046  58
@@ -486,7 +486,6 @@
 
     if (isAllowStarting) {
       console.log('Запускаем скрипты: ', subMenu02posting);
-      // console.log('buttonStart: ', buttonStart);
       buttonStart.setAttribute('disabled', '');
       loadPost();
     } else {
@@ -507,7 +506,7 @@
       }
     }).then(post => {
       currentPost = post;
-      console.log("CURRENT POST: ", currentPost);
+      // console.log("CURRENT POST: ", currentPost);
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
@@ -551,20 +550,23 @@
 
   function enterToBookMarks() {
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
-    console.log('linkGroups0: ', linkGroups);
     if (linkGroups) {
       linkGroups.click();
-      delayAct(enterToCurrentGroup, delayM);
+      delayAct(enterToCurrentGroup, delayL);
     } else {
       delayAct(enterToBookMarks, delayM);
     }
   }
 
   function enterToCurrentGroup() {
+    const URLHash = window.location.href;
+    if (URLHash !== 'https://vk.com/bookmarks?type=group') {
+      delayAct(enterToCurrentGroup, delayL);
+      return;
+    }
     buttonStop.removeAttribute('disabled');
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
-    console.log('linkGroup: ', linkGroup);
     if (linkGroup) {
       linkGroup.click();
       delayAct(checkCurrentGroup, delayM);
@@ -606,10 +608,10 @@
       startNewCycle(delayM);
       return;
     }
-    if (currentNumberPost > 0) {
-      delayAct(clickCreatePost, delayM);
-      return;
-    }
+    // if (currentNumberPost > 0) {
+    //   delayAct(clickCreatePost, delayM);
+    //   return;
+    // }
 
     let strategyItem = null;
     const subMenu01Elements = strategyMenu.querySelectorAll('.strategy');
@@ -633,9 +635,14 @@
     const checkingPosts = Array.from(checkingPostsNode);
 
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
-    if (groupsAll[currentNumberGr][2]) {
+    const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
+    if (isFirstPin) {
+      console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
+    // if (groupsAll[currentNumberGr][2]) {
+    //   checkingPosts.shift();
+    // }
     checkingPosts.splice(deepAmount);
 
     let isNecessityPosting = false;
@@ -706,6 +713,7 @@
     const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
     if (openDraft) {
       openDraft.click();
+      functionRepetitions = 0;
       delayAct(clickContinuePost, delayM);
     } else {
       console.log('Button Открыть черновик didn\'t find!');
@@ -734,9 +742,9 @@
   function clickSavePost() {
     if (isSkipCurrPost) {
       infoContent.missedposts.amountCurr++;
-      buttonStop.removeAttribute('disabled');
+      // buttonStop.removeAttribute('disabled');
       isSkipCurrPost = false;
-      startNewCycle(delayM);
+      delayAct(clickCloseDraftPost, delayM);
       return;
     }
     const buttonSubmit = document.querySelector('[data-testid="posting_submit_button"]');
@@ -745,6 +753,23 @@
       delayAct(checkPostSubmit, delayL);
     } else {
       delayAct(clickSavePost, delayM);
+    }
+  }
+
+  function clickCloseDraftPost() {
+    if (functionRepetitions > 5) {
+      functionRepetitions = 0;
+      startNewCycle(delayM);
+      return;
+    }
+    const closeButton = document.querySelector('[data-testid="modal-close-button"]');
+    if (closeButton) {
+      closeButton.click();
+      functionRepetitions = 0;
+      delayAct(startNewCycle.bind(null, delayM), delayM);
+    } else {
+      functionRepetitions++;
+      delayAct(clickCloseDraftPost, delayM);
     }
   }
 
@@ -761,6 +786,7 @@
   }
 
   function startNewCycle(newDelay = delayXL) {
+    console.log('newDelay: ', newDelay);
     infoContent.missedposts.namePostEl.innerText = infoContent.missedposts.amountCurr;
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
     if (linkGroups) {
