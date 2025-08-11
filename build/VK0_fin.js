@@ -24,11 +24,18 @@
   };
   const competitors = {
     id358923511: "Анна Егорова",
+    diwissmio: "Diwiss Iptv",
     id620542842: "Иван Смирнов",
     sergent771: "Сергей Щепетов",
     id469457210: "Алексей Гвоздев",
     pasha_dubrovsky: "Паша Дубровский",
-    satiptv: "Людвиг Ванбетховен"
+    satiptv: "Людвиг Ванбетховен",
+    id476124794: "VK0: Екатерина Менкина",
+    id806571200: "VK2: Татьяна Андреева",
+    id463839444: "VK6: Павел Каширский",
+    elenad92: "VK9: Елена Поведайко",
+    id562935165: "VK11: Василий Тис",
+    id591910410: "VK13: Andrzey"
   }
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
@@ -207,8 +214,9 @@
   const styleMenu4 = `margin: 4px auto; border: 1px solid ${colors.border01};`
   const stylesInpType1 = "text-align: left; padding: 4px;";
   const stylesInpType2 = "display: inline-block; padding: 4px;";
+  const stylesInpType3 = "text-align: left; padding: 2px;";
 
-  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType1);
+  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType3);
   const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', styleMenu1, stylesInpType1);
   const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', styleMenu4, stylesInpType1);
   const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu4, stylesInpType1);
@@ -334,8 +342,8 @@
   }
 
   function skipCurrPost() {
-    isSkipCurrPost = true;
     buttonStop.setAttribute('disabled', 'disabled');
+    isSkipCurrPost = true;
   }
 
   function changeCompInputs() {
@@ -552,6 +560,7 @@
   }
 
   function enterToCurrentGroup() {
+    buttonStop.removeAttribute('disabled');
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
     console.log('linkGroup: ', linkGroup);
@@ -592,7 +601,6 @@
     window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
     if (isSkipCurrPost) {
       isSkipCurrPost = false;
-      buttonStop.removeAttribute('disabled');
       infoContent.missedposts.amountCurr++;
       startNewCycle(delayM);
       return;
@@ -771,7 +779,6 @@
       updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
     }
     if (isLastSmallCycle && isLastBigCycle) {
-      // buttonStart.removeAttribute('disabled');
       delayAct(enterNews, delayM);
       return;
     }
@@ -787,6 +794,7 @@
   }
 
   function enterNews() {
+    buttonStart.removeAttribute('disabled');
     const buttonNews = document.querySelector('a[href="/feed"]');
     if (buttonNews) {
       buttonNews.click();
