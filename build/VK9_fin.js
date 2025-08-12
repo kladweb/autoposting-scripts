@@ -43,7 +43,7 @@
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
   const currentInfoItems = {myip: "IP", missedposts: "Missed posts"};
-  let subMenu02posting = [];
+  let postElements = [];
   let inputAllGroups = null;
   let inputCompetitors = null;
   const competitorsMenuItems = [];
@@ -449,21 +449,27 @@
     }
   }
 
+  function clearDataBeforeNextCycle() {
+    groupsAll.length = 0;
+    infoPosts[currentNamePost].namePostEl.style.color = "green";
+    loadPost();
+  }
+
   /**
    * START SCRIPT
    **/
   function startScript() {
     // navigator.clipboard.writeText("1234567");
     let isAllowStarting = false;
-    subMenu02posting = [];
+    postElements = [];
     const subMenu02elements = postsMenu.querySelectorAll('input');
     subMenu02elements.forEach((element) => {
       if (element.checked) {
-        subMenu02posting.push(element.id);
+        postElements.push(element.id);
         isAllowStarting = true;
       }
     });
-    currentNamePost = subMenu02posting[currentNumberPost];
+    currentNamePost = postElements[currentNumberPost];
     const subMenu03elements = delaysMenu.querySelectorAll('input');
     subMenu03elements.forEach((element) => {
       if (element.checked) {
@@ -484,7 +490,7 @@
     }
 
     if (isAllowStarting) {
-      console.log('Запускаем скрипты: ', subMenu02posting);
+      console.log('Запускаем скрипты: ', postElements);
       buttonStart.setAttribute('disabled', '');
       loadPost();
     } else {
@@ -567,6 +573,7 @@
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
     if (linkGroup) {
+      console.log("linkGroup: ", linkGroup);
       linkGroup.click();
       delayAct(checkCurrentGroup, delayM);
     } else {
@@ -639,9 +646,6 @@
       console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
-    // if (groupsAll[currentNumberGr][2]) {
-    //   checkingPosts.shift();
-    // }
     checkingPosts.splice(deepAmount);
 
     let isNecessityPosting = false;
@@ -720,7 +724,6 @@
         functionRepetitions = 0;
         groupsAll.push(groupsAll[currentNumberGr]);
         startNewCycle(delayM);
-        // loadPost();
       } else {
         functionRepetitions++;
         delayAct(clickOpenDraftPost, delayM);
@@ -741,7 +744,6 @@
   function clickSavePost() {
     if (isSkipCurrPost) {
       infoContent.missedposts.amountCurr++;
-      // buttonStop.removeAttribute('disabled');
       isSkipCurrPost = false;
       delayAct(clickCloseDraftPost, delayM);
       return;
@@ -797,7 +799,7 @@
   }
 
   function updateCycleData() {
-    const isLastSmallCycle = currentNumberPost >= subMenu02posting.length - 1;
+    const isLastSmallCycle = currentNumberPost >= postElements.length - 1;
     const isLastBigCycle = currentNumberGr >= groupsAll.length - 1;
 
     //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
@@ -810,9 +812,9 @@
     }
     if (isLastBigCycle) {
       currentNumberPost++;
-      currentNamePost = subMenu02posting[currentNumberPost];
+      currentNamePost = postElements[currentNumberPost];
       currentNumberGr = 0;
-      loadPost();
+      clearDataBeforeNextCycle();
       return;
     }
     currentNumberGr++;
