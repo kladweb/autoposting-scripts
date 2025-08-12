@@ -450,17 +450,10 @@
     }
   }
 
-  function clearDataBeforeNextCycle() {
-    groupsAll.length = 0;
-    infoPosts[currentNamePost].namePostEl.style.color = "green";
-    loadPost();
-  }
-
   /**
    * START SCRIPT
    **/
   function startScript() {
-    // navigator.clipboard.writeText("1234567");
     let isAllowStarting = false;
     postElements = [];
     const subMenu02elements = postsMenu.querySelectorAll('input');
@@ -497,6 +490,12 @@
     } else {
       alert('Необходимо выбрать хотя-бы один пост!');
     }
+  }
+
+  function clearDataBeforeNextCycle() {
+    groupsAll.length = 0;
+    infoPosts[currentNamePost].namePostEl.style.color = "green";
+    loadPost();
   }
 
   function loadPost() {
