@@ -450,7 +450,9 @@
 
   function clearDataBeforeCycle() {
     groupsAll.length = 0;
-    infoPosts[currentNamePost].namePostEl.style.color = "green";
+    if (infoPosts[currentNamePost]?.namePostEl) {
+      infoPosts[currentNamePost].namePostEl.style.color = "green";
+    }
   }
 
   /**
