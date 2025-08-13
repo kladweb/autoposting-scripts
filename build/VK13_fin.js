@@ -199,6 +199,7 @@
   left: 10px;
   max-width: 500px;
   padding: 10px 0;
+  box-sizing: border-box;
   font-size: 14px;
   text-align: center;
   color: ${colors.color01};
@@ -208,27 +209,25 @@
   z-index: 5000;
   `;
 
-  const styleMenu1 = `width: 45%; margin: 4px 10px; border: 1px solid ${colors.border01};`
-  const styleMenu2 = `width: 95%; margin: 4px auto; border: 1px solid ${colors.border01};`
-  const styleMenu3 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01}; overflow: hidden;`
-  const styleMenu4 = `margin: 4px auto; border: 1px solid ${colors.border01};`
+  const styleMenu1 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01};`
+  const styleMenu2 = `margin: 4px auto; border: 1px solid ${colors.border01};`
   const stylesInpType1 = "text-align: left; padding: 4px;";
   const stylesInpType2 = "display: inline-block; padding: 4px;";
   const stylesInpType3 = "text-align: left; padding: 2px;";
 
-  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType3);
-  const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', styleMenu1, stylesInpType1);
-  const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', styleMenu4, stylesInpType1);
-  const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu4, stylesInpType1);
-  const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', styleMenu4, stylesInpType2);
-  const blockPostMenu = createMenuBlock('checkbox', numberBlockPost, 'BLOCKPOST', styleMenu4, stylesInpType2);
-  const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu3, stylesInpType1);
-  const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu3, stylesInpType1);
+  const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', styleMenu2, stylesInpType1);
+  const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', styleMenu2, stylesInpType1);
+  const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu2, stylesInpType1);
+  const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', styleMenu2, stylesInpType2);
+  const blockPostMenu = createMenuBlock('checkbox', numberBlockPost, 'BLOCKPOST', styleMenu2, stylesInpType2);
+  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu1, stylesInpType3);
+  const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu1, stylesInpType1);
+  const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu1, stylesInpType1);
   const buttonsBlock = createButtonsBlock(buttonsSet);
   const menuGroupPost = document.createElement("div");
-  menuGroupPost.append(postsMenu, delaysMenu, deepsMenu, blockPostMenu);
-  menuGroupPost.style.cssText = `width: 45%; margin: 4px 10px;`
-  menuVK.append(strategyMenu, menuGroupPost, infoPanel, currentInfo, buttonsBlock);
+  menuGroupPost.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, blockPostMenu);
+  menuGroupPost.style.cssText = `width: 45%; margin: auto`
+  menuVK.append(menuGroupPost, competitorsSubMenu, infoPanel, currentInfo, buttonsBlock);
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
@@ -308,9 +307,9 @@
       inputBlock.style.cssText = styleInput;
       subMenu.append(inputBlock);
     });
-    if (name === "STRATEGY") {
-      subMenu.append(competitorsSubMenu);
-    }
+    // if (name === "STRATEGY") {
+    //   subMenu.append(competitorsSubMenu);
+    // }
     return subMenu;
   }
 
@@ -449,10 +448,16 @@
     }
   }
 
+  function clearDataBeforeCycle() {
+    groupsAll.length = 0;
+    infoPosts[currentNamePost].namePostEl.style.color = "green";
+  }
+
   /**
    * START SCRIPT
    **/
   function startScript() {
+    clearDataBeforeCycle();
     let isAllowStarting = false;
     postElements = [];
     const subMenu02elements = postsMenu.querySelectorAll('input');
@@ -489,12 +494,6 @@
     } else {
       alert('Необходимо выбрать хотя-бы один пост!');
     }
-  }
-
-  function clearDataBeforeNextCycle() {
-    groupsAll.length = 0;
-    infoPosts[currentNamePost].namePostEl.style.color = "green";
-    loadPost();
   }
 
   function loadPost() {
@@ -813,7 +812,8 @@
       currentNumberPost++;
       currentNamePost = postElements[currentNumberPost];
       currentNumberGr = 0;
-      clearDataBeforeNextCycle();
+      clearDataBeforeCycle();
+      loadPost();
       return;
     }
     currentNumberGr++;
