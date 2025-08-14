@@ -793,13 +793,13 @@
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
     if (linkGroups) {
       linkGroups.click();
-      delayAct(updateCycleData, newDelay);
+      delayAct(updateCycleData.bind(null, newDelay), delayM);
     } else {
       delayAct(startNewCycle, delayM);
     }
   }
 
-  function updateCycleData() {
+  function updateCycleData(newDelay = delayXL) {
     const isLastSmallCycle = currentNumberPost >= postElements.length - 1;
     const isLastBigCycle = currentNumberGr >= groupsAll.length - 1;
 
@@ -816,11 +816,11 @@
       currentNamePost = postElements[currentNumberPost];
       currentNumberGr = 0;
       clearDataBeforeCycle();
-      loadPost();
+      delayAct(loadPost, newDelay);
       return;
     }
     currentNumberGr++;
-    delayAct(savePostToDb, delayM);
+    delayAct(savePostToDb, newDelay);
   }
 
   function enterNews() {
