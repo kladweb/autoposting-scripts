@@ -449,7 +449,8 @@
     }
   }
 
-  function clearDataBeforeCycle() {
+  function clearDataBeforeBigCycle() {
+    currentNumberGr = 0;
     groupsAll.length = 0;
     if (infoPosts[currentNamePost]?.namePostEl) {
       infoPosts[currentNamePost].namePostEl.style.color = "green";
@@ -460,7 +461,7 @@
    * START SCRIPT
    **/
   function startScript() {
-    clearDataBeforeCycle();
+    clearDataBeforeBigCycle();
     let isAllowStarting = false;
     postElements = [];
     const subMenu02elements = postsMenu.querySelectorAll('input');
@@ -483,6 +484,9 @@
         groupsAll.push(...groupsBox[element.id]);
       }
     });
+
+    console.log("groupsAll: ", groupsAll);
+    console.log("length: ", groupsAll.length);
 
     // Shuffle array using the Fisher–Yates shuffle
     for (let i = groupsAll.length - 1; i > 0; i--) {
@@ -815,7 +819,7 @@
       currentNumberPost++;
       currentNamePost = postElements[currentNumberPost];
       currentNumberGr = 0;
-      clearDataBeforeCycle();
+      clearDataBeforeBigCycle();
       delayAct(loadPost, newDelay);
       return;
     }
