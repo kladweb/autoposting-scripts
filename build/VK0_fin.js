@@ -30,6 +30,7 @@
     id469457210: "Алексей Гвоздев",
     pasha_dubrovsky: "Паша Дубровский",
     satiptv: "Людвиг Ванбетховен",
+    id387929772: "Дмитрий (ILook)",
     id476124794: "VK0: Екатерина Менкина",
     id806571200: "VK2: Татьяна Андреева",
     id463839444: "VK6: Павел Каширский",
@@ -563,18 +564,49 @@
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
     if (linkGroups) {
       linkGroups.click();
-      delayAct(enterToCurrentGroup, delayL);
+      delayAct(checkLoadGroupsList, delayL);
     } else {
       delayAct(enterToBookMarks, delayM);
     }
   }
 
-  function enterToCurrentGroup() {
-    const URLHash = window.location.href;
-    if (URLHash !== 'https://vk.com/bookmarks?type=group') {
+  function checkLoadGroupsList() {
+    if (document.querySelector('.BookmarksEmptyFeed')) {
+      delayAct(loadPostsList, delayM);
+    } else {
       delayAct(enterToCurrentGroup, delayL);
-      return;
     }
+    // const URLHash = window.location.href;
+    // if (URLHash !== 'https://vk.com/bookmarks?type=group') {
+    //   delayAct(enterToCurrentGroup, delayL);
+    // }
+  }
+
+  function loadPostsList() {
+    const linkPost = document.querySelector('#ui_rmenu_post');
+    if (linkPost) {
+      linkPost.click();
+      delayAct(loadGroupsList, delayM);
+    } else {
+      delayAct(loadPostsList, delayM);
+    }
+  }
+
+  function loadGroupsList() {
+    const linkGroup = document.querySelector('#ui_rmenu_group');
+    if (linkGroup) {
+      delayAct(checkLoadGroupsList, delayL);
+    } else {
+      delayAct(loadGroupsList, delayM);
+    }
+  }
+
+  function enterToCurrentGroup() {
+    // const URLHash = window.location.href;
+    // if (URLHash !== 'https://vk.com/bookmarks?type=group') {
+    //   delayAct(enterToCurrentGroup, delayL);
+    //   return;
+    // }
     buttonStop.removeAttribute('disabled');
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
@@ -762,7 +794,18 @@
       buttonSubmit.click();
       delayAct(checkPostSubmit, delayL);
     } else {
-      delayAct(clickSavePost, delayM);
+      console.log('Button Submit didn\'t find!');
+      if (functionRepetitions > 5) {
+        functionRepetitions = 0;
+        groupsAll.push(groupsAll[currentNumberGr]);
+        infoContent.leftposts.amountCurr++;
+        infoContent.errorsposts.amountCurr++;
+        infoContent.errorsposts.namePostEl.innerText = infoContent.errorsposts.amountCurr;
+        startNewCycle(delayM);
+      } else {
+        functionRepetitions++;
+        delayAct(clickSavePost, delayM);
+      }
     }
   }
 
