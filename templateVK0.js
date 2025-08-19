@@ -43,7 +43,7 @@
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
-  const currentInfoItems = {myip: "IP", missedposts: "Missed posts"};
+  const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts"};
   let postElements = [];
   let inputAllGroups = null;
   let inputCompetitors = null;
@@ -249,7 +249,7 @@
       postEl.style.cssText = "margin: 4px; text-align: left;";
       const postDivSpan = document.createElement('span');
       postDivSpan.style.cssText = `color: ${key !== 'missedposts' ? spanColor : specColor}; font-weight: bold;`;
-      if (key === 'myip') {
+      if (key === 'myip' || key === 'leftposts') {
         postDivSpan.style.fontWeight = 'normal';
       }
       postEl.append(document.createTextNode(`${infoItemsObj[key]}:  `));
@@ -484,6 +484,8 @@
         groupsAll.push(...groupsBox[element.id]);
       }
     });
+    infoContent.leftposts.amountCurr = groupsAll.length;
+    infoContent.leftposts.namePostEl.innerText = infoContent.leftposts.amountCurr.toString();
 
     console.log("groupsAll: ", groupsAll);
     console.log("length: ", groupsAll.length);
@@ -793,7 +795,9 @@
 
   function startNewCycle(newDelay = delayXL) {
     console.log('newDelay: ', newDelay);
+    infoContent.leftposts.amountCurr--;
     infoContent.missedposts.namePostEl.innerText = infoContent.missedposts.amountCurr;
+    infoContent.leftposts.namePostEl.innerText = infoContent.leftposts.amountCurr;
     const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
     if (linkGroups) {
       linkGroups.click();
