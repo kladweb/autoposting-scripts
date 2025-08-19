@@ -42,7 +42,7 @@
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   const [delayM, delayL] = [2000, 3000];
   let delayXL = 10000;
-  const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts"};
+  const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts", errorsposts: "Errors"};
   let postElements = [];
   let inputAllGroups = null;
   let inputCompetitors = null;
@@ -729,6 +729,9 @@
       if (functionRepetitions > 5) {
         functionRepetitions = 0;
         groupsAll.push(groupsAll[currentNumberGr]);
+        infoContent.leftposts.amountCurr++;
+        infoContent.errorsposts.amountCurr++;
+        infoContent.errorsposts.namePostEl.innerText = infoContent.errorsposts.amountCurr;
         startNewCycle(delayM);
       } else {
         functionRepetitions++;
