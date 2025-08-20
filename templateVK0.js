@@ -528,24 +528,23 @@
   }
 
   function savePostToDb() {
-    // const request = indexedDB.open("posting-draft-v1", 1);
-    // request.onerror = function (event) {
-    //   console.error("An error occurred with IndexedDB");
-    //   console.error(event);
-    //   buttonStart.removeAttribute('disabled');
-    // };
-    // request.onsuccess = function () {
-    //   const db = request.result;
-    //   const transaction = db.transaction("posting-draft", "readwrite");
-    //   const store = transaction.objectStore("posting-draft");
-    //   const keyStore = `${idUser}--${groupsAll[currentNumberGr][0]}`;
-    //   const idQuery = store.get(keyStore);
-    //   idQuery.onsuccess = function () {
-    //     store.put(currentPost, keyStore);
-    //     checkEnterToBookMarks();
-    //   };
-    // };
-    checkEnterToBookMarks();
+    const request = indexedDB.open("posting-draft-v1", 1);
+    request.onerror = function (event) {
+      console.error("An error occurred with IndexedDB");
+      console.error(event);
+      buttonStart.removeAttribute('disabled');
+    };
+    request.onsuccess = function () {
+      const db = request.result;
+      const transaction = db.transaction("posting-draft", "readwrite");
+      const store = transaction.objectStore("posting-draft");
+      const keyStore = `${idUser}--${groupsAll[currentNumberGr][0]}`;
+      const idQuery = store.get(keyStore);
+      idQuery.onsuccess = function () {
+        store.put(currentPost, keyStore);
+        checkEnterToBookMarks();
+      };
+    };
   }
 
   function delayAct(action, delay) {
