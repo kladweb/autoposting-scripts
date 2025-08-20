@@ -528,23 +528,24 @@
   }
 
   function savePostToDb() {
-    const request = indexedDB.open("posting-draft-v1", 1);
-    request.onerror = function (event) {
-      console.error("An error occurred with IndexedDB");
-      console.error(event);
-      buttonStart.removeAttribute('disabled');
-    };
-    request.onsuccess = function () {
-      const db = request.result;
-      const transaction = db.transaction("posting-draft", "readwrite");
-      const store = transaction.objectStore("posting-draft");
-      const keyStore = `${idUser}--${groupsAll[currentNumberGr][0]}`;
-      const idQuery = store.get(keyStore);
-      idQuery.onsuccess = function () {
-        store.put(currentPost, keyStore);
-        checkEnterToBookMarks();
-      };
-    };
+    // const request = indexedDB.open("posting-draft-v1", 1);
+    // request.onerror = function (event) {
+    //   console.error("An error occurred with IndexedDB");
+    //   console.error(event);
+    //   buttonStart.removeAttribute('disabled');
+    // };
+    // request.onsuccess = function () {
+    //   const db = request.result;
+    //   const transaction = db.transaction("posting-draft", "readwrite");
+    //   const store = transaction.objectStore("posting-draft");
+    //   const keyStore = `${idUser}--${groupsAll[currentNumberGr][0]}`;
+    //   const idQuery = store.get(keyStore);
+    //   idQuery.onsuccess = function () {
+    //     store.put(currentPost, keyStore);
+    //     checkEnterToBookMarks();
+    //   };
+    // };
+    checkEnterToBookMarks();
   }
 
   function delayAct(action, delay) {
@@ -795,18 +796,7 @@
       buttonSubmit.click();
       delayAct(checkPostSubmit, delayL);
     } else {
-      console.log('Button Submit didn\'t find!');
-      if (functionRepetitions > 5) {
-        functionRepetitions = 0;
-        groupsAll.push(groupsAll[currentNumberGr]);
-        infoContent.leftposts.amountCurr++;
-        infoContent.errorsposts.amountCurr++;
-        infoContent.errorsposts.namePostEl.innerText = infoContent.errorsposts.amountCurr;
-        startNewCycle(delayM);
-      } else {
-        functionRepetitions++;
-        delayAct(clickSavePost, delayM);
-      }
+      delayAct(clickSavePost, delayM);
     }
   }
 
