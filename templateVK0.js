@@ -574,7 +574,7 @@
 
   function checkLoadGroupsList() {
     if (document.querySelector('.BookmarksEmptyFeed')) {
-      delayAct(loadPostsList, delayM);
+      delayAct(loadNarrativeList, delayM);
     } else {
       delayAct(enterToCurrentGroup, delayL);
     }
@@ -584,13 +584,13 @@
     // }
   }
 
-  function loadPostsList() {
-    const linkPost = document.querySelector('#ui_rmenu_post');
+  function loadNarrativeList() {
+    const linkPost = document.querySelector('#ui_rmenu_narrative');
     if (linkPost) {
       linkPost.click();
       delayAct(loadGroupsList, delayM);
     } else {
-      delayAct(loadPostsList, delayM);
+      delayAct(loadNarrativeList, delayM);
     }
   }
 
