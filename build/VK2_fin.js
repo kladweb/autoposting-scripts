@@ -367,11 +367,13 @@
     }
   }
 
+  //TODO save amount posts;
   window.onbeforeunload = function (e) {
-    //TODO save amount posts;
+    e.preventDefault();
     if (infoPosts[currentNamePost] && infoPosts[currentNamePost].amountCurr) {
       updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
     }
+    return 'You have made changes. They will be lost if you continue.';
   };
 
   function loadRenderData(namePost, postEl) {
