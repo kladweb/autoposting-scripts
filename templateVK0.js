@@ -57,6 +57,7 @@
   let currentNumberGr = 0;
   let currentPost = null;
   let isSkipCurrPost = false;
+  let isPostCurrPost = false;
   let buttonStart = null;
   let buttonStop = null;
   let deepAmount = 0;
@@ -187,6 +188,7 @@
 
   const buttonsSet = [
     {name: "SAVE POSTS", handler: savePosted},
+    {name: "POST", handler: postCurrPost},
     {name: "SKIP", handler: skipCurrPost},
     {name: "START POSTING", handler: startScript},
   ];
@@ -340,6 +342,10 @@
       infoPosts[currentNamePost].amountLast += infoPosts[currentNamePost].amountCurr;
       infoPosts[currentNamePost].amountCurr = 0
     }
+  }
+
+  function postCurrPost() {
+    isPostCurrPost = true;
   }
 
   function skipCurrPost() {
@@ -579,10 +585,6 @@
     } else {
       delayAct(enterToCurrentGroup, delayL);
     }
-    // const URLHash = window.location.href;
-    // if (URLHash !== 'https://vk.com/bookmarks?type=group') {
-    //   delayAct(enterToCurrentGroup, delayL);
-    // }
   }
 
   function loadNarrativeList() {
@@ -605,11 +607,6 @@
   }
 
   function enterToCurrentGroup() {
-    // const URLHash = window.location.href;
-    // if (URLHash !== 'https://vk.com/bookmarks?type=group') {
-    //   delayAct(enterToCurrentGroup, delayL);
-    //   return;
-    // }
     buttonStop.removeAttribute('disabled');
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
@@ -628,8 +625,14 @@
   function checkCurrentGroup() {
     const URLHash = window.location.href;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
-      delayAct(checkCurrentGroup, delayM);
+      if (functionRepetitions > 10) {
+        delayAct(enterToCurrentGroup, delayM);
+      } else {
+        functionRepetitions++
+        delayAct(checkCurrentGroup, delayM);
+      }
     } else {
+      functionRepetitions = 0;
       console.log("deepItems: ", deepItems);
       deepItems.forEach((element) => {
         if (element.checked) {
@@ -637,7 +640,6 @@
         }
       });
       console.log("deepAmount: ", deepAmount);
-      // window.scrollBy(0, deepAmount * 500);
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
       delayAct(checkNecessityPosting, delayL);
     }
@@ -655,10 +657,12 @@
       startNewCycle(delayM);
       return;
     }
-    // if (currentNumberPost > 0) {
-    //   delayAct(clickCreatePost, delayM);
-    //   return;
-    // }
+
+    if (isPostCurrPost) {
+      isPostCurrPost = false;
+      delayAct(clickCreatePost, delayM);
+      return;
+    }
 
     let strategyItem = null;
     const subMenu01Elements = strategyMenu.querySelectorAll('.strategy');
