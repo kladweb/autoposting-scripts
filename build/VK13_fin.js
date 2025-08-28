@@ -625,6 +625,7 @@
     const URLHash = window.location.href;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
       if (functionRepetitions > 10) {
+        functionRepetitions = 0;
         delayAct(enterToCurrentGroup, delayM);
       } else {
         functionRepetitions++
