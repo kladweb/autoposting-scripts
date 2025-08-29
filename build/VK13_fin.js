@@ -31,6 +31,7 @@
     pasha_dubrovsky: "Паша Дубровский",
     satiptv: "Людвиг Ванбетховен",
     id387929772: "Дмитрий (ILook)",
+    id91715443: "Владислав Рыбалко",
     id476124794: "VK0: Екатерина Менкина",
     id806571200: "VK2: Татьяна Андреева",
     id463839444: "VK6: Павел Каширский",
@@ -463,6 +464,9 @@
     if (infoPosts[currentNamePost]?.namePostEl) {
       infoPosts[currentNamePost].namePostEl.style.color = "green";
     }
+    if (infoContent.missedposts && infoContent.missedposts.amountCurr) {
+      infoContent.missedposts.amountCurr = 0;
+    }
   }
 
   /**
@@ -599,9 +603,18 @@
   function loadGroupsList() {
     const linkGroup = document.querySelector('#ui_rmenu_group');
     if (linkGroup) {
-      delayAct(checkLoadGroupsList, delayL);
+      delayAct(checkLoadGroupPage, delayL);
     } else {
       delayAct(loadGroupsList, delayM);
+    }
+  }
+
+  function checkLoadGroupPage() {
+    const URLHash = window.location.href;
+    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+      delayAct(checkLoadGroupsList, delayM);
+    } else {
+      delayAct(checkLoadGroupPage, delayL);
     }
   }
 
