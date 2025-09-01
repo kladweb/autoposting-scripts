@@ -848,7 +848,7 @@
   }
 
   function startNewCycle(newDelay = delayXL) {
-    console.log('newDelay: ', newDelay);
+    isPostCurrPost = false;
     infoContent.leftposts.amountCurr--;
     infoContent.missedposts.namePostEl.innerText = infoContent.missedposts.amountCurr;
     infoContent.leftposts.namePostEl.innerText = infoContent.leftposts.amountCurr;
