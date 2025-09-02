@@ -467,6 +467,7 @@
     }
     if (infoContent.missedposts && infoContent.missedposts.amountCurr) {
       infoContent.missedposts.amountCurr = 0;
+      infoContent.missedposts.namePostEl.innerText = "-";
     }
   }
 
