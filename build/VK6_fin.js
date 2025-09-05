@@ -20,7 +20,7 @@
     all: "All groups",
     aftermy: "After my posts",
     my: "Skip my posts",
-    rivals: "Competitors"
+    players: "Competitors and comrades"
   };
   const competitors = {
     id358923511: "Анна Егорова",
@@ -32,6 +32,8 @@
     satiptv: "Людвиг Ванбетховен",
     id387929772: "Дмитрий (ILook)",
     id91715443: "Владислав Рыбалко",
+  }
+  const comrades = {
     id476124794: "VK0: Екатерина Менкина",
     id806571200: "VK2: Татьяна Андреева",
     id463839444: "VK6: Павел Каширский",
@@ -39,6 +41,7 @@
     id562935165: "VK11: Василий Тис",
     id591910410: "VK13: Andrzey"
   }
+  //players = competitors + comrades;
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
@@ -47,8 +50,9 @@
   const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts", errorsposts: "Errors"};
   let postElements = [];
   let inputAllGroups = null;
-  let inputCompetitors = null;
+  let inputPlayers = null;
   const competitorsMenuItems = [];
+  const comradesMenuItems = [];
   const infoPosts = {};
   const infoContent = {};
   const deepItems = [];
@@ -215,6 +219,7 @@
 
   const styleMenu1 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01};`
   const styleMenu2 = `margin: 4px auto; border: 1px solid ${colors.border01};`
+  const styleMenu3 = "width: 45%; margin: 0 auto";
   const stylesInpType1 = "text-align: left; padding: 4px;";
   const stylesInpType2 = "display: inline-block; padding: 4px;";
   const stylesInpType3 = "text-align: left; padding: 2px;";
@@ -224,20 +229,25 @@
   const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu2, stylesInpType1);
   const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', styleMenu2, stylesInpType2);
   const blockPostMenu = createMenuBlock('checkbox', numberBlockPost, 'BLOCKPOST', styleMenu2, stylesInpType2);
-  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu1, stylesInpType3);
+  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType3);
+  const comradesSubMenu = createMenuBlock('checkbox', comrades, 'COMRADES', styleMenu2, stylesInpType3);
   const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu1, stylesInpType1);
   const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu1, stylesInpType1);
   const buttonsBlock = createButtonsBlock(buttonsSet);
   const menuGroupPost = document.createElement("div");
   menuGroupPost.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, blockPostMenu);
-  menuGroupPost.style.cssText = `width: 45%; margin: auto`
-  menuVK.append(menuGroupPost, competitorsSubMenu, infoPanel, currentInfo, buttonsBlock);
+  menuGroupPost.style.cssText = styleMenu3;
+  const playersMenu = document.createElement('div');
+  playersMenu.style.cssText = styleMenu3;
+  playersMenu.append(competitorsSubMenu, comradesSubMenu);
+  menuVK.append(menuGroupPost, playersMenu, infoPanel, currentInfo, buttonsBlock);
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
   strategyMenu.addEventListener('click', changeCompInputs);
 
   createInfoPanelContent(posts, infoPosts, infoPanel, "green");
   createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "green", "red");
+
   getIp().then((res) => {
       infoContent.myip.namePostEl.innerText = res;
     }
@@ -271,7 +281,8 @@
   function createMenuBlock(menuType, items, name, styleMenu, styleInput) {
     const subMenu = document.createElement('div');
     subMenu.style.cssText = styleMenu;
-    const head = document.createElement('div');
+    const head = document.createElement('h6');
+    head.style.margin = "0 0 4px";
     head.append(document.createTextNode(name));
     subMenu.append(head);
     const subMenuItems = Object.keys(items);
@@ -285,7 +296,7 @@
       inputEl.setAttribute('name', name);
       inputEl.setAttribute('id', item);
       if (index === 0) {
-        inputEl.setAttribute('checked', 'checked');
+        inputEl.checked = true;
       }
       const inputLabel = document.createElement('label');
       inputLabel.setAttribute('for', item);
@@ -296,12 +307,16 @@
       if (item === "all") {
         inputAllGroups = inputEl;
       }
-      if (item === "rivals") {
-        inputCompetitors = inputEl;
+      if (item === "players") {
+        inputPlayers = inputEl;
       }
       if (name === "COMPETITORS") {
         inputEl.setAttribute('disabled', 'disabled');
         competitorsMenuItems.push(inputEl);
+      }
+      if (name === "COMRADES") {
+        inputEl.setAttribute('disabled', 'disabled');
+        comradesMenuItems.push(inputEl);
       }
       if (name === "DEEP") {
         inputEl.setAttribute('disabled', 'disabled');
@@ -311,10 +326,22 @@
       inputBlock.style.cssText = styleInput;
       subMenu.append(inputBlock);
     });
-    // if (name === "STRATEGY") {
-    //   subMenu.append(competitorsSubMenu);
-    // }
+
+    if (name === "BLOCKPOST") {
+      head.style.cursor = 'pointer';
+      head.onclick = () => toggleInputSelect(Array.from(subMenu.querySelectorAll('input')));
+    }
     return subMenu;
+  }
+
+  function toggleInputSelect(subMenu) {
+    if (subMenu) {
+      if (subMenu.every(input => input.checked)) {
+        subMenu.forEach(item => item.checked = false);
+      } else {
+        subMenu.forEach(item => item.checked = true);
+      }
+    }
   }
 
   function createButtonsBlock(buttons) {
@@ -354,12 +381,28 @@
   }
 
   function changeCompInputs() {
-    if (inputCompetitors.checked) {
+    const competitorsHead = competitorsSubMenu.querySelector('h6');
+    const comradesHead = comradesSubMenu.querySelector('h6');
+    if (inputPlayers.checked) {
+      competitorsHead.style.cursor = 'pointer';
+      competitorsHead.onclick = () => toggleInputSelect(competitorsMenuItems);
+      comradesHead.style.cursor = 'pointer';
+      comradesHead.onclick = () => toggleInputSelect(comradesMenuItems);
       competitorsMenuItems.forEach((element) => {
         element.removeAttribute('disabled');
       });
+      comradesMenuItems.forEach((element) => {
+        element.removeAttribute('disabled');
+      });
     } else {
+      competitorsHead.onclick = null;
+      comradesHead.onclick = null;
+      competitorsHead.style.cursor = 'default';
+      comradesHead.style.cursor = 'default';
       competitorsMenuItems.forEach((element) => {
+        element.setAttribute('disabled', 'disabled');
+      });
+      comradesMenuItems.forEach((element) => {
         element.setAttribute('disabled', 'disabled');
       });
     }
@@ -375,13 +418,13 @@
   }
 
   //TODO save amount posts;
-  window.onbeforeunload = function (e) {
+  function saveOnClose(e) {
     e.preventDefault();
     if (infoPosts[currentNamePost] && infoPosts[currentNamePost].amountCurr) {
       updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
     }
     return 'You have made changes. They will be lost if you continue.';
-  };
+  }
 
   function loadRenderData(namePost, postEl) {
     fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
@@ -468,6 +511,10 @@
       infoContent.missedposts.amountCurr = 0;
       infoContent.missedposts.namePostEl.innerText = "-";
     }
+    if (infoContent.errorsposts && infoContent.errorsposts.amountCurr) {
+      infoContent.errorsposts.amountCurr = 0;
+      infoContent.errorsposts.namePostEl.innerText = "-";
+    }
   }
 
   /**
@@ -512,6 +559,7 @@
     if (isAllowStarting) {
       console.log('Запускаем скрипты: ', postElements);
       buttonStart.setAttribute('disabled', '');
+      window.addEventListener('beforeunload', saveOnClose);
       loadPost();
     } else {
       alert('Необходимо выбрать хотя-бы один пост!');
@@ -531,7 +579,7 @@
       }
     }).then(post => {
       currentPost = post;
-      // console.log("CURRENT POST: ", currentPost);
+      // console.log('CURRENT POST: ', currentPost);
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
@@ -686,12 +734,16 @@
       }
     });
 
-    //competitorsMenuItems
-    let rivals = [];
-    if (strategyItem === "rivals") {
+    let players = [];
+    if (strategyItem === "players") {
       competitorsMenuItems.forEach((element) => {
         if (element.checked) {
-          rivals.push(element.id);
+          players.push(element.id);
+        }
+      });
+      comradesMenuItems.forEach((element) => {
+        if (element.checked) {
+          players.push(element.id);
         }
       });
     }
@@ -742,8 +794,8 @@
         break;
       }
 
-      console.log("02 Compare ", rivals, " and ", postUserId.substring(1));
-      if (rivals.some(element => postUserId.substring(1).includes(element))) {
+      console.log("02 Compare ", players, " and ", postUserId.substring(1));
+      if (players.some(element => postUserId.substring(1).includes(element))) {
         isNecessityPosting = true;
         break;
       }
@@ -888,6 +940,7 @@
 
   function enterNews() {
     buttonStart.removeAttribute('disabled');
+    window.removeEventListener('beforeunload', saveOnClose);
     const buttonNews = document.querySelector('a[href="/feed"]');
     if (buttonNews) {
       buttonNews.click();
