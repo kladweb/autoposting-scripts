@@ -619,7 +619,7 @@
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
-      .postTask(action, {delay: delay});
+    .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
   }
 
@@ -643,12 +643,14 @@
   }
 
   function checkLoadGroupsList() {
-    if (document.querySelector('.BookmarksEmptyFeed')) {
+    if (document.querySelector('.bookmarks_rows_group').innerText.includes("Добавляйте")) {
       delayAct(loadNarrativeList, delayM);
     } else {
       delayAct(enterToCurrentGroup, delayL);
     }
   }
+
+  console.log(document.querySelector('.bookmarks_rows_group').innerText.includes("Добавляйте"));
 
   function loadNarrativeList() {
     const linkPost = document.querySelector('#ui_rmenu_narrative');
