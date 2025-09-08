@@ -391,7 +391,6 @@
       comradesHead.style.cursor = 'pointer';
       comradesHead.onclick = () => toggleInputSelect(comradesMenuItems);
       competitorsMenuItems.forEach((element) => {
-        // element.removeAttribute('disabled');
         element.disabled = false;
       });
       comradesMenuItems.forEach((element) => {
@@ -613,9 +612,16 @@
     };
   }
 
+  // function delayAct(action, delay) {
+  //   console.log(action.name);
+  //   return (setTimeout(action, delay));
+  // }
+
   function delayAct(action, delay) {
     console.log(action.name);
-    return (setTimeout(action, delay));
+    scheduler
+      .postTask(action, {delay: delay});
+    // return (setTimeout(action, delay));
   }
 
   function checkEnterToBookMarks() {
