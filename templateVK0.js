@@ -312,15 +312,15 @@
         inputPlayers = inputEl;
       }
       if (name === "COMPETITORS") {
-        inputEl.setAttribute('disabled', 'disabled');
+        inputEl.disabled = true;
         competitorsMenuItems.push(inputEl);
       }
       if (name === "COMRADES") {
-        inputEl.setAttribute('disabled', 'disabled');
+        inputEl.disabled = true;
         comradesMenuItems.push(inputEl);
       }
       if (name === "DEEP") {
-        inputEl.setAttribute('disabled', 'disabled');
+        inputEl.disabled = true;
         deepItems.push(inputEl);
       }
       inputBlock.append(inputEl, inputLabel);
@@ -377,7 +377,8 @@
   }
 
   function skipCurrPost() {
-    buttonStop.setAttribute('disabled', 'disabled');
+    buttonStop.disabled = true;
+    buttonStop.style.cursor = "auto";
     isSkipCurrPost = true;
   }
 
@@ -390,10 +391,11 @@
       comradesHead.style.cursor = 'pointer';
       comradesHead.onclick = () => toggleInputSelect(comradesMenuItems);
       competitorsMenuItems.forEach((element) => {
-        element.removeAttribute('disabled');
+        // element.removeAttribute('disabled');
+        element.disabled = false;
       });
       comradesMenuItems.forEach((element) => {
-        element.removeAttribute('disabled');
+        element.disabled = false;
       });
     } else {
       competitorsHead.onclick = null;
@@ -401,19 +403,19 @@
       competitorsHead.style.cursor = 'default';
       comradesHead.style.cursor = 'default';
       competitorsMenuItems.forEach((element) => {
-        element.setAttribute('disabled', 'disabled');
+        element.disabled = true;
       });
       comradesMenuItems.forEach((element) => {
-        element.setAttribute('disabled', 'disabled');
+        element.disabled = true;
       });
     }
     if (inputAllGroups.checked) {
       deepItems.forEach((element) => {
-        element.setAttribute('disabled', 'disabled');
+        element.disabled = true;
       });
     } else {
       deepItems.forEach((element) => {
-        element.removeAttribute('disabled');
+        element.disabled = false;
       });
     }
   }
@@ -559,7 +561,8 @@
 
     if (isAllowStarting) {
       console.log('Запускаем скрипты: ', postElements);
-      buttonStart.setAttribute('disabled', '');
+      buttonStart.disabled = true;
+      buttonStart.style.cursor = 'auto';
       window.addEventListener('beforeunload', saveOnClose);
       loadPost();
     } else {
@@ -584,7 +587,8 @@
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
-      buttonStart.removeAttribute('disabled');
+      buttonStart.disabled = false;
+      buttonStart.style.cursor = 'pointer';
     })
   }
 
@@ -593,7 +597,8 @@
     request.onerror = function (event) {
       console.error("An error occurred with IndexedDB");
       console.error(event);
-      buttonStart.removeAttribute('disabled');
+      buttonStart.disabled = false;
+      buttonStart.style.cursor = 'pointer';
     };
     request.onsuccess = function () {
       const db = request.result;
@@ -669,7 +674,8 @@
   }
 
   function enterToCurrentGroup() {
-    buttonStop.removeAttribute('disabled');
+    buttonStop.disabled = false;
+    buttonStop.style.cursor = "pointer";
     const groupHref = `/${groupsAll[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
     if (linkGroup) {
@@ -940,7 +946,8 @@
   }
 
   function enterNews() {
-    buttonStart.removeAttribute('disabled');
+    buttonStart.disabled = false;
+    buttonStart.style.cursor = 'pointer';
     window.removeEventListener('beforeunload', saveOnClose);
     const buttonNews = document.querySelector('a[href="/feed"]');
     if (buttonNews) {
