@@ -665,6 +665,7 @@
   function loadGroupsList() {
     const linkGroup = document.querySelector('#ui_rmenu_group');
     if (linkGroup) {
+      linkGroup.click();
       delayAct(enterToBookMarks, delayL);
     } else {
       delayAct(loadGroupsList, delayM);
