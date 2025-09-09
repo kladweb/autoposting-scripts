@@ -20,7 +20,8 @@
     all: "All groups",
     aftermy: "After my posts",
     my: "Skip my posts",
-    players: "Competitors and comrades"
+    players: "Competitors and comrades",
+    firstWordPost: "After post starts input"
   };
   const competitors = {
     id358923511: "Анна Егорова",
@@ -56,6 +57,8 @@
   const infoPosts = {};
   const infoContent = {};
   const deepItems = [];
+  let firstWordPostTrigger = null;
+  let firstWordPostInput = null;
   let currentNumberPost = 0;
   let currentNamePost = null;
   let currentNumberGr = 0;
@@ -233,13 +236,14 @@
   const comradesSubMenu = createMenuBlock('checkbox', comrades, 'COMRADES', styleMenu2, stylesInpType3);
   const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu1, stylesInpType1);
   const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu1, stylesInpType1);
+  const inputFirstWord = createMenuBlock('text', {firstWord: ""}, 'First word of post', styleMenu2, stylesInpType1);
   const buttonsBlock = createButtonsBlock(buttonsSet);
   const menuGroupPost = document.createElement("div");
   menuGroupPost.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, blockPostMenu);
   menuGroupPost.style.cssText = styleMenu3;
   const playersMenu = document.createElement('div');
   playersMenu.style.cssText = styleMenu3;
-  playersMenu.append(competitorsSubMenu, comradesSubMenu);
+  playersMenu.append(competitorsSubMenu, comradesSubMenu, inputFirstWord);
   menuVK.append(menuGroupPost, playersMenu, infoPanel, currentInfo, buttonsBlock);
   const bodyVK = document.querySelector(`body`);
   bodyVK.append(menuVK);
@@ -310,6 +314,9 @@
       if (item === "players") {
         inputPlayers = inputEl;
       }
+      if (item === "firstWordPost") {
+        firstWordPostTrigger = inputEl;
+      }
       if (name === "COMPETITORS") {
         inputEl.disabled = true;
         competitorsMenuItems.push(inputEl);
@@ -321,6 +328,10 @@
       if (name === "DEEP") {
         inputEl.disabled = true;
         deepItems.push(inputEl);
+      }
+      if (name === "First word of post") {
+        inputEl.disabled = true;
+        firstWordPostInput = inputEl;
       }
       inputBlock.append(inputEl, inputLabel);
       inputBlock.style.cssText = styleInput;
@@ -416,6 +427,7 @@
         element.disabled = false;
       });
     }
+    firstWordPostInput.disabled = !firstWordPostTrigger.checked;
   }
 
   //TODO save amount posts;
@@ -561,6 +573,7 @@
       console.log('Запускаем скрипты: ', postElements);
       buttonStart.disabled = true;
       buttonStart.style.cursor = 'auto';
+      firstWordPostInput.disabled = true;
       window.addEventListener('beforeunload', saveOnClose);
       loadPost();
     } else {
@@ -587,6 +600,7 @@
       console.log("Что-то пошло не так! ", error);
       buttonStart.disabled = false;
       buttonStart.style.cursor = 'pointer';
+      firstWordPostInput.disabled = false;
     })
   }
 
@@ -597,6 +611,7 @@
       console.error(event);
       buttonStart.disabled = false;
       buttonStart.style.cursor = 'pointer';
+      firstWordPostInput.disabled = false;
     };
     request.onsuccess = function () {
       const db = request.result;
@@ -648,7 +663,7 @@
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       delayAct(loadNarrativeList, delayM);
     } else {
-      delayAct(enterToCurrentGroup, delayL);
+      delayAct(checkLoadGroupPage, delayL);
     }
   }
 
@@ -675,9 +690,9 @@
   function checkLoadGroupPage() {
     const URLHash = window.location.href;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
-      delayAct(checkLoadGroupsList, delayM);
+      delayAct(enterToCurrentGroup, delayM);
     } else {
-      delayAct(checkLoadGroupPage, delayL);
+      delayAct(enterToBookMarks, delayL);
     }
   }
 
@@ -784,6 +799,17 @@
       }
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
+
+      if (strategyItem === "firstWordPost") {
+        const value = firstWordPostInput.value
+        console.log("INPUT: ", value);
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        if (blockTextPost && blockTextPost.innerText.includes(value)) {
+          isNecessityPosting = true;
+          break;
+        }
+        continue;
+      }
 
       if (strategyItem === "aftermy") {
         console.log("00 Compare ", postUserId.substring(3), " and ", idUser);
@@ -956,6 +982,7 @@
   function enterNews() {
     buttonStart.disabled = false;
     buttonStart.style.cursor = 'pointer';
+    firstWordPostInput.disabled = false;
     window.removeEventListener('beforeunload', saveOnClose);
     const buttonNews = document.querySelector('a[href="/feed"]');
     if (buttonNews) {
