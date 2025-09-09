@@ -626,7 +626,7 @@
   function checkEnterToBookMarks() {
     const URLHash = window.location.href;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
-      enterToCurrentGroup();
+      checkLoadGroupsList();
     } else {
       enterToBookMarks();
     }
@@ -643,15 +643,14 @@
   }
 
   function checkLoadGroupsList() {
+    const emptyFeed = document.querySelector('.BookmarksEmptyFeed');
     const bookmarksGroup = document.querySelector('.bookmarks_rows_group');
-    if (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте")) {
+    if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       delayAct(loadNarrativeList, delayM);
     } else {
       delayAct(enterToCurrentGroup, delayL);
     }
   }
-
-  console.log(document.querySelector('.bookmarks_rows_group').innerText.includes("Добавляйте"));
 
   function loadNarrativeList() {
     const linkPost = document.querySelector('#ui_rmenu_narrative');
