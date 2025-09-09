@@ -643,7 +643,8 @@
   }
 
   function checkLoadGroupsList() {
-    if (document.querySelector('.bookmarks_rows_group').innerText.includes("Добавляйте")) {
+    const bookmarksGroup = document.querySelector('.bookmarks_rows_group');
+    if (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте")) {
       delayAct(loadNarrativeList, delayM);
     } else {
       delayAct(enterToCurrentGroup, delayL);
