@@ -22,7 +22,8 @@
     aftermy: "After my posts",
     my: "Skip my posts",
     players: "Competitors and comrades",
-    firstWordPost: "After post starts input"
+    firstWordPostAfter: "After post starts input",
+    firstWordPostSkip: "Skip post starts input"
   };
   const competitors = {
     id358923511: "Анна Егорова",
@@ -801,14 +802,24 @@
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
 
-      if (strategyItem === "firstWordPost") {
+      if (strategyItem === "firstWordPostAfter") {
         const value = firstWordPostInput.value
-        console.log("INPUT: ", value);
         const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
         if (blockTextPost && blockTextPost.innerText.includes(value)) {
           isNecessityPosting = true;
           break;
         }
+        continue;
+      }
+
+      if (strategyItem === "firstWordPostSkip") {
+        const value = firstWordPostInput.value
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        if (blockTextPost && blockTextPost.innerText.includes(value)) {
+          isNecessityPosting = false;
+          break;
+        }
+        isNecessityPosting = true;
         continue;
       }
 
