@@ -45,37 +45,38 @@
     id591910410: "VK13: Andrzey"
   }
   //players = competitors + comrades;
+
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
-  const [delayM, delayL, delayXL] = [2000, 3000, 10000];
-  const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts", errorsposts: "Errors"};
-  const firstWordInputs = {input1: ""};
-  const postElements = []; //посты для публикации
+  let [delayM, delayL, delayXL] = [4000, 5000, 10000];
+  const firstWordInputs = {input1: "", input2: ""};
+  let isSkipCurrPost = false;
+  let isPostCurrPost = false;
+  const postForPublish = []; //посты для публикации
+  const groupsForPublish = []; //группы для постов
+  let currentNumberGr = 0;
+  let currentNumberPost = 0;
+  let currentNamePost = null;
+  let currentPost = null; //объект поста для сохранения в IndexDb
+  let functionRepetitions = 0;
+  let deepAmount = 0;
+  let IdFirstPostForSubmitChecking = null;
 
-  const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: []}
-  const postsMenu = {headName: "POSTS", type: "checkbox", domElements: []}
-  const delayMenu = {headName: "DELAY", type: "radio", domElements: []};
-  const deepMenu = {headName: "DEEP", type: "radio", domElements: []};
-  const blockPostMenu = {headName: "BLOCKPOST", type: "checkbox", domElements: []};
-  const competitorsMenu = {headName: "COMPETITORS", type: "checkbox", domElements: []};
-  const comradesMenu = {headName: "COMRADES", type: "checkbox", domElements: []};
-  const firstWordMenu = {headName: "First word of post", type: "text", domElements: []};
-  const infoPanelMenu = {headName: "Last 12 hours", domElements: []};
-  const currentInfoPanelMenu = {headName: "Current Info", domElements: []};
-
-  // const buttonsSet = [
-  //   {name: "SAVE POSTS", buttonDomElement: null, handler: savePosted},
-  //   {name: "POST", buttonDomElement: null, handler: postCurrPost},
-  //   {name: "SKIP", buttonDomElement: null, handler: skipCurrPost},
-  //   {name: "START POSTING", buttonDomElement: null, handler: startScript},
-  // ]
+  const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
+  const postsMenu = {headName: "POSTS", type: "checkbox", domElements: {}}
+  const delayMenu = {headName: "DELAY", type: "radio", domElements: {}};
+  const deepMenu = {headName: "DEEP", type: "radio", domElements: {}};
+  const blockPostMenu = {headName: "BLOCKPOST", type: "checkbox", domElements: {}};
+  const competitorsMenu = {headName: "COMPETITORS", type: "checkbox", domElements: {}};
+  const comradesMenu = {headName: "COMRADES", type: "checkbox", domElements: {}};
+  const firstWordMenu = {headName: "Start words of posts", type: "text", domElements: {}};
 
   const buttonsSet = {
-    savePost: {name: "SAVE POSTS", buttonDomElement: null, handler: savePosted},
-    doPost: {name: "POST", buttonDomElement: null, handler: postCurrPost},
-    skipPost: {name: "SKIP", buttonDomElement: null, handler: skipCurrPost},
-    startPosting: {name: "START POSTING", buttonDomElement: null, handler: startScript}
+    savePost: {name: "SAVE POSTS", domElement: null, handler: savePosted},
+    doPost: {name: "POST", domElement: null, handler: postCurrPost},
+    skipPost: {name: "SKIP", domElement: null, handler: skipCurrPost},
+    startPosting: {name: "START POSTING", domElement: null, handler: startScript}
   }
 
   //Color Palette #4694
@@ -83,9 +84,101 @@
     color01: '#816460',
     color02: '#B27D6A',
     color03: '#403F26',
+    info01: '#4f930a',
+    info02: '#126AEFFF',
+    info03: '#ff1414',
     background01: '#FEF1C5',
     border01: '#F1C196',
   }
+
+  const infoPanelItems = {}
+  for (const key in posts) {
+    infoPanelItems[key] = {};
+    infoPanelItems[key].name = posts[key];
+    infoPanelItems[key].domElement = null;
+    infoPanelItems[key].infoColor = colors.info01;
+    infoPanelItems[key].bold = true;
+    infoPanelItems[key].startValue = 0;
+    infoPanelItems[key]._loadedValue = 0;
+    infoPanelItems[key]._currentValue = 0;
+    infoPanelItems[key].valueObject = null;
+  }
+
+  for (const key in infoPanelItems) {
+    Object.defineProperty(infoPanelItems[key], "currentValue", {
+      get() {
+        return this._currentValue;
+      },
+      set(value) {
+        this._currentValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this.loadedValue + this._currentValue;
+          this.domElement.style.color = this.infoColor;
+        }
+      }
+    });
+    Object.defineProperty(infoPanelItems[key], "loadedValue", {
+      get() {
+        return this._loadedValue;
+      },
+      set(value) {
+        this._loadedValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this.loadedValue + this._currentValue;
+        }
+      }
+    });
+  }
+
+  const currentInfoItems = {
+    myip: {
+      name: "IP",
+      domElement: null,
+      infoColor: colors.info02,
+      startValue: "...wait",
+      _currentValue: 0,
+    },
+    missedposts: {
+      name: "Missed posts",
+      domElement: null,
+      infoColor: colors.info03,
+      bold: true,
+      startValue: "-",
+      _currentValue: 0
+    },
+    leftposts: {
+      name: "Left posts",
+      domElement: null,
+      infoColor: colors.info01,
+      startValue: "-",
+      _currentValue: 0
+    },
+    errorsposts: {
+      name: "Errors",
+      domElement: null,
+      infoColor: colors.info01,
+      bold: true,
+      startValue: "-",
+      _currentValue: 0
+    },
+  };
+
+  for (const key in currentInfoItems) {
+    Object.defineProperty(currentInfoItems[key], "currentValue", {
+      get() {
+        return this._currentValue;
+      },
+      set(value) {
+        this._currentValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this._currentValue === 0 ? this.startValue : this._currentValue;
+        }
+      }
+    });
+  }
+
+  const infoPanelMenu = {headName: "Last 12 hours", items: infoPanelItems};
+  const currentInfoMenu = {headName: "Current Info", items: currentInfoItems};
 
   const groupsBox = {
     0: [
@@ -233,24 +326,23 @@
   const blockPostMenuDiv = createMenuBlock(numberBlockPost, blockPostMenu, styleMenu2, stylesInpType2);
   const competitorsMenuDiv = createMenuBlock(competitors, competitorsMenu, styleMenu2, stylesInpType3);
   const comradesMenuDiv = createMenuBlock(comrades, comradesMenu, styleMenu2, stylesInpType3);
-  const infoPanelDiv = createMenuBlock({}, infoPanelMenu, styleMenu1, stylesInpType1);
-  const currentInfoPanelDiv = createMenuBlock({}, currentInfoPanelMenu, styleMenu1, stylesInpType1);
   const inputFirstWordDiv = createMenuBlock(firstWordInputs, firstWordMenu, styleMenu2, stylesInpType1);
+
+  const infoPanelDiv = createInfoBlock(infoPanelMenu, styleMenu1);
+  const currentInfoDiv = createInfoBlock(currentInfoMenu, styleMenu1);
 
   const buttonsBlockDiv = createButtonsBlock(buttonsSet);
 
   const menuGroupPostDiv = document.createElement("div");
   menuGroupPostDiv.append(strategyMenuDiv, postsMenuDiv, delayMenuDiv, deepMenuDiv, blockPostMenuDiv);
   menuGroupPostDiv.style.cssText = styleMenu3;
-
   const playersMenu = document.createElement('div');
   playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv);
   playersMenu.style.cssText = styleMenu3;
-
-  menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoPanelDiv, buttonsBlockDiv);
+  menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
   document.querySelector(`body`).append(menuVK);
 
-  strategyMenu.domElements.forEach(elem => elem.onclick = changeCompInputs);
+  // strategyMenu.domElements.forEach(elem => elem.onclick = changeCompInputs);
 
   function createMenuBlock(items, menuObj, styleMenu, styleInput) {
     const menuBlock = document.createElement("div");
@@ -270,10 +362,13 @@
       const inputLabel = document.createElement('label');
       inputLabel.setAttribute('for', item);
       inputLabel.append(document.createTextNode(items[item]));
+      if (menuObj.type === "text") {
+        inputEl.style.width = "calc(100% - 8px)";
+      }
       inputBlock.append(inputEl, inputLabel);
       inputBlock.style.cssText = styleInput;
       menuBlock.append(inputBlock);
-      menuObj.domElements.push(inputEl);
+      menuObj.domElements[item] = inputEl;
     });
     return menuBlock;
   }
@@ -288,32 +383,721 @@
       buttonElement.append(document.createTextNode(buttons[btn].name));
       buttonElement.onclick = buttons[btn].handler;
       buttonsBlock.append(buttonElement);
-      buttons[btn].buttonDomElement = buttonElement;
+      buttons[btn].domElement = buttonElement;
     });
     return buttonsBlock;
   }
 
-  function changeCompInputs(e) {
-    console.log(e.target);
-    console.log(e.currentTarget);
+  function createInfoBlock(menuObj, styleMenu) {
+    const infoBlock = document.createElement("div");
+    infoBlock.style.cssText = styleMenu;
+    const head = document.createElement('h6');
+    head.style.margin = "0 0 4px";
+    head.append(document.createTextNode(menuObj.headName));
+    infoBlock.append(head);
+
+    for (const key in menuObj.items) {
+      const postEl = document.createElement('p');
+      postEl.style.cssText = "margin: 4px; text-align: left;";
+      const postDivSpan = document.createElement('span');
+      postDivSpan.style.color = menuObj.items[key].infoColor;
+      postDivSpan.append(document.createTextNode(menuObj.items[key].startValue));
+      postDivSpan.style.fontWeight = menuObj.items[key].bold ? "bold" : "normal";
+      postEl.append(document.createTextNode(`${menuObj.items[key].name}: `), postDivSpan);
+      menuObj.items[key].domElement = postDivSpan;
+      infoBlock.append(postEl);
+    }
+    return infoBlock;
+  }
+
+  function setListenersStrategyMenu() {
+    for (const key in strategyMenu.domElements) {
+      strategyMenu.domElements[key].onchange = updateDisableInputs;
+    }
+    blockPostMenu.headDomElement.onclick = updateCheckedInputs;
+    competitorsMenu.headDomElement.onclick = updateCheckedInputs;
+    comradesMenu.headDomElement.onclick = updateCheckedInputs;
+  }
+
+  function updateDisableInputs(e) {
+    switch (e.target.id) {
+      case "all":
+        changeDisableInputs(deepMenu.domElements, e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "aftermy":
+      case "my":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "players":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, !e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, !e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "pointer" : "text";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "pointer" : "text";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "firstWordPostAfter":
+      case "firstWordPostSkip":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        changeDisableInputs(firstWordMenu.domElements, !e.target.checked);
+        break;
+    }
+  }
+
+  function changeDisableInputs(inputs, isChecked) {
+    for (const key in inputs) {
+      inputs[key].disabled = isChecked;
+    }
+  }
+
+  function updateCheckedInputs(e) {
+    if (e.target.innerText !== "BLOCKPOST" && !strategyMenu.domElements.players.checked) {
+      return;
+    }
+    switch (e.target.innerText) {
+      case "BLOCKPOST":
+        changeCheckedInputs(blockPostMenu.domElements);
+        break;
+      case "COMPETITORS":
+        changeCheckedInputs(competitorsMenu.domElements);
+        break;
+      case "COMRADES":
+        changeCheckedInputs(comradesMenu.domElements);
+        break;
+    }
+  }
+
+  function changeCheckedInputs(inputs) {
+    const inputsArr = Object.values(inputs);
+    if (inputsArr.every(input => input.checked)) {
+      inputsArr.forEach(item => item.checked = false);
+    } else {
+      inputsArr.forEach(item => item.checked = true);
+    }
+  }
+
+  function setDefaultInputsChecked() {
+    delayMenu.domElements["15"].checked = true;
+    deepMenu.domElements["1"].checked = true;
+    strategyMenu.domElements.all.click();
+    blockPostMenu.headDomElement.style.cursor = "pointer";
+  }
+
+  function enableButton(button) {
+    button.disabled = false;
+    button.style.cursor = 'pointer';
+  }
+
+  function disableButton(button) {
+    button.disabled = true;
+    button.style.cursor = 'auto';
+  }
+
+  async function getIp() {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+  }
+
+  async function saveIPAddress() {
+    try {
+      await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
+      .then(() => {
+        currentInfoItems.myip.domElement.style.color = colors.info02;
+        setTimeout(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info01;
+        }, 1500);
+      });
+    } catch (error) {
+      console.error("4: IP адрес не  сохранен! Ошибка: ", error);
+    }
+  }
+
+  function initStartData() {
+    setListenersStrategyMenu();
+    setDefaultInputsChecked();
+    Object.keys(posts).forEach(post => loadAmountPosts(post));
+    getIp().then((ip) => {
+      currentInfoItems.myip.currentValue = ip;
+      currentInfoItems.myip.domElement.style.color = colors.info01;
+      currentInfoItems.myip.domElement.style.cursor = "pointer";
+      currentInfoItems.myip.domElement.onclick = saveIPAddress;
+    });
+  }
+
+  function loadAmountPosts(namePost) {
+    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+      method: 'GET',
+      headers: {'content-type': 'application/json'},
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("0: Something went wrong!");
+      }
+    })
+    .then(renderInfo => {
+      const result = renderInfo.posts;
+      const resultFilter = result.filter((pack) => {
+        const currentDate = new Date();
+        const packDate = new Date(pack.date);
+        return (currentDate - packDate) / 3600000 < 12;
+      });
+      console.log("resultFilter (DATA): ", resultFilter);
+      infoPanelItems[namePost].valueObject = resultFilter;
+      const summArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+      infoPanelItems[namePost].loadedValue = summArr;
+    })
+    .catch(error => {
+      console.log("0: Что-то пошло не так! ", error);
+    })
+  }
+
+  function saveAmountPosts(namePost) {
+    const amount = infoPanelItems[currentNamePost].currentValue;
+    if (!infoPanelItems[currentNamePost] || amount === 0) {
+      return;
+    }
+    buttonsSet.savePost.domElement.disabled = true;
+    const newData = {
+      posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
+    };
+    console.log("newData", newData.posts);
+    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+      method: 'PUT',
+      headers: {'content-type': 'application/json'},
+      body: JSON.stringify(newData)
+    }).then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      throw new Error("2: Something went wrong!");
+    }).then(task => {
+      infoPanelItems[currentNamePost].currentValue = 0;
+      infoPanelItems[currentNamePost].loadedValue += amount;
+      infoPanelItems[currentNamePost].valueObject = newData.posts;
+      infoPanelItems[namePost].domElement.style.color = colors.info02;
+      console.log("2: Данные на сервере обновлены!");
+    }).catch(error => {
+      console.log("2: Что-то пошло не так! ", error);
+    })
   }
 
   function savePosted() {
-
+    saveAmountPosts(currentNamePost);
   }
 
   function postCurrPost() {
-
+    buttonsSet.doPost.domElement.disabled = true;
+    isPostCurrPost = true;
   }
 
   function skipCurrPost() {
-
+    buttonsSet.skipPost.domElement.disabled = true;
+    isSkipCurrPost = true;
   }
 
+  function clearDataBeforeStartCycle() {
+    currentNumberGr = 0;
+    groupsForPublish.length = 0;
+    postForPublish.length = 0;
+    // loadAmountPosts(postForPublish[currentNumberPost]);
+    currentInfoItems.missedposts.currentValue = 0;
+    currentInfoItems.leftposts.currentValue = 0;
+    currentInfoItems.errorsposts.currentValue = 0;
+  }
+
+  function clearDataBeforeBigCycle() {
+    //clear
+  }
+
+  function saveOnClose(e) {
+    e.preventDefault();
+    saveAmountPosts(currentNamePost);
+    return 'You have made changes. They will be lost if you continue.';
+  }
+
+  /**
+   * INIT SCRIPT
+   **/
+  initStartData();
+
+  /**
+   * START SCRIPT
+   **/
   function startScript() {
+    if ((Object.values(postsMenu.domElements)).every(element => !element.checked)) {
+      alert('Не выбрано ни одного поста (POSTS) !');
+      return;
+    }
+    if ((Object.values(blockPostMenu.domElements)).every(element => !element.checked)) {
+      alert('Не выбрано ни одного набора групп (BLOCKPOST) для постов !');
+      return;
+    }
+    if (strategyMenu.domElements.players.checked &&
+      (Object.values(competitorsMenu.domElements)).every(element => element.checked) &&
+      (Object.values(comradesMenu.domElements)).every(element => element.checked)) {
+      alert('Необходимо выбрать хотя бы одного пользователя COMPETITORS и/или COMRADES !')
+      return;
+    }
+    clearDataBeforeStartCycle();
+    console.log("delayMenu.domElements: ", delayMenu.domElements);
+    for (let key in delayMenu.domElements) {
+      if (delayMenu.domElements[key].checked) {
+        delayXL = (+key) * 1000;
+      }
+    }
 
+    for (const key in postsMenu.domElements) {
+      if (postsMenu.domElements[key].checked) {
+        postForPublish.push(key);
+      }
+    }
+    currentNamePost = postForPublish[currentNumberPost];
+    const blockPostMenuGroups = Object.values(blockPostMenu.domElements);
+    blockPostMenuGroups.forEach(group => {
+      if (group.checked) {
+        groupsForPublish.push(...groupsBox[group.id]);
+      }
+    });
+    // Shuffle array using the Fisher–Yates shuffle
+    for (let i = groupsForPublish.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      [groupsForPublish[i], groupsForPublish[j]] = [groupsForPublish[j], groupsForPublish[i]];
+    }
+    currentInfoItems.leftposts.currentValue = groupsForPublish.length;
+
+    console.log('Запускаем скрипты: ', postForPublish);
+    buttonsSet.startPosting.domElement.disabled = true;
+    buttonsSet.startPosting.domElement.style.cursor = "auto";
+    window.addEventListener('beforeunload', saveOnClose);
+    loadPost();
   }
 
+  function loadPost() {
+    fetch(`https://642dd59966a20ec9cea70c6c.mockapi.io/tasks/${VKName}_${currentNamePost}`, {
+      method: 'GET',
+      headers: {'content-type': 'application/json'},
+    })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("Something went wrong!");
+      }
+    }).then(post => {
+      currentPost = post;
+      // console.log('CURRENT POST: ', currentPost);
+      savePostToDb();
+    }).catch(error => {
+      console.log("Что-то пошло не так! ", error);
+      disableButton(buttonsSet.startPosting.domElement);
+    })
+  }
+
+  function savePostToDb() {
+    const request = indexedDB.open("posting-draft-v1", 1);
+    request.onerror = function (event) {
+      console.error("An error occurred with IndexedDB");
+      console.error(event);
+      disableButton(buttonsSet.startPosting.domElement);
+    };
+    request.onsuccess = function () {
+      const db = request.result;
+      const transaction = db.transaction("posting-draft", "readwrite");
+      const store = transaction.objectStore("posting-draft");
+      const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
+      const idQuery = store.get(keyStore);
+      idQuery.onsuccess = function () {
+        store.put(currentPost, keyStore);
+        checkEnterToBookMarks();
+      };
+    };
+  }
+
+  function delayAct(action, delay) {
+    console.log(action.name);
+    scheduler
+    .postTask(action, {delay: delay});
+    // return (setTimeout(action, delay));
+  }
+
+  function nextClickAction(selector, nextCallback, delay) {
+    const linkToClick = document.querySelector(selector);
+    if (linkToClick) {
+      linkToClick.click();
+      delayAct(nextCallback, delay);
+    } else {
+      delayAct(() => {
+        nextClickAction(selector, nextCallback, delay);
+      }, delayM);
+    }
+  }
+
+  function checkEnterToBookMarks() {
+    const URLHash = window.location.href;
+    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+      checkLoadGroupsList();
+    } else {
+      enterToBookMarks();
+    }
+  }
+
+  function enterToBookMarks() {
+    nextClickAction('a[href="/bookmarks?from_menu=1"]', checkLoadGroupsList, delayL);
+  }
+
+  function checkLoadGroupsList() {
+    const emptyFeed = document.querySelector('.BookmarksEmptyFeed');
+    const bookmarksGroup = document.querySelector('.bookmarks_rows_group');
+    if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
+      loadNarrativeList();
+    } else {
+      delayAct(enterToCurrentGroup, delayL);
+    }
+  }
+
+  function loadNarrativeList() {
+    nextClickAction('#ui_rmenu_narrative', loadGroupsList, delayM);
+  }
+
+  function loadGroupsList() {
+    nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
+  }
+
+  // function checkLoadGroupPage() {
+  //   const URLHash = window.location.href;
+  //   if (URLHash === 'https://vk.com/bookmarks?type=group') {
+  //     delayAct(enterToCurrentGroup, delayM);
+  //   } else {
+  //     delayAct(enterToBookMarks, delayL);
+  //   }
+  // }
+
+  function enterToCurrentGroup() {
+    enableButton(buttonsSet.skipPost.domElement);
+    const groupHref = `/${groupsForPublish[currentNumberGr][1]}`;
+    const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
+    if (linkGroup) {
+      console.log("linkGroup: ", linkGroup);
+      linkGroup.click();
+      delayAct(checkCurrentGroup, delayM);
+    } else {
+      console.log("Didn't find group: ", groupHref);
+      console.log("Scrolling page...");
+      window.scrollBy(0, 1500);
+      delayAct(enterToCurrentGroup, delayM);
+    }
+  }
+
+  function checkCurrentGroup() {
+    const URLHash = window.location.href;
+    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+      if (functionRepetitions > 10) {
+        functionRepetitions = 0;
+        delayAct(enterToCurrentGroup, delayM);
+      } else {
+        functionRepetitions++
+        delayAct(checkCurrentGroup, delayM);
+      }
+    } else {
+      functionRepetitions = 0;
+      for (const key in deepMenu.domElements) {
+        if (deepMenu.domElements[key].checked) {
+          deepAmount = +(key);
+        }
+      }
+      console.log("deepAmount: ", deepAmount);
+      window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
+      delayAct(checkNecessityPosting, delayL);
+    }
+  }
+
+  /**
+   * NECESSITY POSTING
+   **/
+  function checkNecessityPosting() {
+    window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
+    if (isPostCurrPost) {
+      makePost();
+      return;
+    }
+    if (isSkipCurrPost) {
+      skipPosting();
+      return;
+    }
+    let currentStrategy = null;
+    for (const key in strategyMenu.domElements) {
+      if (strategyMenu.domElements[key].checked) {
+        currentStrategy = key;
+        break;
+      }
+    }
+    console.log("currentStrategy: ", currentStrategy);
+    if (currentStrategy === "all") {
+      makePost();
+      return;
+    }
+
+    const players = [];
+    if (currentStrategy === "players") {
+      (Object.values(competitorsMenu.domElements)).forEach((element) => {
+        if (element.checked) {
+          players.push(element.id);
+        }
+      });
+      (Object.values(comradesMenu.domElements)).forEach((element) => {
+        if (element.checked) {
+          players.push(element.id);
+        }
+      });
+    }
+
+    let firstWordValues = []
+    if (currentStrategy === "firstWordPostAfter") {
+      for (const key in firstWordMenu.domElements) {
+        firstWordValues.push(firstWordMenu.domElements[key].value);
+      }
+    }
+
+    const checkingPosts = Array.from(document.querySelectorAll('.post'));
+    //check "pin" in the group, if yes, then we increase deepAmount by 1;
+    const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
+    if (isFirstPin) {
+      checkingPosts[0].style.display = 'none';
+      console.log("*** There is PIN ***");
+      checkingPosts.shift();
+    }
+    checkingPosts.splice(deepAmount);
+    IdFirstPostForSubmitChecking = checkingPosts[0].id;
+
+    for (let i = 0; i < checkingPosts.length; i++) {
+      const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
+      if (!avatarRich) {
+        console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
+        continue;
+      }
+      const postUserId = avatarRich.getAttribute('href');
+      console.log("postUserId: ", postUserId);
+      if (currentStrategy === "aftermy") {
+        console.log("00 Compare ", postUserId.substring(3), " and ", idUser);
+        if (postUserId.substring(3) === idUser) {
+          makePost();
+          return;
+        }
+        continue;
+      }
+      if (currentStrategy === "my") {
+        console.log("01 Compare ", postUserId.substring(3), " and ", idUser);
+        if (postUserId.substring(3) === idUser) {
+          skipPosting();
+          return;
+        }
+        if (i >= checkingPosts.length) {
+          makePost();
+          return;
+        }
+        continue;
+      }
+      if (currentStrategy === "players") {
+        console.log("02 Compare ", players, " and ", postUserId.substring(1));
+        if (players.some(element => postUserId.substring(1).includes(element))) {
+          makePost();
+          return;
+        }
+      }
+      if (currentStrategy === "firstWordPostAfter") {
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        let isBreak = false;
+        firstWordValues.forEach((value) => {
+          if (blockTextPost && blockTextPost.innerText.includes(value)) {
+            isBreak = true;
+          }
+        });
+        if (isBreak) {
+          makePost();
+          return;
+        }
+        continue;
+      }
+      if (currentStrategy === "firstWordPostSkip") {
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        let isBreak = false;
+        firstWordValues.forEach((value) => {
+          if (blockTextPost && blockTextPost.innerText.includes(value)) {
+            isBreak = true;
+          }
+        });
+        if (isBreak) {
+          makePost();
+          return;
+        }
+      }
+    }
+    console.log("ЗАВЕРШИЛИ ЦИКЛ ПРОВЕРКИ.");
+    skipPosting();
+  }
+
+  function skipPosting() {
+    isSkipCurrPost = false;
+    buttonsSet.skipPost.domElement.disabled = false;
+    currentInfoItems.missedposts.currentValue++;
+    startNewCycle(delayM);
+  }
+
+  function makePost() {
+    isPostCurrPost = false;
+    clickCreatePost();
+  }
+
+  function clickCreatePost() {
+    nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+  }
+
+  function clickOpenDraftPost() {
+    const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
+    if (openDraft) {
+      openDraft.click();
+      functionRepetitions = 0;
+      delayAct(clickContinuePost, delayM);
+    } else {
+      console.log('Button Открыть черновик didn\'t find!');
+      if (functionRepetitions > 5) {
+        functionRepetitions = 0;
+        groupsForPublish.push(groupsForPublish[currentNumberGr]);
+        currentInfoItems.leftposts.currentValue++;
+        currentInfoItems.errorsposts.currentValue++;
+        startNewCycle(delayM);
+      } else {
+        functionRepetitions++;
+        delayAct(clickOpenDraftPost, delayM);
+      }
+    }
+  }
+
+  function clickContinuePost() {
+    nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayM);
+  }
+
+  function clickSavePost() {
+    if (isSkipCurrPost) {
+      currentInfoItems.missedposts.currentValue++;
+      isSkipCurrPost = false;
+      delayAct(clickCloseDraftPost, delayM);
+      return;
+    }
+    nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
+  }
+
+  function clickCloseDraftPost() {
+    if (functionRepetitions > 5) {
+      functionRepetitions = 0;
+      startNewCycle(delayM);
+      return;
+    }
+    const closeButton = document.querySelector('[data-testid="modal-close-button"]');
+    if (closeButton) {
+      closeButton.click();
+      functionRepetitions = 0;
+      delayAct(startNewCycle.bind(null, delayM), delayM);
+    } else {
+      functionRepetitions++;
+      delayAct(clickCloseDraftPost, delayM);
+    }
+  }
+
+  function checkPostSubmit() {
+    const currentFirstPost = document.querySelector('.post');
+    console.log("POST 1: ", currentFirstPost.id);
+    console.log("POST 2: ", IdFirstPostForSubmitChecking);
+    if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
+      infoPanelItems[currentNamePost].currentValue++;
+      buttonsSet.savePost.domElement.disabled = false;
+      delayAct(startNewCycle, delayM);
+    } else {
+      delayAct(checkPostSubmit, delayM);
+    }
+  }
+
+  function startNewCycle(newDelay = delayXL) {
+    isPostCurrPost = false;
+    buttonsSet.doPost.domElement.disabled = false;
+    currentInfoItems.leftposts.currentValue--;
+
+    nextClickAction('a[href="/bookmarks?from_menu=1"]', updateCycleData.bind(null, newDelay), delayM);
+
+    function updateCycleData(newDelay = delayXL) {
+      console.log("newDelay: ", newDelay);
+      const isLastSmallCycle = currentNumberPost >= postForPublish.length - 1;
+      const isLastBigCycle = currentNumberGr >= groupsForPublish.length - 1;
+
+      //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
+      if (isLastBigCycle && infoPanelItems[currentNamePost]) {
+        saveAmountPosts(currentNamePost);
+      }
+      if (isLastSmallCycle && isLastBigCycle) {
+        delayAct(enterNews, delayM);
+        return;
+      }
+      if (isLastBigCycle) {
+        currentNumberPost++;
+        currentNamePost = postForPublish[currentNumberPost];
+        currentNumberGr = 0;
+        clearDataBeforeBigCycle();
+        delayAct(loadPost, newDelay);
+        return;
+      }
+      currentNumberGr++;
+      delayAct(savePostToDb, newDelay);
+    }
+
+    function enterNews() {
+      nextClickAction('a[href="/feed"]', scrollPage, delayM);
+    }
+
+    function scrollPage(k = 10) {
+      if (isSkipCurrPost) {
+        isSkipCurrPost = false;
+        buttonsSet.skipPost.domElement.disabled = false;
+        k = 0;
+      }
+      const n = 1000;
+      const m = 5000;
+      const timer = Math.floor(Math.random() * (m - n + 1)) + n;
+      const a = 300;
+      const b = 700;
+      const dist = Math.floor(Math.random() * (b - a + 1)) + a;
+      setTimeout(() => {
+        window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
+        if (k <= 0) {
+          window.removeEventListener('beforeunload', saveOnClose);
+          disableButton(buttonsSet.startPosting.domElement);
+          alert('ВСЕ СДЕЛАНО !!!');
+        } else {
+          scrollPage(k - 1);
+        }
+      }, timer);
+    }
+  }
 
   // === PART END ===
 })();

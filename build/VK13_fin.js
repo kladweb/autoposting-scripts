@@ -456,7 +456,7 @@
       const result = renderInfo.posts;
       const resultFilter = result.filter((pack) => {
         const currentDate = new Date();
-        const packDate = new Date(pack.date);
+        const packDate = new Date(pack.date);``
         return (currentDate - packDate) / 3600000 < 12;
       });
       loadedFetchPosts[namePost] = resultFilter;
