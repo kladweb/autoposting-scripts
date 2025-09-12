@@ -44,34 +44,140 @@
     id591910410: "VK13: Andrzey"
   }
   //players = competitors + comrades;
+
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
-  const [delayM, delayL] = [2000, 3000];
-  let delayXL = 10000;
-  const currentInfoItems = {myip: "IP", missedposts: "Missed posts", leftposts: "Left posts", errorsposts: "Errors"};
-  let postElements = [];
-  let inputAllGroups = null;
-  let inputPlayers = null;
-  const competitorsMenuItems = [];
-  const comradesMenuItems = [];
-  const infoPosts = {};
-  const infoContent = {};
-  const deepItems = [];
-  let firstWordPostTrigger = null;
-  let firstWordPostInput = null;
-  let currentNumberPost = 0;
-  let currentNamePost = null;
-  let currentNumberGr = 0;
-  let currentPost = null;
+  let [delayM, delayL, delayXL] = [4000, 5000, 10000];
+  const firstWordInputs = {input1: "", input2: ""};
   let isSkipCurrPost = false;
   let isPostCurrPost = false;
-  let buttonStart = null;
-  let buttonStop = null;
-  let deepAmount = 0;
+  const postForPublish = []; //посты для публикации
+  const groupsForPublish = []; //группы для постов
+  let currentNumberGr = 0;
+  let currentNumberPost = 0;
+  let currentNamePost = null;
+  let currentPost = null; //объект поста для сохранения в IndexDb
   let functionRepetitions = 0;
-  let loadedFetchPosts = {};
-  const groupsAll = [];
+  let deepAmount = 0;
+  let IdFirstPostForSubmitChecking = null;
+
+  const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
+  const postsMenu = {headName: "POSTS", type: "checkbox", domElements: {}}
+  const delayMenu = {headName: "DELAY", type: "radio", domElements: {}};
+  const deepMenu = {headName: "DEEP", type: "radio", domElements: {}};
+  const blockPostMenu = {headName: "BLOCKPOST", type: "checkbox", domElements: {}};
+  const competitorsMenu = {headName: "COMPETITORS", type: "checkbox", domElements: {}};
+  const comradesMenu = {headName: "COMRADES", type: "checkbox", domElements: {}};
+  const firstWordMenu = {headName: "Start words of posts", type: "text", domElements: {}};
+
+  const buttonsSet = {
+    savePost: {name: "SAVE POSTS", domElement: null, handler: savePosted},
+    doPost: {name: "POST", domElement: null, handler: postCurrPost},
+    skipPost: {name: "SKIP", domElement: null, handler: skipCurrPost},
+    startPosting: {name: "START POSTING", domElement: null, handler: startScript}
+  }
+
+  //Color Palette #4694
+  const colors = {
+    color01: '#816460',
+    color02: '#B27D6A',
+    color03: '#403F26',
+    info01: '#4f930a',
+    info02: '#126AEFFF',
+    info03: '#ff1414',
+    background01: '#FEF1C5',
+    border01: '#F1C196',
+  }
+
+  const infoPanelItems = {}
+  for (const key in posts) {
+    infoPanelItems[key] = {};
+    infoPanelItems[key].name = posts[key];
+    infoPanelItems[key].domElement = null;
+    infoPanelItems[key].infoColor = colors.info01;
+    infoPanelItems[key].bold = true;
+    infoPanelItems[key].startValue = 0;
+    infoPanelItems[key]._loadedValue = 0;
+    infoPanelItems[key]._currentValue = 0;
+    infoPanelItems[key].valueObject = null;
+  }
+
+  for (const key in infoPanelItems) {
+    Object.defineProperty(infoPanelItems[key], "currentValue", {
+      get() {
+        return this._currentValue;
+      },
+      set(value) {
+        this._currentValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this.loadedValue + this._currentValue;
+          this.domElement.style.color = this.infoColor;
+        }
+      }
+    });
+    Object.defineProperty(infoPanelItems[key], "loadedValue", {
+      get() {
+        return this._loadedValue;
+      },
+      set(value) {
+        this._loadedValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this.loadedValue + this._currentValue;
+        }
+      }
+    });
+  }
+
+  const currentInfoItems = {
+    myip: {
+      name: "IP",
+      domElement: null,
+      infoColor: colors.info02,
+      startValue: "...wait",
+      _currentValue: 0,
+    },
+    missedposts: {
+      name: "Missed posts",
+      domElement: null,
+      infoColor: colors.info03,
+      bold: true,
+      startValue: "-",
+      _currentValue: 0
+    },
+    leftposts: {
+      name: "Left posts",
+      domElement: null,
+      infoColor: colors.info01,
+      startValue: "-",
+      _currentValue: 0
+    },
+    errorsposts: {
+      name: "Errors",
+      domElement: null,
+      infoColor: colors.info01,
+      bold: true,
+      startValue: "-",
+      _currentValue: 0
+    },
+  };
+
+  for (const key in currentInfoItems) {
+    Object.defineProperty(currentInfoItems[key], "currentValue", {
+      get() {
+        return this._currentValue;
+      },
+      set(value) {
+        this._currentValue = value;
+        if (this.domElement) {
+          this.domElement.innerText = this._currentValue === 0 ? this.startValue : this._currentValue;
+        }
+      }
+    });
+  }
+
+  const infoPanelMenu = {headName: "Last 12 hours", items: infoPanelItems};
+  const currentInfoMenu = {headName: "Current Info", items: currentInfoItems};
 
   const groupsBox = {
     0: [
@@ -185,22 +291,6 @@
     ]
   };
 
-  //Color Palette #4694
-  const colors = {
-    color01: '#816460',
-    color02: '#B27D6A',
-    color03: '#403F26',
-    background01: '#FEF1C5',
-    border01: '#F1C196',
-  }
-
-  const buttonsSet = [
-    {name: "SAVE POSTS", handler: savePosted},
-    {name: "POST", handler: postCurrPost},
-    {name: "SKIP", handler: skipCurrPost},
-    {name: "START POSTING", handler: startScript},
-  ];
-
   const menuVK = document.createElement('div');
   menuVK.style.cssText = `
   position: fixed;
@@ -228,219 +318,231 @@
   const stylesInpType2 = "display: inline-block; padding: 4px;";
   const stylesInpType3 = "text-align: left; padding: 2px;";
 
-  const strategyMenu = createMenuBlock('radio', strategy, 'STRATEGY', styleMenu2, stylesInpType1);
-  const postsMenu = createMenuBlock('checkbox', posts, 'POSTS', styleMenu2, stylesInpType1);
-  const delaysMenu = createMenuBlock('radio', delays, 'DELAY', styleMenu2, stylesInpType1);
-  const deepsMenu = createMenuBlock('radio', deeps, 'DEEP', styleMenu2, stylesInpType2);
-  const blockPostMenu = createMenuBlock('checkbox', numberBlockPost, 'BLOCKPOST', styleMenu2, stylesInpType2);
-  const competitorsSubMenu = createMenuBlock('checkbox', competitors, 'COMPETITORS', styleMenu2, stylesInpType3);
-  const comradesSubMenu = createMenuBlock('checkbox', comrades, 'COMRADES', styleMenu2, stylesInpType3);
-  const infoPanel = createMenuBlock('', {}, 'Last 12 hours', styleMenu1, stylesInpType1);
-  const currentInfo = createMenuBlock('', {}, 'Current Info', styleMenu1, stylesInpType1);
-  const inputFirstWord = createMenuBlock('text', {firstWord: ""}, 'First word of post', styleMenu2, stylesInpType1);
-  const buttonsBlock = createButtonsBlock(buttonsSet);
-  const menuGroupPost = document.createElement("div");
-  menuGroupPost.append(strategyMenu, postsMenu, delaysMenu, deepsMenu, blockPostMenu);
-  menuGroupPost.style.cssText = styleMenu3;
+  const strategyMenuDiv = createMenuBlock(strategy, strategyMenu, styleMenu2, stylesInpType1);
+  const postsMenuDiv = createMenuBlock(posts, postsMenu, styleMenu2, stylesInpType1);
+  const delayMenuDiv = createMenuBlock(delays, delayMenu, styleMenu2, stylesInpType1);
+  const deepMenuDiv = createMenuBlock(deeps, deepMenu, styleMenu2, stylesInpType2);
+  const blockPostMenuDiv = createMenuBlock(numberBlockPost, blockPostMenu, styleMenu2, stylesInpType2);
+  const competitorsMenuDiv = createMenuBlock(competitors, competitorsMenu, styleMenu2, stylesInpType3);
+  const comradesMenuDiv = createMenuBlock(comrades, comradesMenu, styleMenu2, stylesInpType3);
+  const inputFirstWordDiv = createMenuBlock(firstWordInputs, firstWordMenu, styleMenu2, stylesInpType1);
+
+  const infoPanelDiv = createInfoBlock(infoPanelMenu, styleMenu1);
+  const currentInfoDiv = createInfoBlock(currentInfoMenu, styleMenu1);
+
+  const buttonsBlockDiv = createButtonsBlock(buttonsSet);
+
+  const menuGroupPostDiv = document.createElement("div");
+  menuGroupPostDiv.append(strategyMenuDiv, postsMenuDiv, delayMenuDiv, deepMenuDiv, blockPostMenuDiv);
+  menuGroupPostDiv.style.cssText = styleMenu3;
   const playersMenu = document.createElement('div');
+  playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv);
   playersMenu.style.cssText = styleMenu3;
-  playersMenu.append(competitorsSubMenu, comradesSubMenu, inputFirstWord);
-  menuVK.append(menuGroupPost, playersMenu, infoPanel, currentInfo, buttonsBlock);
-  const bodyVK = document.querySelector(`body`);
-  bodyVK.append(menuVK);
-  strategyMenu.addEventListener('click', changeCompInputs);
+  menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
+  document.querySelector(`body`).append(menuVK);
 
-  createInfoPanelContent(posts, infoPosts, infoPanel, "green");
-  createInfoPanelContent(currentInfoItems, infoContent, currentInfo, "green", "red");
+  // strategyMenu.domElements.forEach(elem => elem.onclick = changeCompInputs);
 
-  getIp().then((res) => {
-      infoContent.myip.namePostEl.innerText = res;
-    }
-  );
-
-  infoContent.myip.namePostEl.style.cursor = 'pointer';
-  infoContent.myip.namePostEl.addEventListener('click', saveIPAddress);
-
-  function createInfoPanelContent(infoItemsObj, contentObj, menuPanel, spanColor, specColor) {
-    for (const key in infoItemsObj) {
-      const postEl = document.createElement('p');
-      postEl.style.cssText = "margin: 4px; text-align: left;";
-      const postDivSpan = document.createElement('span');
-      postDivSpan.style.cssText = `color: ${key !== 'missedposts' ? spanColor : specColor}; font-weight: bold;`;
-      if (key === 'myip' || key === 'leftposts') {
-        postDivSpan.style.fontWeight = 'normal';
-      }
-      postEl.append(document.createTextNode(`${infoItemsObj[key]}:  `));
-      postEl.append(postDivSpan);
-      contentObj[key] = {namePostEl: postDivSpan, amountCurr: 0, amountLast: 0};
-      if (JSON.stringify(infoItemsObj) === JSON.stringify(posts)) {
-        loadRenderData(key, postDivSpan);
-      }
-      if (JSON.stringify(infoItemsObj) === JSON.stringify(currentInfoItems)) {
-        contentObj[key].namePostEl.innerText = "-";
-      }
-      menuPanel.append(postEl);
-    }
-  }
-
-  function createMenuBlock(menuType, items, name, styleMenu, styleInput) {
-    const subMenu = document.createElement('div');
-    subMenu.style.cssText = styleMenu;
+  function createMenuBlock(items, menuObj, styleMenu, styleInput) {
+    const menuBlock = document.createElement("div");
+    menuBlock.style.cssText = styleMenu;
     const head = document.createElement('h6');
     head.style.margin = "0 0 4px";
-    head.append(document.createTextNode(name));
-    subMenu.append(head);
-    const subMenuItems = Object.keys(items);
-    if (/^\d+$/.test(subMenuItems[0]) && name !== "DEEP" && name !== "BLOCKPOST") {
-      subMenuItems.reverse();
-    }
-    subMenuItems.forEach((item, index) => {
+    head.append(document.createTextNode(menuObj.headName));
+    menuBlock.append(head);
+    menuObj.headDomElement = head;
+    const menuItems = Object.keys(items);
+    menuItems.forEach((item) => {
       const inputBlock = document.createElement('div');
       const inputEl = document.createElement('input');
-      inputEl.setAttribute('type', menuType);
-      inputEl.setAttribute('name', name);
+      inputEl.setAttribute('type', menuObj.type);
+      inputEl.setAttribute('name', menuObj.headName);
       inputEl.setAttribute('id', item);
-      if (index === 0) {
-        inputEl.checked = true;
-      }
       const inputLabel = document.createElement('label');
       inputLabel.setAttribute('for', item);
       inputLabel.append(document.createTextNode(items[item]));
-      if (name === "STRATEGY") {
-        inputEl.className = "strategy";
-      }
-      if (item === "all") {
-        inputAllGroups = inputEl;
-      }
-      if (item === "players") {
-        inputPlayers = inputEl;
-      }
-      if (item === "firstWordPost") {
-        firstWordPostTrigger = inputEl;
-      }
-      if (name === "COMPETITORS") {
-        inputEl.disabled = true;
-        competitorsMenuItems.push(inputEl);
-      }
-      if (name === "COMRADES") {
-        inputEl.disabled = true;
-        comradesMenuItems.push(inputEl);
-      }
-      if (name === "DEEP") {
-        inputEl.disabled = true;
-        deepItems.push(inputEl);
-      }
-      if (name === "First word of post") {
-        inputEl.disabled = true;
-        firstWordPostInput = inputEl;
+      if (menuObj.type === "text") {
+        inputEl.style.width = "calc(100% - 8px)";
       }
       inputBlock.append(inputEl, inputLabel);
       inputBlock.style.cssText = styleInput;
-      subMenu.append(inputBlock);
+      menuBlock.append(inputBlock);
+      menuObj.domElements[item] = inputEl;
     });
-
-    if (name === "BLOCKPOST") {
-      head.style.cursor = 'pointer';
-      head.onclick = () => toggleInputSelect(Array.from(subMenu.querySelectorAll('input')));
-    }
-    return subMenu;
-  }
-
-  function toggleInputSelect(subMenu) {
-    if (subMenu) {
-      if (subMenu.every(input => input.checked)) {
-        subMenu.forEach(item => item.checked = false);
-      } else {
-        subMenu.forEach(item => item.checked = true);
-      }
-    }
+    return menuBlock;
   }
 
   function createButtonsBlock(buttons) {
-    const buttonsBlock = document.createElement('div');
+    const buttonsBlock = document.createElement("div");
     buttonsBlock.style.cssText = `width: 95%; margin: 4px 10px;`
-    buttons.forEach((btn) => {
-      const buttonAct = document.createElement('button');
-      buttonAct.style.cssText = `display: inline-block; margin: 20px 10px; color: ${colors.color01}; cursor: pointer;`;
-      buttonAct.append(document.createTextNode(btn.name));
-      buttonAct.addEventListener('click', btn.handler);
-      buttonsBlock.append(buttonAct);
-      if (btn.name === 'START POSTING') {
-        buttonStart = buttonAct;
-      }
-      if (btn.name === 'SKIP') {
-        buttonStop = buttonAct;
-      }
+    const buttonsItems = Object.keys(buttons);
+    buttonsItems.forEach((btn) => {
+      const buttonElement = document.createElement('button');
+      buttonElement.style.cssText = `display: inline-block; margin: 20px 10px; color: ${colors.color01}; cursor: pointer;`;
+      buttonElement.append(document.createTextNode(buttons[btn].name));
+      buttonElement.onclick = buttons[btn].handler;
+      buttonsBlock.append(buttonElement);
+      buttons[btn].domElement = buttonElement;
     });
     return buttonsBlock;
   }
 
-  function savePosted() {
-    if (infoPosts[currentNamePost] && infoPosts[currentNamePost].amountCurr) {
-      updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
-      infoPosts[currentNamePost].amountLast += infoPosts[currentNamePost].amountCurr;
-      infoPosts[currentNamePost].amountCurr = 0
+  function createInfoBlock(menuObj, styleMenu) {
+    const infoBlock = document.createElement("div");
+    infoBlock.style.cssText = styleMenu;
+    const head = document.createElement('h6');
+    head.style.margin = "0 0 4px";
+    head.append(document.createTextNode(menuObj.headName));
+    infoBlock.append(head);
+
+    for (const key in menuObj.items) {
+      const postEl = document.createElement('p');
+      postEl.style.cssText = "margin: 4px; text-align: left;";
+      const postDivSpan = document.createElement('span');
+      postDivSpan.style.color = menuObj.items[key].infoColor;
+      postDivSpan.append(document.createTextNode(menuObj.items[key].startValue));
+      postDivSpan.style.fontWeight = menuObj.items[key].bold ? "bold" : "normal";
+      postEl.append(document.createTextNode(`${menuObj.items[key].name}: `), postDivSpan);
+      menuObj.items[key].domElement = postDivSpan;
+      infoBlock.append(postEl);
+    }
+    return infoBlock;
+  }
+
+  function setListenersStrategyMenu() {
+    for (const key in strategyMenu.domElements) {
+      strategyMenu.domElements[key].onchange = updateDisableInputs;
+    }
+    blockPostMenu.headDomElement.onclick = updateCheckedInputs;
+    competitorsMenu.headDomElement.onclick = updateCheckedInputs;
+    comradesMenu.headDomElement.onclick = updateCheckedInputs;
+  }
+
+  function updateDisableInputs(e) {
+    switch (e.target.id) {
+      case "all":
+        changeDisableInputs(deepMenu.domElements, e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "aftermy":
+      case "my":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "players":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, !e.target.checked);
+        changeDisableInputs(comradesMenu.domElements, !e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "pointer" : "text";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "pointer" : "text";
+        changeDisableInputs(firstWordMenu.domElements, e.target.checked);
+        break;
+      case "firstWordPostAfter":
+      case "firstWordPostSkip":
+        changeDisableInputs(deepMenu.domElements, !e.target.checked);
+        changeDisableInputs(competitorsMenu.domElements, e.target.checked);
+        competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        comradesMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
+        changeDisableInputs(comradesMenu.domElements, e.target.checked);
+        changeDisableInputs(firstWordMenu.domElements, !e.target.checked);
+        break;
     }
   }
 
-  function postCurrPost() {
-    isPostCurrPost = true;
+  function changeDisableInputs(inputs, isChecked) {
+    for (const key in inputs) {
+      inputs[key].disabled = isChecked;
+    }
   }
 
-  function skipCurrPost() {
-    buttonStop.disabled = true;
-    buttonStop.style.cursor = "auto";
-    isSkipCurrPost = true;
+  function updateCheckedInputs(e) {
+    if (e.target.innerText !== "BLOCKPOST" && !strategyMenu.domElements.players.checked) {
+      return;
+    }
+    switch (e.target.innerText) {
+      case "BLOCKPOST":
+        changeCheckedInputs(blockPostMenu.domElements);
+        break;
+      case "COMPETITORS":
+        changeCheckedInputs(competitorsMenu.domElements);
+        break;
+      case "COMRADES":
+        changeCheckedInputs(comradesMenu.domElements);
+        break;
+    }
   }
 
-  function changeCompInputs() {
-    const competitorsHead = competitorsSubMenu.querySelector('h6');
-    const comradesHead = comradesSubMenu.querySelector('h6');
-    if (inputPlayers.checked) {
-      competitorsHead.style.cursor = 'pointer';
-      competitorsHead.onclick = () => toggleInputSelect(competitorsMenuItems);
-      comradesHead.style.cursor = 'pointer';
-      comradesHead.onclick = () => toggleInputSelect(comradesMenuItems);
-      competitorsMenuItems.forEach((element) => {
-        element.disabled = false;
-      });
-      comradesMenuItems.forEach((element) => {
-        element.disabled = false;
-      });
+  function changeCheckedInputs(inputs) {
+    const inputsArr = Object.values(inputs);
+    if (inputsArr.every(input => input.checked)) {
+      inputsArr.forEach(item => item.checked = false);
     } else {
-      competitorsHead.onclick = null;
-      comradesHead.onclick = null;
-      competitorsHead.style.cursor = 'default';
-      comradesHead.style.cursor = 'default';
-      competitorsMenuItems.forEach((element) => {
-        element.disabled = true;
-      });
-      comradesMenuItems.forEach((element) => {
-        element.disabled = true;
-      });
+      inputsArr.forEach(item => item.checked = true);
     }
-    if (inputAllGroups.checked) {
-      deepItems.forEach((element) => {
-        element.disabled = true;
-      });
-    } else {
-      deepItems.forEach((element) => {
-        element.disabled = false;
-      });
-    }
-    firstWordPostInput.disabled = !firstWordPostTrigger.checked;
   }
 
-  //TODO save amount posts;
-  function saveOnClose(e) {
-    e.preventDefault();
-    if (infoPosts[currentNamePost] && infoPosts[currentNamePost].amountCurr) {
-      updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
-    }
-    return 'You have made changes. They will be lost if you continue.';
+  function setDefaultInputsChecked() {
+    delayMenu.domElements["15"].checked = true;
+    deepMenu.domElements["1"].checked = true;
+    strategyMenu.domElements.all.click();
+    blockPostMenu.headDomElement.style.cursor = "pointer";
   }
 
-  function loadRenderData(namePost, postEl) {
+  function enableButton(button) {
+    button.disabled = false;
+    button.style.cursor = 'pointer';
+  }
+
+  function disableButton(button) {
+    button.disabled = true;
+    button.style.cursor = 'auto';
+  }
+
+  async function getIp() {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Error fetching IP address:', error);
+    }
+  }
+
+  async function saveIPAddress() {
+    try {
+      await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
+      .then(() => {
+        currentInfoItems.myip.domElement.style.color = colors.info02;
+        setTimeout(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info01;
+        }, 1500);
+      });
+    } catch (error) {
+      console.error("4: IP адрес не  сохранен! Ошибка: ", error);
+    }
+  }
+
+  function initStartData() {
+    setListenersStrategyMenu();
+    setDefaultInputsChecked();
+    Object.keys(posts).forEach(post => loadAmountPosts(post));
+    getIp().then((ip) => {
+      currentInfoItems.myip.currentValue = ip;
+      currentInfoItems.myip.domElement.style.color = colors.info01;
+      currentInfoItems.myip.domElement.style.cursor = "pointer";
+      currentInfoItems.myip.domElement.onclick = saveIPAddress;
+    });
+  }
+
+  function loadAmountPosts(namePost) {
     fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
       method: 'GET',
       headers: {'content-type': 'application/json'},
@@ -456,24 +558,30 @@
       const result = renderInfo.posts;
       const resultFilter = result.filter((pack) => {
         const currentDate = new Date();
-        const packDate = new Date(pack.date);``
+        const packDate = new Date(pack.date);
         return (currentDate - packDate) / 3600000 < 12;
       });
-      loadedFetchPosts[namePost] = resultFilter;
+      console.log("resultFilter (DATA): ", resultFilter);
+      infoPanelItems[namePost].valueObject = resultFilter;
       const summArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-      infoPosts[namePost].amountLast = summArr;
-      postEl.innerText = infoPosts[namePost].amountLast + infoPosts[namePost].amountCurr;
+      infoPanelItems[namePost].loadedValue = summArr;
     })
     .catch(error => {
       console.log("0: Что-то пошло не так! ", error);
     })
   }
 
-  function updateRenderData(namePost, amount) {
+  function saveAmountPosts(namePost) {
+    const amount = infoPanelItems[currentNamePost].currentValue;
+    if (!infoPanelItems[currentNamePost] || amount === 0) {
+      return;
+    }
+    buttonsSet.savePost.domElement.disabled = true;
+    buttonsSet.savePost.domElement.style.cursor = "auto";
     const newData = {
-      posts: [{amount: amount, date: new Date()}, ...loadedFetchPosts[namePost]],
+      posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
-
+    console.log("newData", newData.posts);
     fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
       method: 'PUT',
       headers: {'content-type': 'application/json'},
@@ -484,102 +592,107 @@
       }
       throw new Error("2: Something went wrong!");
     }).then(task => {
-      infoPosts[currentNamePost].namePostEl.style.color = "blue";
+      infoPanelItems[currentNamePost].currentValue = 0;
+      infoPanelItems[currentNamePost].loadedValue += amount;
+      infoPanelItems[currentNamePost].valueObject = newData.posts;
+      infoPanelItems[namePost].domElement.style.color = colors.info02;
       console.log("2: Данные на сервере обновлены!");
     }).catch(error => {
       console.log("2: Что-то пошло не так! ", error);
     })
   }
 
-  async function getIp() {
-    try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip;
-    } catch (error) {
-      console.error('Error fetching IP address:', error);
-    }
+  function savePosted() {
+    saveAmountPosts(currentNamePost);
   }
 
-  async function saveIPAddress() {
-    try {
-      await navigator.clipboard.writeText(infoContent.myip.namePostEl.innerText)
-      .then(() => {
-        infoContent.myip.namePostEl.style.color = "blue";
-        setTimeout(() => {
-          infoContent.myip.namePostEl.style.color = "green";
-        }, 1500);
-      });
-    } catch (error) {
-      console.error("4: IP адрес не  сохранен! Ошибка: ", error);
-    }
+  function postCurrPost() {
+    buttonsSet.doPost.domElement.disabled = true;
+    buttonsSet.doPost.domElement.style.cursor = "auto";
+    isPostCurrPost = true;
+  }
+
+  function skipCurrPost() {
+    buttonsSet.skipPost.domElement.disabled = true;
+    buttonsSet.skipPost.domElement.style.cursor = "auto";
+    isSkipCurrPost = true;
+  }
+
+  function clearDataBeforeStartCycle() {
+    currentNumberGr = 0;
+    groupsForPublish.length = 0;
+    postForPublish.length = 0;
+    // loadAmountPosts(postForPublish[currentNumberPost]);
+    currentInfoItems.missedposts.currentValue = 0;
+    currentInfoItems.leftposts.currentValue = 0;
+    currentInfoItems.errorsposts.currentValue = 0;
   }
 
   function clearDataBeforeBigCycle() {
-    currentNumberGr = 0;
-    groupsAll.length = 0;
-    if (infoPosts[currentNamePost]?.namePostEl) {
-      infoPosts[currentNamePost].namePostEl.style.color = "green";
-    }
-    if (infoContent.missedposts && infoContent.missedposts.amountCurr) {
-      infoContent.missedposts.amountCurr = 0;
-      infoContent.missedposts.namePostEl.innerText = "-";
-    }
-    if (infoContent.errorsposts && infoContent.errorsposts.amountCurr) {
-      infoContent.errorsposts.amountCurr = 0;
-      infoContent.errorsposts.namePostEl.innerText = "-";
-    }
+    //clear
   }
+
+  function saveOnClose(e) {
+    e.preventDefault();
+    saveAmountPosts(currentNamePost);
+    return 'You have made changes. They will be lost if you continue.';
+  }
+
+  /**
+   * INIT SCRIPT
+   **/
+  initStartData();
 
   /**
    * START SCRIPT
    **/
   function startScript() {
-    clearDataBeforeBigCycle();
-    let isAllowStarting = false;
-    postElements = [];
-    const subMenu02elements = postsMenu.querySelectorAll('input');
-    subMenu02elements.forEach((element) => {
-      if (element.checked) {
-        postElements.push(element.id);
-        isAllowStarting = true;
+    if ((Object.values(postsMenu.domElements)).every(element => !element.checked)) {
+      alert('Не выбрано ни одного поста (POSTS) !');
+      return;
+    }
+    if ((Object.values(blockPostMenu.domElements)).every(element => !element.checked)) {
+      alert('Не выбрано ни одного набора групп (BLOCKPOST) для постов !');
+      return;
+    }
+    if (strategyMenu.domElements.players.checked &&
+      (Object.values(competitorsMenu.domElements)).every(element => element.checked) &&
+      (Object.values(comradesMenu.domElements)).every(element => element.checked)) {
+      alert('Необходимо выбрать хотя бы одного пользователя COMPETITORS и/или COMRADES !')
+      return;
+    }
+    clearDataBeforeStartCycle();
+    console.log("delayMenu.domElements: ", delayMenu.domElements);
+    for (let key in delayMenu.domElements) {
+      if (delayMenu.domElements[key].checked) {
+        delayXL = (+key) * 1000;
       }
-    });
-    currentNamePost = postElements[currentNumberPost];
-    const subMenu03elements = delaysMenu.querySelectorAll('input');
-    subMenu03elements.forEach((element) => {
-      if (element.checked) {
-        delayXL = (+element.id) * 1000;
-      }
-    });
-    const blockPostMenuEls = blockPostMenu.querySelectorAll('input');
-    blockPostMenuEls.forEach((element) => {
-      if (element.checked) {
-        groupsAll.push(...groupsBox[element.id]);
-      }
-    });
-    infoContent.leftposts.amountCurr = groupsAll.length;
-    infoContent.leftposts.namePostEl.innerText = infoContent.leftposts.amountCurr.toString();
+    }
 
-    console.log("groupsAll: ", groupsAll);
-    console.log("length: ", groupsAll.length);
-
+    for (const key in postsMenu.domElements) {
+      if (postsMenu.domElements[key].checked) {
+        postForPublish.push(key);
+      }
+    }
+    currentNamePost = postForPublish[currentNumberPost];
+    const blockPostMenuGroups = Object.values(blockPostMenu.domElements);
+    blockPostMenuGroups.forEach(group => {
+      if (group.checked) {
+        groupsForPublish.push(...groupsBox[group.id]);
+      }
+    });
     // Shuffle array using the Fisher–Yates shuffle
-    for (let i = groupsAll.length - 1; i > 0; i--) {
+    for (let i = groupsForPublish.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
-      [groupsAll[i], groupsAll[j]] = [groupsAll[j], groupsAll[i]];
+      [groupsForPublish[i], groupsForPublish[j]] = [groupsForPublish[j], groupsForPublish[i]];
     }
+    currentInfoItems.leftposts.currentValue = groupsForPublish.length;
 
-    if (isAllowStarting) {
-      console.log('Запускаем скрипты: ', postElements);
-      buttonStart.disabled = true;
-      buttonStart.style.cursor = 'auto';
-      firstWordPostInput.disabled = true;
-      window.addEventListener('beforeunload', saveOnClose);
-      loadPost();
-    } else {
-      alert('Необходимо выбрать хотя-бы один пост!');
-    }
+    console.log('Запускаем скрипты: ', postForPublish);
+    buttonsSet.startPosting.domElement.disabled = true;
+    buttonsSet.startPosting.domElement.style.cursor = "auto";
+    window.addEventListener('beforeunload', saveOnClose);
+    loadPost();
   }
 
   function loadPost() {
@@ -599,9 +712,7 @@
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
-      buttonStart.disabled = false;
-      buttonStart.style.cursor = 'pointer';
-      firstWordPostInput.disabled = false;
+      disableButton(buttonsSet.startPosting.domElement);
     })
   }
 
@@ -610,15 +721,13 @@
     request.onerror = function (event) {
       console.error("An error occurred with IndexedDB");
       console.error(event);
-      buttonStart.disabled = false;
-      buttonStart.style.cursor = 'pointer';
-      firstWordPostInput.disabled = false;
+      disableButton(buttonsSet.startPosting.domElement);
     };
     request.onsuccess = function () {
       const db = request.result;
       const transaction = db.transaction("posting-draft", "readwrite");
       const store = transaction.objectStore("posting-draft");
-      const keyStore = `${idUser}--${groupsAll[currentNumberGr][0]}`;
+      const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
       const idQuery = store.get(keyStore);
       idQuery.onsuccess = function () {
         store.put(currentPost, keyStore);
@@ -627,16 +736,23 @@
     };
   }
 
-  // function delayAct(action, delay) {
-  //   console.log(action.name);
-  //   return (setTimeout(action, delay));
-  // }
-
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
     .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
+  }
+
+  function nextClickAction(selector, nextCallback, delay) {
+    const linkToClick = document.querySelector(selector);
+    if (linkToClick) {
+      linkToClick.click();
+      delayAct(nextCallback, delay);
+    } else {
+      delayAct(() => {
+        nextClickAction(selector, nextCallback, delay);
+      }, delayM);
+    }
   }
 
   function checkEnterToBookMarks() {
@@ -649,58 +765,39 @@
   }
 
   function enterToBookMarks() {
-    const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
-    if (linkGroups) {
-      linkGroups.click();
-      delayAct(checkLoadGroupsList, delayL);
-    } else {
-      delayAct(enterToBookMarks, delayM);
-    }
+    nextClickAction('a[href="/bookmarks?from_menu=1"]', checkLoadGroupsList, delayL);
   }
 
   function checkLoadGroupsList() {
     const emptyFeed = document.querySelector('.BookmarksEmptyFeed');
     const bookmarksGroup = document.querySelector('.bookmarks_rows_group');
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
-      delayAct(loadNarrativeList, delayM);
+      loadNarrativeList();
     } else {
-      delayAct(checkLoadGroupPage, delayL);
+      delayAct(enterToCurrentGroup, delayL);
     }
   }
 
   function loadNarrativeList() {
-    const linkPost = document.querySelector('#ui_rmenu_narrative');
-    if (linkPost) {
-      linkPost.click();
-      delayAct(loadGroupsList, delayM);
-    } else {
-      delayAct(loadNarrativeList, delayM);
-    }
+    nextClickAction('#ui_rmenu_narrative', loadGroupsList, delayM);
   }
 
   function loadGroupsList() {
-    const linkGroup = document.querySelector('#ui_rmenu_group');
-    if (linkGroup) {
-      linkGroup.click();
-      delayAct(enterToBookMarks, delayL);
-    } else {
-      delayAct(loadGroupsList, delayM);
-    }
+    nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
   }
 
-  function checkLoadGroupPage() {
-    const URLHash = window.location.href;
-    if (URLHash === 'https://vk.com/bookmarks?type=group') {
-      delayAct(enterToCurrentGroup, delayM);
-    } else {
-      delayAct(enterToBookMarks, delayL);
-    }
-  }
+  // function checkLoadGroupPage() {
+  //   const URLHash = window.location.href;
+  //   if (URLHash === 'https://vk.com/bookmarks?type=group') {
+  //     delayAct(enterToCurrentGroup, delayM);
+  //   } else {
+  //     delayAct(enterToBookMarks, delayL);
+  //   }
+  // }
 
   function enterToCurrentGroup() {
-    buttonStop.disabled = false;
-    buttonStop.style.cursor = "pointer";
-    const groupHref = `/${groupsAll[currentNumberGr][1]}`;
+    enableButton(buttonsSet.skipPost.domElement);
+    const groupHref = `/${groupsForPublish[currentNumberGr][1]}`;
     const linkGroup = document.querySelector(`.group_link[href^="${groupHref}"]`);
     if (linkGroup) {
       console.log("linkGroup: ", linkGroup);
@@ -726,12 +823,11 @@
       }
     } else {
       functionRepetitions = 0;
-      console.log("deepItems: ", deepItems);
-      deepItems.forEach((element) => {
-        if (element.checked) {
-          deepAmount = +element.id;
+      for (const key in deepMenu.domElements) {
+        if (deepMenu.domElements[key].checked) {
+          deepAmount = +(key);
         }
-      });
+      }
       console.log("deepAmount: ", deepAmount);
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
       delayAct(checkNecessityPosting, delayL);
@@ -742,55 +838,59 @@
    * NECESSITY POSTING
    **/
   function checkNecessityPosting() {
-    // window.scrollTo(0, 500);
     window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
-    if (isSkipCurrPost) {
-      isSkipCurrPost = false;
-      infoContent.missedposts.amountCurr++;
-      startNewCycle(delayM);
-      return;
-    }
-
     if (isPostCurrPost) {
-      isPostCurrPost = false;
-      delayAct(clickCreatePost, delayM);
+      makePost();
+      return;
+    }
+    if (isSkipCurrPost) {
+      skipPosting();
+      return;
+    }
+    let currentStrategy = null;
+    for (const key in strategyMenu.domElements) {
+      if (strategyMenu.domElements[key].checked) {
+        currentStrategy = key;
+        break;
+      }
+    }
+    console.log("currentStrategy: ", currentStrategy);
+    if (currentStrategy === "all") {
+      makePost();
       return;
     }
 
-    let strategyItem = null;
-    const subMenu01Elements = strategyMenu.querySelectorAll('.strategy');
-    subMenu01Elements.forEach((element) => {
-      if (element.checked) {
-        strategyItem = element.id;
-      }
-    });
-
-    let players = [];
-    if (strategyItem === "players") {
-      competitorsMenuItems.forEach((element) => {
+    const players = [];
+    if (currentStrategy === "players") {
+      (Object.values(competitorsMenu.domElements)).forEach((element) => {
         if (element.checked) {
           players.push(element.id);
         }
       });
-      comradesMenuItems.forEach((element) => {
+      (Object.values(comradesMenu.domElements)).forEach((element) => {
         if (element.checked) {
           players.push(element.id);
         }
       });
     }
 
-    const checkingPostsNode = document.querySelectorAll('.post');
-    const checkingPosts = Array.from(checkingPostsNode);
+    let firstWordValues = []
+    if (currentStrategy === "firstWordPostAfter") {
+      for (const key in firstWordMenu.domElements) {
+        firstWordValues.push(firstWordMenu.domElements[key].value);
+      }
+    }
 
+    const checkingPosts = Array.from(document.querySelectorAll('.post'));
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
+      checkingPosts[0].remove();
       console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-
-    let isNecessityPosting = false;
+    IdFirstPostForSubmitChecking = checkingPosts[0].id;
 
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
@@ -800,79 +900,80 @@
       }
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
-
-      if (strategyItem === "firstWordPostAfter") {
-        const value = firstWordPostInput.value
-        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
-        if (blockTextPost && blockTextPost.innerText.includes(value)) {
-          isNecessityPosting = true;
-          break;
-        }
-        continue;
-      }
-
-      if (strategyItem === "firstWordPostSkip") {
-        const value = firstWordPostInput.value
-        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
-        if (blockTextPost && blockTextPost.innerText.includes(value)) {
-          isNecessityPosting = false;
-          break;
-        }
-        isNecessityPosting = true;
-        continue;
-      }
-
-      if (strategyItem === "aftermy") {
+      if (currentStrategy === "aftermy") {
         console.log("00 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
-          isNecessityPosting = true;
-          break;
+          makePost();
+          return;
         }
         continue;
       }
-
-      if (strategyItem === "my") {
+      if (currentStrategy === "my") {
         console.log("01 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
-          isNecessityPosting = false;
-          break;
+          skipPosting();
+          return;
         }
-        isNecessityPosting = true;
+        if (i >= checkingPosts.length) {
+          makePost();
+          return;
+        }
         continue;
       }
-
-      console.log("011 Compare (check presence of our post only for the 1st cycle) ", postUserId.substring(3), " и ", idUser);
-      if (i === 0 && postUserId.substring(3) === idUser) {
-        break;
+      if (currentStrategy === "players") {
+        console.log("02 Compare ", players, " and ", postUserId.substring(1));
+        if (players.some(element => postUserId.substring(1).includes(element))) {
+          makePost();
+          return;
+        }
       }
-
-      console.log("02 Compare ", players, " and ", postUserId.substring(1));
-      if (players.some(element => postUserId.substring(1).includes(element))) {
-        isNecessityPosting = true;
-        break;
+      if (currentStrategy === "firstWordPostAfter") {
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        let isBreak = false;
+        firstWordValues.forEach((value) => {
+          if (blockTextPost && blockTextPost.innerText.includes(value)) {
+            isBreak = true;
+          }
+        });
+        if (isBreak) {
+          makePost();
+          return;
+        }
+        continue;
       }
-
-      if (strategyItem === "all") {
-        isNecessityPosting = true;
-        break;
+      if (currentStrategy === "firstWordPostSkip") {
+        const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        let isBreak = false;
+        firstWordValues.forEach((value) => {
+          if (blockTextPost && blockTextPost.innerText.includes(value)) {
+            isBreak = true;
+          }
+        });
+        if (isBreak) {
+          makePost();
+          return;
+        }
       }
     }
-    if (isNecessityPosting) {
-      delayAct(clickCreatePost, delayM);
-    } else {
-      infoContent.missedposts.amountCurr++;
-      startNewCycle(delayM);
-    }
+    console.log("ЗАВЕРШИЛИ ЦИКЛ ПРОВЕРКИ.");
+    skipPosting();
+  }
+
+  function skipPosting() {
+    isSkipCurrPost = false;
+    buttonsSet.skipPost.domElement.disabled = false;
+    buttonsSet.skipPost.domElement.style.cursor = "pointer";
+    currentInfoItems.missedposts.currentValue++;
+    startNewCycle(delayM);
+  }
+
+  function makePost() {
+    isPostCurrPost = false;
+    clickCreatePost();
   }
 
   function clickCreatePost() {
-    const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
-    if (createPost) {
-      createPost.click();
-      delayAct(clickOpenDraftPost, delayM);
-    } else {
-      delayAct(clickCreatePost, delayM);
-    }
+    nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
   }
 
   function clickOpenDraftPost() {
@@ -885,10 +986,9 @@
       console.log('Button Открыть черновик didn\'t find!');
       if (functionRepetitions > 5) {
         functionRepetitions = 0;
-        groupsAll.push(groupsAll[currentNumberGr]);
-        infoContent.leftposts.amountCurr++;
-        infoContent.errorsposts.amountCurr++;
-        infoContent.errorsposts.namePostEl.innerText = infoContent.errorsposts.amountCurr;
+        groupsForPublish.push(groupsForPublish[currentNumberGr]);
+        currentInfoItems.leftposts.currentValue++;
+        currentInfoItems.errorsposts.currentValue++;
         startNewCycle(delayM);
       } else {
         functionRepetitions++;
@@ -898,29 +998,17 @@
   }
 
   function clickContinuePost() {
-    const buttonFar = document.querySelector('[data-testid="posting_base_screen_next"]');
-    if (buttonFar) {
-      buttonFar.click();
-      delayAct(clickSavePost, delayM);
-    } else {
-      delayAct(clickContinuePost, delayM);
-    }
+    nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayM);
   }
 
   function clickSavePost() {
     if (isSkipCurrPost) {
-      infoContent.missedposts.amountCurr++;
+      currentInfoItems.missedposts.currentValue++;
       isSkipCurrPost = false;
       delayAct(clickCloseDraftPost, delayM);
       return;
     }
-    const buttonSubmit = document.querySelector('[data-testid="posting_submit_button"]');
-    if (buttonSubmit) {
-      buttonSubmit.click();
-      delayAct(checkPostSubmit, delayL);
-    } else {
-      delayAct(clickSavePost, delayM);
-    }
+    nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
   }
 
   function clickCloseDraftPost() {
@@ -941,11 +1029,13 @@
   }
 
   function checkPostSubmit() {
-    const createPost = document.querySelector('[data-testid="posting_create_post_button"]');
-    if (createPost) {
-      infoPosts[currentNamePost].amountCurr++;
-      infoPosts[currentNamePost].namePostEl.innerText = infoPosts[currentNamePost].amountCurr + infoPosts[currentNamePost].amountLast;
-      infoPosts[currentNamePost].namePostEl.style.color = "green";
+    const currentFirstPost = document.querySelector('.post');
+    console.log("POST 1: ", currentFirstPost.id);
+    console.log("POST 2: ", IdFirstPostForSubmitChecking);
+    if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
+      infoPanelItems[currentNamePost].currentValue++;
+      buttonsSet.savePost.domElement.disabled = false;
+      buttonsSet.savePost.domElement.style.cursor = "pointer";
       delayAct(startNewCycle, delayM);
     } else {
       delayAct(checkPostSubmit, delayM);
@@ -954,76 +1044,65 @@
 
   function startNewCycle(newDelay = delayXL) {
     isPostCurrPost = false;
-    infoContent.leftposts.amountCurr--;
-    infoContent.missedposts.namePostEl.innerText = infoContent.missedposts.amountCurr;
-    infoContent.leftposts.namePostEl.innerText = infoContent.leftposts.amountCurr;
-    const linkGroups = document.querySelector('a[href="/bookmarks?from_menu=1"]');
-    if (linkGroups) {
-      linkGroups.click();
-      delayAct(updateCycleData.bind(null, newDelay), delayM);
-    } else {
-      delayAct(startNewCycle, delayM);
-    }
-  }
+    buttonsSet.doPost.domElement.disabled = false;
+    buttonsSet.doPost.domElement.style.cursor = "pointer";
+    currentInfoItems.leftposts.currentValue--;
 
-  function updateCycleData(newDelay = delayXL) {
-    const isLastSmallCycle = currentNumberPost >= postElements.length - 1;
-    const isLastBigCycle = currentNumberGr >= groupsAll.length - 1;
+    nextClickAction('a[href="/bookmarks?from_menu=1"]', updateCycleData.bind(null, newDelay), delayM);
 
-    //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
-    if (isLastBigCycle && infoPosts[currentNamePost].amountCurr) {
-      updateRenderData(currentNamePost, infoPosts[currentNamePost].amountCurr);
-    }
-    if (isLastSmallCycle && isLastBigCycle) {
-      delayAct(enterNews, delayM);
-      return;
-    }
-    if (isLastBigCycle) {
-      currentNumberPost++;
-      currentNamePost = postElements[currentNumberPost];
-      currentNumberGr = 0;
-      clearDataBeforeBigCycle();
-      delayAct(loadPost, newDelay);
-      return;
-    }
-    currentNumberGr++;
-    delayAct(savePostToDb, newDelay);
-  }
+    function updateCycleData(newDelay = delayXL) {
+      console.log("newDelay: ", newDelay);
+      const isLastSmallCycle = currentNumberPost >= postForPublish.length - 1;
+      const isLastBigCycle = currentNumberGr >= groupsForPublish.length - 1;
 
-  function enterNews() {
-    buttonStart.disabled = false;
-    buttonStart.style.cursor = 'pointer';
-    firstWordPostInput.disabled = false;
-    window.removeEventListener('beforeunload', saveOnClose);
-    const buttonNews = document.querySelector('a[href="/feed"]');
-    if (buttonNews) {
-      buttonNews.click();
-      delayAct(scrollPage.bind(null, 10), delayM);
-    } else {
-      delayAct(enterNews, delayM);
-    }
-  }
-
-  function scrollPage(k = 20) {
-    if (isSkipCurrPost) {
-      isSkipCurrPost = false;
-      return;
-    }
-    const n = 1000;
-    const m = 5000;
-    const timer = Math.floor(Math.random() * (m - n + 1)) + n;
-    const a = 300;
-    const b = 700;
-    const dist = Math.floor(Math.random() * (b - a + 1)) + a;
-    setTimeout(() => {
-      // window.scrollBy(0, dist);
-      window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
-      if (k <= 0) {
-        alert('ВСЕ СДЕЛАНО !!!');
-      } else {
-        scrollPage(k - 1);
+      //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
+      if (isLastBigCycle && infoPanelItems[currentNamePost]) {
+        saveAmountPosts(currentNamePost);
       }
-    }, timer);
+      if (isLastSmallCycle && isLastBigCycle) {
+        delayAct(enterNews, delayM);
+        return;
+      }
+      if (isLastBigCycle) {
+        currentNumberPost++;
+        currentNamePost = postForPublish[currentNumberPost];
+        currentNumberGr = 0;
+        clearDataBeforeBigCycle();
+        delayAct(loadPost, newDelay);
+        return;
+      }
+      currentNumberGr++;
+      delayAct(savePostToDb, newDelay);
+    }
+
+    function enterNews() {
+      nextClickAction('a[href="/feed"]', scrollPage, delayM);
+    }
+
+    function scrollPage(k = 10) {
+      if (isSkipCurrPost) {
+        isSkipCurrPost = false;
+        buttonsSet.skipPost.domElement.disabled = false;
+        buttonsSet.skipPost.domElement.style.cursor = "pointer";
+        k = 0;
+      }
+      const n = 1000;
+      const m = 5000;
+      const timer = Math.floor(Math.random() * (m - n + 1)) + n;
+      const a = 300;
+      const b = 700;
+      const dist = Math.floor(Math.random() * (b - a + 1)) + a;
+      setTimeout(() => {
+        window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
+        if (k <= 0) {
+          window.removeEventListener('beforeunload', saveOnClose);
+          disableButton(buttonsSet.startPosting.domElement);
+          alert('ВСЕ СДЕЛАНО !!!');
+        } else {
+          scrollPage(k - 1);
+        }
+      }, timer);
+    }
   }
 
 })();
