@@ -49,7 +49,7 @@
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
-  let [delayM, delayL, delayXL] = [4000, 5000, 10000];
+  let [delayM, delayL, delayXL] = [3000, 4000, 10000];
   const firstWordInputs = {input1: "", input2: ""};
   let isSkipCurrPost = false;
   let isPostCurrPost = false;
@@ -577,8 +577,7 @@
     if (!infoPanelItems[currentNamePost] || amount === 0) {
       return;
     }
-    buttonsSet.savePost.domElement.disabled = true;
-    buttonsSet.savePost.domElement.style.cursor = "auto";
+    disableButton(buttonsSet.savePost.domElement);
     const newData = {
       posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
@@ -608,14 +607,12 @@
   }
 
   function postCurrPost() {
-    buttonsSet.doPost.domElement.disabled = true;
-    buttonsSet.doPost.domElement.style.cursor = "auto";
+    disableButton(buttonsSet.doPost.domElement);
     isPostCurrPost = true;
   }
 
   function skipCurrPost() {
-    buttonsSet.skipPost.domElement.disabled = true;
-    buttonsSet.skipPost.domElement.style.cursor = "auto";
+    disableButton(buttonsSet.skipPost.domElement);
     isSkipCurrPost = true;
   }
 
@@ -690,8 +687,7 @@
     currentInfoItems.leftposts.currentValue = groupsForPublish.length;
 
     console.log('Запускаем скрипты: ', postForPublish);
-    buttonsSet.startPosting.domElement.disabled = true;
-    buttonsSet.startPosting.domElement.style.cursor = "auto";
+    disableButton(buttonsSet.startPosting.domElement);
     window.addEventListener('beforeunload', saveOnClose);
     loadPost();
   }
@@ -962,8 +958,7 @@
 
   function skipPosting() {
     isSkipCurrPost = false;
-    buttonsSet.skipPost.domElement.disabled = false;
-    buttonsSet.skipPost.domElement.style.cursor = "pointer";
+    enableButton(buttonsSet.skipPost.domElement);
     currentInfoItems.missedposts.currentValue++;
     startNewCycle(delayM);
   }
@@ -1035,8 +1030,7 @@
     console.log("POST 2: ", IdFirstPostForSubmitChecking);
     if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
-      buttonsSet.savePost.domElement.disabled = false;
-      buttonsSet.savePost.domElement.style.cursor = "pointer";
+      enableButton(buttonsSet.savePost.domElement);
       delayAct(startNewCycle, delayM);
     } else {
       delayAct(checkPostSubmit, delayM);
@@ -1045,8 +1039,7 @@
 
   function startNewCycle(newDelay = delayXL) {
     isPostCurrPost = false;
-    buttonsSet.doPost.domElement.disabled = false;
-    buttonsSet.doPost.domElement.style.cursor = "pointer";
+    enableButton(buttonsSet.doPost.domElement);
     currentInfoItems.leftposts.currentValue--;
 
     nextClickAction('a[href="/bookmarks?from_menu=1"]', updateCycleData.bind(null, newDelay), delayM);
@@ -1083,8 +1076,7 @@
     function scrollPage(k = 10) {
       if (isSkipCurrPost) {
         isSkipCurrPost = false;
-        buttonsSet.skipPost.domElement.disabled = false;
-        buttonsSet.skipPost.domElement.style.cursor = "pointer";
+        enableButton(buttonsSet.skipPost.domElement);
         k = 0;
       }
       const n = 1000;
@@ -1097,7 +1089,7 @@
         window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
         if (k <= 0) {
           window.removeEventListener('beforeunload', saveOnClose);
-          disableButton(buttonsSet.startPosting.domElement);
+          enableButton(buttonsSet.startPosting.domElement);
           alert('ВСЕ СДЕЛАНО !!!');
         } else {
           scrollPage(k - 1);
