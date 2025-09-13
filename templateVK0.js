@@ -171,7 +171,7 @@
       set(value) {
         this._currentValue = value;
         if (this.domElement) {
-          this.domElement.innerText = this._currentValue === 0 ? this.startValue : this._currentValue;
+          this.domElement.innerText = this._currentValue;
         }
       }
     });
@@ -562,7 +562,6 @@
         const packDate = new Date(pack.date);
         return (currentDate - packDate) / 3600000 < 12;
       });
-      console.log("resultFilter (DATA): ", resultFilter);
       infoPanelItems[namePost].valueObject = resultFilter;
       const summArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
       infoPanelItems[namePost].loadedValue = summArr;
@@ -581,7 +580,6 @@
     const newData = {
       posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
-    console.log("newData", newData.posts);
     fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
       method: 'PUT',
       headers: {'content-type': 'application/json'},
@@ -624,6 +622,9 @@
     currentInfoItems.missedposts.currentValue = 0;
     currentInfoItems.leftposts.currentValue = 0;
     currentInfoItems.errorsposts.currentValue = 0;
+    currentInfoItems.missedposts.domElement.innerText = currentInfoItems.missedposts.startValue;
+    currentInfoItems.leftposts.domElement.innerText = currentInfoItems.leftposts.startValue;
+    currentInfoItems.errorsposts.domElement.innerText = currentInfoItems.errorsposts.startValue;
   }
 
   function clearDataBeforeBigCycle() {
@@ -660,7 +661,6 @@
       return;
     }
     clearDataBeforeStartCycle();
-    console.log("delayMenu.domElements: ", delayMenu.domElements);
     for (let key in delayMenu.domElements) {
       if (delayMenu.domElements[key].checked) {
         delayXL = (+key) * 1000;
@@ -925,6 +925,7 @@
         continue;
       }
       if (currentStrategy === "firstWordPostAfter") {
+        console.log("03 Compare... ");
         const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
         let isBreak = false;
         firstWordValues.forEach((value) => {
@@ -940,14 +941,13 @@
       }
       if (currentStrategy === "firstWordPostSkip") {
         const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
-        console.log("04 Compare ", firstWordValues, " and ", blockTextPost.innerText);
+        console.log("04 Compare... ");
         let isBreak = false;
         firstWordValues.forEach((value) => {
           if (blockTextPost && blockTextPost.innerText.includes(value)) {
             isBreak = true;
           }
         });
-        console.log("isBreak:", isBreak);
         if (isBreak) {
           isNecessityPosting = false;
           break;
@@ -955,7 +955,6 @@
         isNecessityPosting = true;
         continue;
       }
-      console.log("isNecessityPosting:", isNecessityPosting);
     }
     console.log("ЗАВЕРШИЛИ ЦИКЛ ПРОВЕРКИ.");
     if (isNecessityPosting) {
