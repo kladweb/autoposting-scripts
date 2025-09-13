@@ -872,7 +872,7 @@
     }
 
     let firstWordValues = []
-    if (currentStrategy === "firstWordPostAfter") {
+    if (currentStrategy === "firstWordPostAfter" || currentStrategy === "firstWordPostSkip") {
       for (const key in firstWordMenu.domElements) {
         firstWordValues.push(firstWordMenu.domElements[key].value);
       }
@@ -889,6 +889,7 @@
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0].id;
 
+    let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
@@ -897,32 +898,31 @@
       }
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
+
       if (currentStrategy === "aftermy") {
         console.log("00 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
-          makePost();
-          return;
+          isNecessityPosting = true;
+          break;
         }
         continue;
       }
       if (currentStrategy === "my") {
         console.log("01 Compare ", postUserId.substring(3), " and ", idUser);
         if (postUserId.substring(3) === idUser) {
-          skipPosting();
-          return;
+          isNecessityPosting = false;
+          break;
         }
-        if (i >= checkingPosts.length) {
-          makePost();
-          return;
-        }
+        isNecessityPosting = true;
         continue;
       }
       if (currentStrategy === "players") {
         console.log("02 Compare ", players, " and ", postUserId.substring(1));
         if (players.some(element => postUserId.substring(1).includes(element))) {
-          makePost();
-          return;
+          isNecessityPosting = true;
+          break;
         }
+        continue;
       }
       if (currentStrategy === "firstWordPostAfter") {
         const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
@@ -933,13 +933,14 @@
           }
         });
         if (isBreak) {
-          makePost();
-          return;
+          isNecessityPosting = true;
+          break;
         }
         continue;
       }
       if (currentStrategy === "firstWordPostSkip") {
         const blockTextPost = checkingPosts[i].querySelector('[data-testid="showmoretext"]');
+        console.log("04 Compare ", firstWordValues, " and ", blockTextPost.innerText);
         let isBreak = false;
         firstWordValues.forEach((value) => {
           if (blockTextPost && blockTextPost.innerText.includes(value)) {
@@ -947,13 +948,19 @@
           }
         });
         if (isBreak) {
-          makePost();
-          return;
+          isNecessityPosting = false;
+          break;
         }
+        isNecessityPosting = true;
+        continue;
       }
     }
     console.log("ЗАВЕРШИЛИ ЦИКЛ ПРОВЕРКИ.");
-    skipPosting();
+    if (isNecessityPosting) {
+      makePost();
+    } else {
+      skipPosting();
+    }
   }
 
   function skipPosting() {
