@@ -50,7 +50,7 @@
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   let [delayM, delayL, delayXL] = [3000, 4000, 10000];
-  const firstWordInputs = {input1: "", input2: ""};
+  const firstWordInputs = {input1: ""};
   let isSkipCurrPost = false;
   let isPostCurrPost = false;
   const postForPublish = []; //посты для публикации
@@ -947,6 +947,7 @@
             isBreak = true;
           }
         });
+        console.log("isBreak:", isBreak);
         if (isBreak) {
           isNecessityPosting = false;
           break;
@@ -954,6 +955,7 @@
         isNecessityPosting = true;
         continue;
       }
+      console.log("isNecessityPosting:", isNecessityPosting);
     }
     console.log("ЗАВЕРШИЛИ ЦИКЛ ПРОВЕРКИ.");
     if (isNecessityPosting) {
