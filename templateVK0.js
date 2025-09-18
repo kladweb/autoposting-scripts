@@ -771,7 +771,7 @@
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       loadNarrativeList();
     } else {
-      delayAct(enterToCurrentGroup, delayL);
+      delayAct(checkLoadGroupPage, delayL);
     }
   }
 
@@ -783,14 +783,20 @@
     nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
   }
 
-  // function checkLoadGroupPage() {
-  //   const URLHash = window.location.href;
-  //   if (URLHash === 'https://vk.com/bookmarks?type=group') {
-  //     delayAct(enterToCurrentGroup, delayM);
-  //   } else {
-  //     delayAct(enterToBookMarks, delayL);
-  //   }
-  // }
+  function checkLoadGroupPage() {
+    const URLHash = window.location.href;
+    if (functionRepetitions > 10) {
+      functionRepetitions = 0;
+      enterToBookMarks();
+      return;
+    }
+    functionRepetitions++;
+    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+      delayAct(enterToCurrentGroup, delayM);
+    } else {
+      delayAct(checkLoadGroupPage, delayL);
+    }
+  }
 
   function enterToCurrentGroup() {
     enableButton(buttonsSet.skipPost.domElement);
@@ -815,7 +821,7 @@
         functionRepetitions = 0;
         delayAct(enterToCurrentGroup, delayM);
       } else {
-        functionRepetitions++
+        functionRepetitions++;
         delayAct(checkCurrentGroup, delayM);
       }
     } else {
@@ -827,7 +833,7 @@
       }
       console.log("deepAmount: ", deepAmount);
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
-      delayAct(checkNecessityPosting, delayL);
+      delayAct(checkNecessityPosting, delayL * 2);
     }
   }
 
@@ -1051,59 +1057,59 @@
     currentInfoItems.leftposts.currentValue--;
 
     nextClickAction('a[href="/bookmarks?from_menu=1"]', updateCycleData.bind(null, newDelay), delayM);
+  }
 
-    function updateCycleData(newDelay = delayXL) {
-      console.log("newDelay: ", newDelay);
-      const isLastSmallCycle = currentNumberPost >= postForPublish.length - 1;
-      const isLastBigCycle = currentNumberGr >= groupsForPublish.length - 1;
+  function updateCycleData(newDelay = delayXL) {
+    console.log("newDelay: ", newDelay);
+    const isLastSmallCycle = currentNumberPost >= postForPublish.length - 1;
+    const isLastBigCycle = currentNumberGr >= groupsForPublish.length - 1;
 
-      //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
-      if (isLastBigCycle && infoPanelItems[currentNamePost]) {
-        saveAmountPosts(currentNamePost);
-      }
-      if (isLastSmallCycle && isLastBigCycle) {
-        delayAct(enterNews, delayM);
-        return;
-      }
-      if (isLastBigCycle) {
-        currentNumberPost++;
-        currentNamePost = postForPublish[currentNumberPost];
-        currentNumberGr = 0;
-        clearDataBeforeBigCycle();
-        delayAct(loadPost, newDelay);
-        return;
-      }
-      currentNumberGr++;
-      delayAct(savePostToDb, newDelay);
+    //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
+    if (isLastBigCycle && infoPanelItems[currentNamePost]) {
+      saveAmountPosts(currentNamePost);
     }
-
-    function enterNews() {
-      nextClickAction('a[href="/feed"]', scrollPage, delayM);
+    if (isLastSmallCycle && isLastBigCycle) {
+      delayAct(enterNews, delayM);
+      return;
     }
+    if (isLastBigCycle) {
+      currentNumberPost++;
+      currentNamePost = postForPublish[currentNumberPost];
+      currentNumberGr = 0;
+      clearDataBeforeBigCycle();
+      delayAct(loadPost, newDelay);
+      return;
+    }
+    currentNumberGr++;
+    delayAct(savePostToDb, newDelay);
+  }
 
-    function scrollPage(k = 10) {
-      if (isSkipCurrPost) {
-        isSkipCurrPost = false;
-        enableButton(buttonsSet.skipPost.domElement);
-        k = 0;
+  function enterNews() {
+    nextClickAction('a[href="/feed"]', scrollPage, delayM);
+  }
+
+  function scrollPage(k = 10) {
+    if (isSkipCurrPost) {
+      isSkipCurrPost = false;
+      enableButton(buttonsSet.skipPost.domElement);
+      k = 0;
+    }
+    const n = 1000;
+    const m = 5000;
+    const timer = Math.floor(Math.random() * (m - n + 1)) + n;
+    const a = 300;
+    const b = 700;
+    const dist = Math.floor(Math.random() * (b - a + 1)) + a;
+    setTimeout(() => {
+      window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
+      if (k <= 0) {
+        window.removeEventListener('beforeunload', saveOnClose);
+        enableButton(buttonsSet.startPosting.domElement);
+        alert('ВСЕ СДЕЛАНО !!!');
+      } else {
+        scrollPage(k - 1);
       }
-      const n = 1000;
-      const m = 5000;
-      const timer = Math.floor(Math.random() * (m - n + 1)) + n;
-      const a = 300;
-      const b = 700;
-      const dist = Math.floor(Math.random() * (b - a + 1)) + a;
-      setTimeout(() => {
-        window.scrollBy({top: dist, left: 0, behavior: 'smooth'});
-        if (k <= 0) {
-          window.removeEventListener('beforeunload', saveOnClose);
-          enableButton(buttonsSet.startPosting.domElement);
-          alert('ВСЕ СДЕЛАНО !!!');
-        } else {
-          scrollPage(k - 1);
-        }
-      }, timer);
-    }
+    }, timer);
   }
 
   // === PART END ===
