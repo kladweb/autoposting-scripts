@@ -341,8 +341,6 @@
   menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
   document.querySelector(`body`).append(menuVK);
 
-  // strategyMenu.domElements.forEach(elem => elem.onclick = changeCompInputs);
-
   function createMenuBlock(items, menuObj, styleMenu, styleInput) {
     const menuBlock = document.createElement("div");
     menuBlock.style.cssText = styleMenu;
