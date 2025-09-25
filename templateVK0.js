@@ -192,27 +192,27 @@
       ["140398176", "oknotiviru"], //28 https://vk.com/oknotiviru
       ["106796170", "club106796170"],//25 https://vk.com/club106796170
       ["52218536", "club52218536"],//21 https://vk.com/club52218536
-      ["84120000", "club84120000"], //18 https://vk.com/club84120000
       ["176994995", "tvlisty", "pin"], //29 https://vk.com/tvlisty
       ["167018774", "club167018774"], //30 https://vk.com/club167018774
       ["171843329", "ru_iptv", "pin"], //31 https://vk.com/ru_iptv
-      ["131638330", "galaktik_iptv", "pin"], //33 https://vk.com/galaktik_iptv
       ["186442856", "iptv_bt"], //35 https://vk.com/iptv_bt
-      ["120034509", "club120034509", "pin"], //32 https://vk.com/club120034509
-      ["99770042", "club99770042"], //17 https://vk.com/club99770042
       ["138553819", "club138553819"],//16 https://vk.com/club138553819
+      ["24950442", "club24950442"],// https://vk.com/club24950442
+      ["86617505", "club86617505"],// https://vk.com/club86617505  1101
+      ["99770042", "club99770042"], //17 https://vk.com/club99770042
+      ["120034509", "club120034509", "pin"], //32 https://vk.com/club120034509
     ],
     1: [
+      ["131638330", "galaktik_iptv", "pin"], //33 https://vk.com/galaktik_iptv
+      ["84120000", "club84120000"], //18 https://vk.com/club84120000
       ["141086755", "club141086755"],// https://vk.com/club141086755
       ["136708898", "play_53"],// https://vk.com/play_53
-      ["24950442", "club24950442"],// https://vk.com/club24950442
       ["206061686", "club206061686"],// https://vk.com/club206061686
       ["35875023", "sputnikovetv"],// https://vk.com/sputnikovetv
       ["175865636", "iplist", "pin"],// https://vk.com/iplist
       ["148105703", "club148105703"],// https://vk.com/club148105703
       ["132602273", "club132602273"],// https://vk.com/club132602273
       ["218718758", "club218718758"],// https://vk.com/club218718758
-      ["86617505", "club86617505"],// https://vk.com/club86617505  1101
     ],
     2: [
       ["44971717", "club44971717", "pin"],// https://vk.com/club44971717  868
