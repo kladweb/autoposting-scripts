@@ -50,7 +50,7 @@
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
   const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
-  let [delayM, delayL, delayXL] = [3000, 4000, 10000];
+  let [delayM, delayL, delayXL] = [2000, 4000, 10000];
   const firstWordInputs = {input1: ""};
   let isSkipCurrPost = false;
   let isPostCurrPost = false;
@@ -63,6 +63,7 @@
   let functionRepetitions = 0;
   let deepAmount = 0;
   let IdFirstPostForSubmitChecking = null;
+  let myPostText = null;
 
   const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
   const postsMenu = {headName: "POSTS", type: "checkbox", domElements: {}}
@@ -72,12 +73,19 @@
   const competitorsMenu = {headName: "COMPETITORS", type: "checkbox", domElements: {}};
   const comradesMenu = {headName: "COMRADES", type: "checkbox", domElements: {}};
   const firstWordMenu = {headName: "Start words of posts", type: "text", domElements: {}};
+  const extraSettings = {headName: "SETTINGS", type: "checkbox", domElements: {}};
 
   const buttonsSet = {
     savePost: {name: "SAVE POSTS", domElement: null, handler: savePosted},
     doPost: {name: "POST", domElement: null, handler: postCurrPost},
     skipPost: {name: "SKIP", domElement: null, handler: skipCurrPost},
     startPosting: {name: "START POSTING", domElement: null, handler: startScript}
+  }
+
+  const extraSets = {
+    // skipMyPostFirst: "Skip my first post",
+    // skipMyPostDeep: "Skip my post with deep",
+    fast: "Fast checking"
   }
 
   //Color Palette #4694
@@ -328,6 +336,7 @@
   const competitorsMenuDiv = createMenuBlock(competitors, competitorsMenu, styleMenu2, stylesInpType3);
   const comradesMenuDiv = createMenuBlock(comrades, comradesMenu, styleMenu2, stylesInpType3);
   const inputFirstWordDiv = createMenuBlock(firstWordInputs, firstWordMenu, styleMenu2, stylesInpType1);
+  const extraSettingsDiv = createMenuBlock(extraSets, extraSettings, styleMenu2, stylesInpType3);
 
   const infoPanelDiv = createInfoBlock(infoPanelMenu, styleMenu1);
   const currentInfoDiv = createInfoBlock(currentInfoMenu, styleMenu1);
@@ -338,7 +347,7 @@
   menuGroupPostDiv.append(strategyMenuDiv, postsMenuDiv, delayMenuDiv, deepMenuDiv, blockPostMenuDiv);
   menuGroupPostDiv.style.cssText = styleMenu3;
   const playersMenu = document.createElement('div');
-  playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv);
+  playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv, extraSettingsDiv);
   playersMenu.style.cssText = styleMenu3;
   menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
   document.querySelector(`body`).append(menuVK);
@@ -347,7 +356,7 @@
     const menuBlock = document.createElement("div");
     menuBlock.style.cssText = styleMenu;
     const head = document.createElement('h6');
-    head.style.margin = "0 0 4px";
+    head.style.cssText = "margin: 2px auto; width: fit-content;"
     head.append(document.createTextNode(menuObj.headName));
     menuBlock.append(head);
     menuObj.headDomElement = head;
@@ -422,6 +431,7 @@
     switch (e.target.id) {
       case "all":
         changeDisableInputs(deepMenu.domElements, e.target.checked);
+        // extraSettings.domElements.skipMyPostDeep.disabled = e.target.checked;
         changeDisableInputs(competitorsMenu.domElements, e.target.checked);
         changeDisableInputs(comradesMenu.domElements, e.target.checked);
         competitorsMenu.headDomElement.style.cursor = e.target.checked ? "text" : "pointer";
@@ -704,7 +714,8 @@
       }
     }).then(post => {
       currentPost = post;
-      // console.log('CURRENT POST: ', currentPost);
+      // console.log('CURRENT POST: ', currentPost.text);
+      myPostText = currentPost.text.substring(0, 31);
       savePostToDb();
     }).catch(error => {
       console.log("Что-то пошло не так! ", error);
@@ -789,10 +800,11 @@
       enterToBookMarks();
       return;
     }
-    functionRepetitions++;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
+      functionRepetitions = 0;
       delayAct(enterToCurrentGroup, delayM);
     } else {
+      functionRepetitions++;
       delayAct(checkLoadGroupPage, delayL);
     }
   }
@@ -809,7 +821,7 @@
       console.log("Didn't find group: ", groupHref);
       console.log("Scrolling page...");
       window.scrollBy(0, 1500);
-      delayAct(enterToCurrentGroup, delayM);
+      delayAct(checkLoadGroupPage, delayM);
     }
   }
 
@@ -832,7 +844,7 @@
       }
       console.log("deepAmount: ", deepAmount);
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
-      delayAct(checkNecessityPosting, delayL * 2);
+      delayAct(checkNecessityPosting, delayL);
     }
   }
 
@@ -841,12 +853,12 @@
    **/
   function checkNecessityPosting() {
     window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
-    if (isPostCurrPost) {
-      makePost();
-      return;
-    }
     if (isSkipCurrPost) {
       skipPosting();
+      return;
+    }
+    if (isPostCurrPost) {
+      makePost();
       return;
     }
     let currentStrategy = null;
@@ -884,6 +896,7 @@
     }
 
     const checkingPosts = Array.from(document.querySelectorAll('.post'));
+    console.log("checkingPosts00: ", checkingPosts);
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
@@ -894,12 +907,30 @@
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0].id;
 
+    console.log("checkingPosts01: ", checkingPosts);
+    const avatarRichFirst = checkingPosts[0].querySelector('.AvatarRich');
+    if (!avatarRichFirst) {
+      console.log("Не найден avatarRichFirst, попробуем снова...");
+      delayAct(checkNecessityPosting, delayL);
+      return;
+    }
+    const postUserIdFirst = avatarRichFirst.getAttribute('href');
+    let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
+    if (!blockTextPostFirst) {
+      blockTextPostFirst = " ";
+    }
+    if (postUserIdFirst.substring(3) === idUser && blockTextPostFirst.innerText.includes(myPostText)) {
+      console.log("Опаньки... Мой пост уже есть! Уходим!");
+      skipPosting();
+      return;
+    }
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
-        continue;
+        delayAct(checkNecessityPosting, delayL);
+        return;
       }
       const postUserId = avatarRich.getAttribute('href');
       console.log("postUserId: ", postUserId);
