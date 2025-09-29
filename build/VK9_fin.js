@@ -842,8 +842,10 @@
         }
       }
       console.log("deepAmount: ", deepAmount);
-      window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
-      delayAct(checkNecessityPosting, delayL);
+      if (!extraSettings.domElements.fast.checked) {
+        window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
+      }
+      delayAct(checkNecessityPosting, delayM);
     }
   }
 
@@ -851,7 +853,9 @@
    * NECESSITY POSTING
    **/
   function checkNecessityPosting() {
-    window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
+    if (!extraSettings.domElements.fast.checked) {
+      window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
+    }
     if (isSkipCurrPost) {
       skipPosting();
       return;
