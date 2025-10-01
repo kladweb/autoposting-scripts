@@ -843,9 +843,8 @@
         }
       }
       console.log("deepAmount: ", deepAmount);
-      if (!extraSettings.domElements.fast.checked) {
-        window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
-      }
+      const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
+      window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
       delayAct(checkNecessityPosting, delayM);
     }
   }
