@@ -919,10 +919,11 @@
     }
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
     let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
-    if (!blockTextPostFirst) {
-      blockTextPostFirst = " ";
+    let messageText = " ";
+    if (blockTextPostFirst) {
+      messageText = blockTextPostFirst.innerText.includes(myPostText);
     }
-    if (postUserIdFirst.substring(3) === idUser && blockTextPostFirst.innerText.includes(myPostText)) {
+    if (postUserIdFirst.substring(3) === idUser && messageText) {
       console.log("Опаньки... Мой пост уже есть! Уходим!");
       skipPosting();
       return;
