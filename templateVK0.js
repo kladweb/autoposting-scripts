@@ -845,17 +845,23 @@
       console.log("deepAmount: ", deepAmount);
       const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
-      delayAct(checkNecessityPosting, delayM);
+      if (extraSettings.domElements.fast.checked) {
+        delayAct(checkNecessityPosting, delayM);
+      } else {
+        delayAct(scrollPageBack, delayM);
+      }
     }
+  }
+
+  function scrollPageBack() {
+    window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
+    delayAct(checkNecessityPosting, delayM);
   }
 
   /**
    * NECESSITY POSTING
    **/
   function checkNecessityPosting() {
-    if (!extraSettings.domElements.fast.checked) {
-      window.scrollTo({top: 500, left: 0, behavior: 'smooth'});
-    }
     if (isSkipCurrPost) {
       skipPosting();
       return;
@@ -899,7 +905,6 @@
     }
 
     const checkingPosts = Array.from(document.querySelectorAll('.post'));
-    console.log("checkingPosts00: ", checkingPosts);
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
@@ -910,7 +915,6 @@
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0].id;
 
-    console.log("checkingPosts01: ", checkingPosts);
     const avatarRichFirst = checkingPosts[0].querySelector('.AvatarRich');
     if (!avatarRichFirst) {
       console.log("Не найден avatarRichFirst, попробуем снова...");
