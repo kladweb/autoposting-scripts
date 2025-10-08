@@ -1073,6 +1073,10 @@
 
   function checkPostSubmit() {
     const currentFirstPost = document.querySelector('.post');
+    if (!currentFirstPost) {
+      delayAct(checkPostSubmit, delayL);
+      return;
+    }
     console.log("POST 1: ", currentFirstPost.id);
     console.log("POST 2: ", IdFirstPostForSubmitChecking);
     if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
