@@ -842,9 +842,8 @@
         }
       }
       console.log("deepAmount: ", deepAmount);
-      if (!extraSettings.domElements.fast.checked) {
-        window.scrollBy({top: deepAmount * 500, left: 0, behavior: 'smooth'});
-      }
+      const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
+      window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
       delayAct(checkNecessityPosting, delayM);
     }
   }
@@ -919,10 +918,11 @@
     }
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
     let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
-    if (!blockTextPostFirst) {
-      blockTextPostFirst = " ";
+    let messageText = " ";
+    if (blockTextPostFirst) {
+      messageText = blockTextPostFirst.innerText.includes(myPostText);
     }
-    if (postUserIdFirst.substring(3) === idUser && blockTextPostFirst.innerText.includes(myPostText)) {
+    if (postUserIdFirst.substring(3) === idUser && messageText) {
       console.log("Опаньки... Мой пост уже есть! Уходим!");
       skipPosting();
       return;
