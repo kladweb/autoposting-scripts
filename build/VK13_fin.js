@@ -324,7 +324,7 @@
   const styleMenu2 = `margin: 4px auto; border: 1px solid ${colors.border01};`
   const styleMenu3 = "width: 45%; margin: 0 auto";
   const stylesInpType1 = "text-align: left; padding: 4px;";
-  const stylesInpType2 = "display: inline-block; padding: 4px;";
+  const stylesInpType2 = "display: inline-block; padding: 3px;";
   const stylesInpType3 = "text-align: left; padding: 2px;";
 
   const strategyMenuDiv = createMenuBlock(strategy, strategyMenu, styleMenu2, stylesInpType1);
