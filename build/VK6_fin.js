@@ -47,7 +47,7 @@
   //players = competitors + comrades;
 
   const delays = {30: "30 sec", 15: "15 sec", 10: "10 sec"};
-  const deeps = {1: 1, 2: 2, 3: 3, 5: 5, 9: 9};
+  const deeps = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   let [delayM, delayL, delayXL] = [2000, 4000, 10000];
   const firstWordInputs = {input1: ""};
