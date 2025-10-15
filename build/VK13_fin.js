@@ -207,9 +207,9 @@
       ["24950442", "club24950442"],// https://vk.com/club24950442
       ["86617505", "club86617505"],// https://vk.com/club86617505  1101
       ["99770042", "club99770042"], //17 https://vk.com/club99770042
-      ["120034509", "club120034509", "pin"], //32 https://vk.com/club120034509
     ],
     1: [
+      ["120034509", "club120034509", "pin"], //32 https://vk.com/club120034509
       ["131638330", "galaktik_iptv", "pin"], //33 https://vk.com/galaktik_iptv
       ["84120000", "club84120000"], //18 https://vk.com/club84120000
       ["141086755", "club141086755"],// https://vk.com/club141086755
@@ -219,9 +219,9 @@
       ["175865636", "iplist", "pin"],// https://vk.com/iplist
       ["148105703", "club148105703"],// https://vk.com/club148105703
       ["132602273", "club132602273"],// https://vk.com/club132602273
-      ["218718758", "club218718758"],// https://vk.com/club218718758
     ],
     2: [
+      ["218718758", "club218718758"],// https://vk.com/club218718758
       ["44971717", "club44971717", "pin"],// https://vk.com/club44971717  868
       ["64610320", "iptvworld"],// https://vk.com/iptvworld
       ["183716378", "4at_biz"],// https://vk.com/4at_biz
@@ -231,12 +231,11 @@
       ["129904512", "club129904512"],// https://vk.com/club129904512  138
       ["87564019", "club87564019"],// https://vk.com/club87564019  214
       ["182272329", "club182272329"],// https://vk.com/club182272329  677
-      ["85473521", "club85473521"],// https://vk.com/club85473521  363
     ],
     3: [
+      ["85473521", "club85473521"],// https://vk.com/club85473521  363
       ["97046131", "club97046131"],// https://vk.com/club97046131  268
       ["181633050", "iptvarmenia"],// https://vk.com/iptvarmenia  274
-      ["119225474", "aromashopvl", "pin"],// https://vk.com/aromashopvl  197
       ["163108884", "club_playlistsiptv"],// https://vk.com/club_playlistsiptv  177
       ["163420799", "club163420799"],// https://vk.com/club163420799  165
       ["119462518", "club119462518"],// https://vk.com/club119462518  155*
@@ -244,6 +243,7 @@
       ["88877831", "iptv15"],// https://vk.com/iptv15  76
       ["133932827", "club133932827"],// https://vk.com/club133932827  115
       ["114358721", "iptvmen", "pin"],// https://vk.com/iptvmen  125
+      // ["119225474", "aromashopvl", "pin"],// https://vk.com/aromashopvl  197  deleted
     ],
     4: [
       ["125907101", "club125907101"],// https://vk.com/club125907101  129
