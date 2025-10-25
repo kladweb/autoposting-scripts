@@ -575,7 +575,7 @@
       infoPanelItems[namePost].loadedValue = summArr;
     })
     .catch(error => {
-      console.log("0: Что-то пошло не так! ", error);
+      console.log("Ошибка получения количества постов с mockapi: ", error);
     })
   }
 
@@ -604,7 +604,7 @@
       infoPanelItems[namePost].domElement.style.color = colors.info02;
       console.log("2: Данные на сервере обновлены!");
     }).catch(error => {
-      console.log("2: Что-то пошло не так! ", error);
+      console.log("Ошибка сохранения данных опубликованных постов на mockapi: ", error);
     })
   }
 
@@ -717,7 +717,7 @@
       myPostText = currentPost.text.substring(0, 31);
       savePostToDb();
     }).catch(error => {
-      console.log("Что-то пошло не так! ", error);
+      console.log("Ошибка чтения поста с mockapi: ", error);
       disableButton(buttonsSet.startPosting.domElement);
     })
   }
