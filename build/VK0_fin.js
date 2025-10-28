@@ -63,6 +63,7 @@
   let deepAmount = 0;
   let IdFirstPostForSubmitChecking = null;
   let myPostText = null;
+  let isMinimize = false;
 
   const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
   const postsMenu = {headName: "POSTS", type: "checkbox", domElements: {}}
@@ -318,11 +319,13 @@
   border: 1px solid ${colors.border01};
   border-radius: 3px;
   z-index: 5000;
+  transform-origin: bottom left;
+  transition: all 0.5s;
   `;
 
-  const styleMenu1 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01};`
-  const styleMenu2 = `margin: 4px auto; border: 1px solid ${colors.border01};`
-  const styleMenu3 = "width: 45%; margin: 0 auto";
+  const styleMenu1 = `width: 45%; margin: 4px auto; border: 1px solid ${colors.border01};`;
+  const styleMenu2 = `margin: 4px auto; border: 1px solid ${colors.border01};`;
+  const styleMenu3 = "width: 45%; margin: 0 auto;";
   const stylesInpType1 = "text-align: left; padding: 4px;";
   const stylesInpType2 = "display: inline-block; padding: 3px;";
   const stylesInpType3 = "text-align: left; padding: 2px;";
@@ -348,8 +351,20 @@
   const playersMenu = document.createElement('div');
   playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv, extraSettingsDiv);
   playersMenu.style.cssText = styleMenu3;
+
+  const minimizeButton = document.createElement("button");
+  minimizeButton.append(document.createTextNode("_"));
+  minimizeButton.style.cssText = `
+  position: fixed;
+  bottom: 50px;
+  left: 10px;
+  color: ${colors.color01};
+  border: 1px solid ${colors.border01};
+  z-index: 5010;
+  `;
+
   menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
-  document.querySelector(`body`).append(menuVK);
+  document.querySelector(`body`).append(menuVK, minimizeButton);
 
   function createMenuBlock(items, menuObj, styleMenu, styleInput) {
     const menuBlock = document.createElement("div");
@@ -424,6 +439,18 @@
     blockPostMenu.headDomElement.onclick = updateCheckedInputs;
     competitorsMenu.headDomElement.onclick = updateCheckedInputs;
     comradesMenu.headDomElement.onclick = updateCheckedInputs;
+    minimizeButton.onclick = minimizeMenu;
+  }
+
+  function minimizeMenu() {
+    if (isMinimize) {
+      menuVK.style.transform = "scale(1)";
+      minimizeButton.innerText = "_";
+    } else {
+      menuVK.style.transform = "scale(0)";
+      minimizeButton.innerText = "□";
+    }
+    isMinimize = !isMinimize;
   }
 
   function updateDisableInputs(e) {
