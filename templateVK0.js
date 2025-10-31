@@ -51,7 +51,7 @@
   const deeps = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 9: 9};
   const numberBlockPost = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7};
   let [delayM, delayL, delayXL] = [2000, 4000, 10000];
-  const firstWordInputs = {input1: ""};
+  const firstWordInputs = {input1: "", input2: ""};
   let isSkipCurrPost = false;
   let isPostCurrPost = false;
   const postForPublish = []; //посты для публикации
@@ -927,7 +927,10 @@
     let firstWordValues = []
     if (currentStrategy === "firstWordPostAfter" || currentStrategy === "firstWordPostSkip") {
       for (const key in firstWordMenu.domElements) {
-        firstWordValues.push(firstWordMenu.domElements[key].value);
+        const currValue = firstWordMenu.domElements[key].value.trim();
+        if (currValue) {
+          firstWordValues.push(currValue);
+        }
       }
     }
 
