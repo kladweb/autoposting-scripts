@@ -543,6 +543,14 @@
     button.style.cursor = 'auto';
   }
 
+  function enableMenus() {
+    blockPostMenu.domElements.forEach((element) => element.disabled = false);
+  }
+
+  function disableMenus() {
+    blockPostMenu.domElements.forEach((element) => element.disabled = true);
+  }
+
   async function getIp() {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
@@ -708,6 +716,7 @@
         postForPublish.push(key);
       }
     }
+
     currentNamePost = postForPublish[currentNumberPost];
     const blockPostMenuGroups = Object.values(blockPostMenu.domElements);
     blockPostMenuGroups.forEach(group => {
@@ -746,7 +755,8 @@
       savePostToDb();
     }).catch(error => {
       console.log("Ошибка чтения поста с mockapi: ", error);
-      disableButton(buttonsSet.startPosting.domElement);
+      enableButton(buttonsSet.startPosting.domElement);
+      enableMenus();
     })
   }
 
@@ -755,7 +765,8 @@
     request.onerror = function (event) {
       console.error("An error occurred with IndexedDB");
       console.error(event);
-      disableButton(buttonsSet.startPosting.domElement);
+      enableButton(buttonsSet.startPosting.domElement);
+      enableMenus();
     };
     request.onsuccess = function () {
       const db = request.result;
@@ -765,6 +776,7 @@
       const idQuery = store.get(keyStore);
       idQuery.onsuccess = function () {
         store.put(currentPost, keyStore);
+        disableMenus();
         checkEnterToBookMarks();
       };
     };
@@ -1179,6 +1191,7 @@
       if (k <= 0) {
         window.removeEventListener('beforeunload', saveOnClose);
         enableButton(buttonsSet.startPosting.domElement);
+        enableMenus();
         alert('ВСЕ СДЕЛАНО !!!');
       } else {
         scrollPage(k - 1);
