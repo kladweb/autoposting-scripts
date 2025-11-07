@@ -904,10 +904,6 @@
       }
     }
     console.log("currentStrategy: ", currentStrategy);
-    if (currentStrategy === "all") {
-      makePost();
-      return;
-    }
 
     const players = [];
     if (currentStrategy === "players") {
@@ -961,6 +957,12 @@
       skipPosting();
       return;
     }
+
+    if (currentStrategy === "all") {
+      makePost();
+      return;
+    }
+
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
       const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
