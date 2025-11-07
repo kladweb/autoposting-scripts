@@ -85,8 +85,7 @@
   const extraSets = {
     // skipMyPostFirst: "Skip my first post",
     // skipMyPostDeep: "Skip my post with deep",
-    fast: "Fast checking",
-    autonext: "Auto next blockpost"
+    fast: "Fast checking"
   }
 
   //Color Palette #4694
@@ -1141,7 +1140,7 @@
       saveAmountPosts(currentNamePost);
     }
     if (isLastSmallCycle && isLastBigCycle) {
-      delayAct(checkNextBlockPost, delayM);
+      delayAct(enterNews, delayM);
       return;
     }
     if (isLastBigCycle) {
@@ -1154,23 +1153,6 @@
     }
     currentNumberGr++;
     delayAct(savePostToDb, newDelay);
-  }
-
-  function checkNextBlockPost() {
-    const lengthBlockPosts = Object.keys(blockPostMenu.domElements).length;
-    if (blockPostMenu.domElements[lengthBlockPosts].checked) {
-      enterNews();
-    } else {
-      for (let i = lengthBlockPosts; i >= 0; i--) {
-        if (blockPostMenu.domElements[i].checked) {
-          blockPostMenu.domElements[i].textContent += infoPanelItems[currentNamePost].currentValue;
-          blockPostMenu.domElements[i].checked = false;
-          blockPostMenu.domElements[i + 1].checked = true;
-          break;
-        }
-      }
-      startScript();
-    }
   }
 
   function enterNews() {
