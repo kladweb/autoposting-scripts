@@ -55,6 +55,7 @@
   let isPostCurrPost = false;
   const postForPublish = []; //посты для публикации
   const groupsForPublish = []; //группы для постов
+  const boxNumbers = []; //номера блоков групп, выбранных пользователем
   let currentNumberGr = 0;
   let currentNumberPost = 0;
   let currentNamePost = null;
@@ -64,6 +65,7 @@
   let IdFirstPostForSubmitChecking = null;
   let myPostText = null;
   let isMinimize = false;
+
 
   const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
   const postsMenu = {headName: "POSTS", type: "checkbox", domElements: {}}
@@ -187,6 +189,7 @@
   }
 
   const infoPanelMenu = {headName: "Last 12 hours", items: infoPanelItems};
+  const logsInfoMenu = {headName: "Logs Info", items: {}};
   const currentInfoMenu = {headName: "Current Info", items: currentInfoItems};
 
   const groupsBox = {
@@ -339,14 +342,18 @@
   const comradesMenuDiv = createMenuBlock(comrades, comradesMenu, styleMenu2, stylesInpType3);
   const inputFirstWordDiv = createMenuBlock(firstWordInputs, firstWordMenu, styleMenu2, stylesInpType1);
   const extraSettingsDiv = createMenuBlock(extraSets, extraSettings, styleMenu2, stylesInpType3);
+  const infoPanelDiv = createInfoBlock(infoPanelMenu, styleMenu2);
 
-  const infoPanelDiv = createInfoBlock(infoPanelMenu, styleMenu1);
   const currentInfoDiv = createInfoBlock(currentInfoMenu, styleMenu1);
+  const logsInfoDiv = createInfoBlock(logsInfoMenu, styleMenu1);
+  const logsInfoFieldDiv = document.createElement("div");
+  logsInfoFieldDiv.style.cssText = "text-align: left; height: 100px; overflow: auto;";
+  logsInfoDiv.append(logsInfoFieldDiv);
 
   const buttonsBlockDiv = createButtonsBlock(buttonsSet);
 
   const menuGroupPostDiv = document.createElement("div");
-  menuGroupPostDiv.append(strategyMenuDiv, postsMenuDiv, delayMenuDiv, deepMenuDiv, blockPostMenuDiv);
+  menuGroupPostDiv.append(strategyMenuDiv, postsMenuDiv, delayMenuDiv, deepMenuDiv, blockPostMenuDiv, infoPanelDiv);
   menuGroupPostDiv.style.cssText = styleMenu3;
   const playersMenu = document.createElement('div');
   playersMenu.append(competitorsMenuDiv, comradesMenuDiv, inputFirstWordDiv, extraSettingsDiv);
@@ -363,7 +370,7 @@
   z-index: 5010;
   `;
 
-  menuVK.append(menuGroupPostDiv, playersMenu, infoPanelDiv, currentInfoDiv, buttonsBlockDiv);
+  menuVK.append(menuGroupPostDiv, playersMenu, logsInfoDiv, currentInfoDiv, buttonsBlockDiv);
   document.querySelector(`body`).append(menuVK, minimizeButton);
 
   function createMenuBlock(items, menuObj, styleMenu, styleInput) {
@@ -430,6 +437,13 @@
       infoBlock.append(postEl);
     }
     return infoBlock;
+  }
+
+  function addLogsInfo(infoText, color = colors.info01) {
+    const infoNode = document.createElement("p");
+    infoNode.style.cssText = `margin: 4px 0; color: ${color};`;
+    infoNode.textContent = infoText;
+    logsInfoFieldDiv.append(infoNode);
   }
 
   function setListenersStrategyMenu() {
@@ -543,11 +557,15 @@
   }
 
   function enableMenus() {
-    blockPostMenu.domElements.forEach((element) => element.disabled = false);
+    Object.values(strategyMenu.domElements).forEach((el) => el.disabled = false);
+    Object.values(postsMenu.domElements).forEach((el) => el.disabled = false);
+    Object.values(blockPostMenu.domElements).forEach((el) => el.disabled = false);
   }
 
   function disableMenus() {
-    blockPostMenu.domElements.forEach((element) => element.disabled = true);
+    Object.values(strategyMenu.domElements).forEach((el) => el.disabled = true);
+    Object.values(postsMenu.domElements).forEach((el) => el.disabled = true);
+    Object.values(blockPostMenu.domElements).forEach((el) => el.disabled = true);
   }
 
   async function getIp() {
@@ -556,7 +574,9 @@
       const data = await response.json();
       return data.ip;
     } catch (error) {
-      console.error('Error fetching IP address:', error);
+      const errorInfo = 'Error fetching IP address:' + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
     }
   }
 
@@ -570,7 +590,9 @@
         }, 1500);
       });
     } catch (error) {
-      console.error("4: IP адрес не  сохранен! Ошибка: ", error);
+      const errorInfo = "4: IP адрес не  сохранен! Ошибка: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
     }
   }
 
@@ -610,7 +632,9 @@
       infoPanelItems[namePost].loadedValue = summArr;
     })
     .catch(error => {
-      console.log("Ошибка получения количества постов с mockapi: ", error);
+      const errorInfo = "Ошибка получения количества постов с mockapi: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
     })
   }
 
@@ -639,7 +663,9 @@
       infoPanelItems[namePost].domElement.style.color = colors.info02;
       console.log("2: Данные на сервере обновлены!");
     }).catch(error => {
-      console.log("Ошибка сохранения данных опубликованных постов на mockapi: ", error);
+      const errorInfo = "Ошибка сохранения данных опубликованных постов на mockapi: " + error;
+      console.log(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
     })
   }
 
@@ -717,12 +743,21 @@
     }
 
     currentNamePost = postForPublish[currentNumberPost];
-    const blockPostMenuGroups = Object.values(blockPostMenu.domElements);
-    blockPostMenuGroups.forEach(group => {
-      if (group.checked) {
-        groupsForPublish.push(...groupsBox[group.id]);
-      }
-    });
+
+    if (boxNumbers.length === 0) {
+      const blockPostMenuGroups = Object.values(blockPostMenu.domElements);
+      blockPostMenuGroups.forEach(group => {
+        if (group.checked) {
+          boxNumbers.push(Number(group.id));
+        }
+      });
+    }
+
+    blockPostMenu.domElements[boxNumbers[0]].parentNode.style.border = "2px solid green";
+
+    //берем первый из выбранных бокс(набор) групп
+    groupsForPublish.push(...groupsBox[boxNumbers[0]]);
+
     // Shuffle array using the Fisher–Yates shuffle
     for (let i = groupsForPublish.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
@@ -753,7 +788,9 @@
       myPostText = currentPost.text.substring(0, 31);
       savePostToDb();
     }).catch(error => {
-      console.log("Ошибка чтения поста с mockapi: ", error);
+      const errorInfo = "Ошибка чтения поста с mockapi: " + error;
+      console.log(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
       enableButton(buttonsSet.startPosting.domElement);
       enableMenus();
     })
@@ -762,8 +799,9 @@
   function savePostToDb() {
     const request = indexedDB.open("posting-draft-v1", 1);
     request.onerror = function (event) {
-      console.error("An error occurred with IndexedDB");
-      console.error(event);
+      const errorInfo = "An error occurred with IndexedDB, " + event;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
       enableButton(buttonsSet.startPosting.domElement);
       enableMenus();
     };
@@ -943,7 +981,7 @@
 
     const checkingPosts = Array.from(document.querySelectorAll('.post'));
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
-    const isFirstPin = checkingPosts[0].querySelector('.PostHeaderTitle__pin');
+    const isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
       checkingPosts[0].remove();
       console.log("*** There is PIN ***");
@@ -1151,10 +1189,11 @@
 
     //Если завершается большой круг, сохраняем кол-во опубликованных постов на сервере.
     if (isLastBigCycle && infoPanelItems[currentNamePost]) {
+      addLogsInfo(`Box№${boxNumbers[0]}:  ${infoPanelItems[currentNamePost].currentValue}`, colors.info02);
       saveAmountPosts(currentNamePost);
     }
     if (isLastSmallCycle && isLastBigCycle) {
-      delayAct(enterNews, delayM);
+      delayAct(checkNextBox(), delayM);
       return;
     }
     if (isLastBigCycle) {
@@ -1167,6 +1206,16 @@
     }
     currentNumberGr++;
     delayAct(savePostToDb, newDelay);
+  }
+
+  function checkNextBox() {
+    if (boxNumbers.length <= 1) {
+      enterNews();
+    } else {
+      blockPostMenu.domElements[boxNumbers[0]].parentNode.style.border = "none";
+      boxNumbers.shift();
+      startScript();
+    }
   }
 
   function enterNews() {
