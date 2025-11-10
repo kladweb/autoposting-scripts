@@ -247,7 +247,6 @@
       ["88877831", "iptv15"],// https://vk.com/iptv15  76
       ["133932827", "club133932827"],// https://vk.com/club133932827  115
       ["114358721", "iptvmen", "pin"],// https://vk.com/iptvmen  125
-      // ["119225474", "aromashopvl", "pin"],// https://vk.com/aromashopvl  197  deleted
     ],
     4: [
       ["125907101", "club125907101"],// https://vk.com/club125907101  129
@@ -628,8 +627,8 @@
         return (currentDate - packDate) / 3600000 < 12;
       });
       infoPanelItems[namePost].valueObject = resultFilter;
-      const summArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-      infoPanelItems[namePost].loadedValue = summArr;
+      const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+      infoPanelItems[namePost].loadedValue = sumArr;
     })
     .catch(error => {
       const errorInfo = "Ошибка получения количества постов с mockapi: " + error;
@@ -687,7 +686,6 @@
     currentNumberGr = 0;
     groupsForPublish.length = 0;
     postForPublish.length = 0;
-    // loadAmountPosts(postForPublish[currentNumberPost]);
     currentInfoItems.missedposts.currentValue = 0;
     currentInfoItems.leftposts.currentValue = 0;
     currentInfoItems.errorsposts.currentValue = 0;
