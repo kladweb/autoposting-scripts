@@ -987,7 +987,7 @@
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    IdFirstPostForSubmitChecking = checkingPosts[0].id;
+    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
 
     const avatarRichFirst = checkingPosts[0].querySelector('.AvatarRich');
     if (!avatarRichFirst) {
