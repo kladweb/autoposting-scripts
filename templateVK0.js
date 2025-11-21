@@ -989,7 +989,7 @@
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
 
-    const avatarRichFirst = checkingPosts[0].querySelector('.AvatarRich');
+    const avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     if (!avatarRichFirst) {
       console.log("Не найден avatarRichFirst, попробуем снова...");
       delayAct(checkNecessityPosting, delayL);
