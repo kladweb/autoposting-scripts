@@ -208,7 +208,7 @@
       ["171843329", "ru_iptv", "pin"], //31 https://vk.com/ru_iptv
       ["186442856", "iptv_bt"], //35 https://vk.com/iptv_bt
       ["138553819", "club138553819"],//16 https://vk.com/club138553819
-      ["24950442", "club24950442"],// https://vk.com/club24950442
+      ["24950442", "club24950442"],// https://vk.com/club24950442 ***
       ["86617505", "club86617505"],// https://vk.com/club86617505  1101
       ["99770042", "club99770042"], //17 https://vk.com/club99770042
     ],
@@ -977,18 +977,23 @@
       }
     }
 
-    const checkingPosts = Array.from(document.querySelectorAll('.post'));
+    const checkingPosts = Array.from(document.querySelectorAll('article'));
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
-    const isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
+    const isFirstPin = checkingPosts[0]?.querySelector('.vkuiGroup__header');
     if (isFirstPin) {
       checkingPosts[0].remove();
       console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
+    const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
+    console.log("IdFirstPostDiv: ", IdFirstPostDiv);
+    if (IdFirstPostDiv) {
+      IdFirstPostForSubmitChecking = IdFirstPostDiv.dataset.postId;
+      console.log("IdFirstPostForSubmitChecking", IdFirstPostForSubmitChecking);
+    }
 
-    const avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
+    const avatarRichFirst = checkingPosts[0]?.querySelector('.vkitInternalRichAvatar');
     if (!avatarRichFirst) {
       console.log("Не найден avatarRichFirst, попробуем снова...");
       delayAct(checkNecessityPosting, delayL);
@@ -1013,7 +1018,7 @@
 
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
-      const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
+      const avatarRich = checkingPosts[i].querySelector('.vkitInternalRichAvatar');
       if (!avatarRich) {
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
         delayAct(checkNecessityPosting, delayL);
@@ -1156,14 +1161,16 @@
   }
 
   function checkPostSubmit() {
-    const currentFirstPost = document.querySelector('.post');
+    const currentFirstPost = document.querySelector('article');
     if (!currentFirstPost) {
       delayAct(checkPostSubmit, delayL);
       return;
     }
-    console.log("POST 1: ", currentFirstPost.id);
-    console.log("POST 2: ", IdFirstPostForSubmitChecking);
-    if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
+    const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
+    const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
+    console.log("POST 1: ", IdFirstPostForSubmitChecking);
+    console.log("POST 2: ", IdCurrentPostForSubmitChecking);
+    if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
       enableButton(buttonsSet.savePost.domElement);
       delayAct(startNewCycle, delayM);
