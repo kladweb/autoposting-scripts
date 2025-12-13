@@ -1106,7 +1106,25 @@
   }
 
   function clickCreatePost() {
-    nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+    const postCreateButton = document.querySelector('[data-testid="posting_create_post_button"]');
+    if (postCreateButton) {
+      postCreateButton.click();
+      delayAct(clickOpenDraftPost, delayM);
+    } else {
+      delayAct(submitGroup, delayM);
+    }
+    // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+  }
+
+  function submitGroup() {
+    const submitButton = document.querySelector('[data-testid="group-subscribe-button"]');
+    if (submitButton) {
+      submitButton.click();
+      delayAct(clickCreatePost, delayM);
+    } else {
+      console.log("Кнопка ПОДПИСАТЬСЯ не найдена");
+      delayAct(clickCreatePost, delayM);
+    }
   }
 
   function clickOpenDraftPost() {
