@@ -1,19 +1,20 @@
 // ==UserScript==
-// @name         AutoRepVK_11_mod05_remote
-// @author       kladweb
+// @name         AutoRepVK_0_mod04
+// @author       You
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-body
-// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK11_fin.js
-// @downloadURL  hhttps://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK11_fin.js
+// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK0_fin.js
+// @downloadURL  hhttps://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK0_fin.js
 // ==/UserScript==
 
 (function () {
   'use strict';
-  const idUser = '562935165';
-  const posts = {best: "The best operators", mediabox: "MEDIABOX"};
-  const VKName = "vk11";
+  const idUser = '476124794';
+  const posts = {sharavoz: "Sharavoz.tv", russkoetv: 'Русское ТВ'};
+  const VKName = "vk0"
 
+  // === PART START ===
   // version 1.1.5
   const urlBaseDataStat = "https://689069c9944bf437b595d196.mockapi.io/vkstat";
   const strategy = {
@@ -582,12 +583,12 @@
   async function saveIPAddress() {
     try {
       await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
-        .then(() => {
-          currentInfoItems.myip.domElement.style.color = colors.info02;
-          setTimeout(() => {
-            currentInfoItems.myip.domElement.style.color = colors.info01;
-          }, 1500);
-        });
+      .then(() => {
+        currentInfoItems.myip.domElement.style.color = colors.info02;
+        setTimeout(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info01;
+        }, 1500);
+      });
     } catch (error) {
       const errorInfo = "4: IP адрес не  сохранен! Ошибка: " + error;
       console.error(errorInfo);
@@ -612,29 +613,29 @@
       method: 'GET',
       headers: {'content-type': 'application/json'},
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("0: Something went wrong!");
-        }
-      })
-      .then(renderInfo => {
-        const result = renderInfo.posts;
-        const resultFilter = result.filter((pack) => {
-          const currentDate = new Date();
-          const packDate = new Date(pack.date);
-          return (currentDate - packDate) / 3600000 < 12;
-        });
-        infoPanelItems[namePost].valueObject = resultFilter;
-        const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-        infoPanelItems[namePost].loadedValue = sumArr;
-      })
-      .catch(error => {
-        const errorInfo = "Ошибка получения количества постов с mockapi: " + error;
-        console.error(errorInfo);
-        addLogsInfo(errorInfo, colors.info03);
-      })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("0: Something went wrong!");
+      }
+    })
+    .then(renderInfo => {
+      const result = renderInfo.posts;
+      const resultFilter = result.filter((pack) => {
+        const currentDate = new Date();
+        const packDate = new Date(pack.date);
+        return (currentDate - packDate) / 3600000 < 12;
+      });
+      infoPanelItems[namePost].valueObject = resultFilter;
+      const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+      infoPanelItems[namePost].loadedValue = sumArr;
+    })
+    .catch(error => {
+      const errorInfo = "Ошибка получения количества постов с mockapi: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
+    })
   }
 
   function saveAmountPosts(namePost) {
@@ -774,13 +775,13 @@
       method: 'GET',
       headers: {'content-type': 'application/json'},
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("Something went wrong!");
-        }
-      }).then(post => {
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("Something went wrong!");
+      }
+    }).then(post => {
       currentPost = post;
       // console.log('CURRENT POST: ', currentPost.text);
       myPostText = currentPost.text.substring(0, 31);
@@ -820,7 +821,7 @@
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
-      .postTask(action, {delay: delay});
+    .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
   }
 
@@ -977,13 +978,9 @@
       }
     }
 
-    let checkingPosts = Array.from(document.querySelectorAll('.post'));
-    let isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
-    if (!checkingPosts.length) {
-      checkingPosts = Array.from(document.querySelectorAll('article'));
-      isFirstPin = checkingPosts[0]?.querySelector('.vkuiGroup__header');
-    }
+    const checkingPosts = Array.from(document.querySelectorAll('.post'));
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
+    const isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
       checkingPosts[0].remove();
       console.log("*** There is PIN ***");
@@ -992,8 +989,7 @@
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
 
-    let avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
-    avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('.vkitInternalRichAvatar') : avatarRichFirst;
+    const avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     if (!avatarRichFirst) {
       console.log("Не найден avatarRichFirst, попробуем снова...");
       delayAct(checkNecessityPosting, delayL);
@@ -1018,8 +1014,7 @@
 
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
-      let avatarRich = checkingPosts[i].querySelector('.AvatarRich');
-      avatarRich = !avatarRich ? checkingPosts[i].querySelector('.vkitInternalRichAvatar') : avatarRich;
+      const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
         delayAct(checkNecessityPosting, delayL);
@@ -1269,4 +1264,5 @@
     }, timer);
   }
 
+  // === PART END ===
 })();
