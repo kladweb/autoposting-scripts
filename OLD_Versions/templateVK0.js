@@ -1,19 +1,20 @@
 // ==UserScript==
-// @name         AutoRepVK_13_mod05_remote
-// @author       kladweb
+// @name         AutoRepVK_0_mod04
+// @author       You
 // @match        https://vk.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-body
-// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK13_fin.js
-// @downloadURL  hhttps://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK13_fin.js
+// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK0_fin.js
+// @downloadURL  hhttps://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK0_fin.js
 // ==/UserScript==
 
 (function () {
   'use strict';
-  const idUser = '591910410';
-  const posts = {cbilling: "cbilling", best: 'The best operators'};
-  const VKName = "vk13";
+  const idUser = '476124794';
+  const posts = {sharavoz: "Sharavoz.tv", russkoetv: 'Русское ТВ'};
+  const VKName = "vk0"
 
+  // === PART START ===
   // version 1.1.5
   const urlBaseDataStat = "https://689069c9944bf437b595d196.mockapi.io/vkstat";
   const strategy = {
@@ -208,7 +209,7 @@
       ["171843329", "ru_iptv", "pin"], //31 https://vk.com/ru_iptv
       ["186442856", "iptv_bt"], //35 https://vk.com/iptv_bt
       ["138553819", "club138553819"],//16 https://vk.com/club138553819
-      ["24950442", "club24950442"],// https://vk.com/club24950442
+      ["24950442", "club24950442"],// https://vk.com/club24950442 ***
       ["86617505", "club86617505"],// https://vk.com/club86617505  1101
       ["99770042", "club99770042"], //17 https://vk.com/club99770042
     ],
@@ -1105,7 +1106,25 @@
   }
 
   function clickCreatePost() {
-    nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+    const postCreateButton = document.querySelector('[data-testid="posting_create_post_button"]');
+    if (postCreateButton) {
+      postCreateButton.click();
+      delayAct(clickOpenDraftPost, delayM);
+    } else {
+      delayAct(submitGroup, delayM);
+    }
+    // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+  }
+
+  function submitGroup() {
+    const submitButton = document.querySelector('[data-testid="group-subscribe-button"]');
+    if (submitButton) {
+      submitButton.click();
+      delayAct(clickCreatePost, delayM);
+    } else {
+      console.log("Кнопка ПОДПИСАТЬСЯ не найдена");
+      delayAct(clickCreatePost, delayM);
+    }
   }
 
   function clickOpenDraftPost() {
@@ -1168,7 +1187,7 @@
     }
     const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
     const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
-    console.log("POST 1: ",IdFirstPostForSubmitChecking);
+    console.log("POST 1: ", IdFirstPostForSubmitChecking);
     console.log("POST 2: ", IdCurrentPostForSubmitChecking);
     if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
@@ -1252,4 +1271,5 @@
     }, timer);
   }
 
+  // === PART END ===
 })();

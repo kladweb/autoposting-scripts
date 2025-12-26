@@ -978,23 +978,18 @@
       }
     }
 
-    const checkingPosts = Array.from(document.querySelectorAll('article'));
+    const checkingPosts = Array.from(document.querySelectorAll('.post'));
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
-    const isFirstPin = checkingPosts[0]?.querySelector('.vkuiGroup__header');
+    const isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
     if (isFirstPin) {
       checkingPosts[0].remove();
       console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
-    console.log("IdFirstPostDiv: ", IdFirstPostDiv);
-    if (IdFirstPostDiv) {
-      IdFirstPostForSubmitChecking = IdFirstPostDiv.dataset.postId;
-      console.log("IdFirstPostForSubmitChecking", IdFirstPostForSubmitChecking);
-    }
+    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
 
-    const avatarRichFirst = checkingPosts[0]?.querySelector('.vkitInternalRichAvatar');
+    const avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     if (!avatarRichFirst) {
       console.log("Не найден avatarRichFirst, попробуем снова...");
       delayAct(checkNecessityPosting, delayL);
@@ -1019,7 +1014,7 @@
 
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
-      const avatarRich = checkingPosts[i].querySelector('.vkitInternalRichAvatar');
+      const avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       if (!avatarRich) {
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
         delayAct(checkNecessityPosting, delayL);
@@ -1180,16 +1175,14 @@
   }
 
   function checkPostSubmit() {
-    const currentFirstPost = document.querySelector('article');
+    const currentFirstPost = document.querySelector('.post');
     if (!currentFirstPost) {
       delayAct(checkPostSubmit, delayL);
       return;
     }
-    const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
-    const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
-    console.log("POST 1: ", IdFirstPostForSubmitChecking);
-    console.log("POST 2: ", IdCurrentPostForSubmitChecking);
-    if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
+    console.log("POST 1: ", currentFirstPost.id);
+    console.log("POST 2: ", IdFirstPostForSubmitChecking);
+    if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
       enableButton(buttonsSet.savePost.domElement);
       delayAct(startNewCycle, delayM);
