@@ -991,7 +991,13 @@
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
+    // IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
+    const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
+    console.log("IdFirstPostDiv: ", IdFirstPostDiv);
+    if (IdFirstPostDiv) {
+      IdFirstPostForSubmitChecking = IdFirstPostDiv.dataset.postId;
+      console.log("IdFirstPostForSubmitChecking", IdFirstPostForSubmitChecking);
+    }
 
     let avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('.vkitInternalRichAvatar') : avatarRichFirst;
@@ -1150,7 +1156,7 @@
   }
 
   function clickContinuePost() {
-    nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayM);
+    nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
   }
 
   function clickSavePost() {
@@ -1181,14 +1187,17 @@
   }
 
   function checkPostSubmit() {
-    const currentFirstPost = document.querySelector('.post');
+    const currentFirstPost = document.querySelector('.post') ?
+      document.querySelector('.post') : document.querySelector('article');
     if (!currentFirstPost) {
       delayAct(checkPostSubmit, delayL);
       return;
     }
-    console.log("POST 1: ", currentFirstPost.id);
-    console.log("POST 2: ", IdFirstPostForSubmitChecking);
-    if (currentFirstPost.id !== IdFirstPostForSubmitChecking) {
+    const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
+    const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
+    console.log("POST 1: ", IdFirstPostForSubmitChecking);
+    console.log("POST 2: ", IdCurrentPostForSubmitChecking);
+    if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
       enableButton(buttonsSet.savePost.domElement);
       delayAct(startNewCycle, delayM);
