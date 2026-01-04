@@ -35,6 +35,7 @@
     satiptv: "Людвиг Ванбетховен",
     id387929772: "Дмитрий (ILook)",
     id91715443: "Владислав Рыбалко",
+    lukadubovic: "Вася Обломов"
   }
   const comrades = {
     id476124794: "VK0: Екатерина Менкина",
@@ -1138,7 +1139,7 @@
     if (openDraft) {
       openDraft.click();
       functionRepetitions = 0;
-      delayAct(clickContinuePost, delayM);
+      delayAct(clickContinuePost, delayL);
     } else {
       console.log('Button Открыть черновик didn\'t find!');
       if (functionRepetitions > 5) {
@@ -1163,9 +1164,9 @@
       currentInfoItems.missedposts.currentValue++;
       isSkipCurrPost = false;
       delayAct(clickCloseDraftPost, delayM);
-      return;
+    } else {
+      nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
     }
-    nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
   }
 
   function clickCloseDraftPost() {
