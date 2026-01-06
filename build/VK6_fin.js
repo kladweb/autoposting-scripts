@@ -15,7 +15,6 @@
   const VKName = "vk6";
 
   // version 1.1.5
-  const urlBaseDataPost = "https://api.jsonbin.io/v3/b/695cc88643b1c97be91c931d";
   const urlBaseDataStat = "https://api.jsonbin.io/v3/b/695ce2ceae596e708fc88b25";
   const strategy = {
     all: "All groups",
@@ -305,6 +304,34 @@
     ]
   };
 
+  // Initialize Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCwyfsW7F9jKjFKROk1iE7l7MLxvPouKjQ",
+    authDomain: "autoposting-64b90.firebaseapp.com",
+    projectId: "autoposting-64b90",
+    storageBucket: "autoposting-64b90.firebasestorage.app",
+    messagingSenderId: "622180926114",
+    appId: "1:622180926114:web:8729bb3c0361c5fd25cdfb"
+  };
+
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore(app);
+
+  // const docRef = db.collection("posts").doc("vk0_russkoetv");
+  //
+  // docRef.get().then((doc) => {
+  //   if (doc.exists) {
+  //     console.log("Document data:", doc.data().data.json());
+  //   } else {
+  //     // doc.data() will be undefined in this case
+  //     console.log("No such document!");
+  //   }
+  // }).catch((error) => {
+  //   console.log("Error getting document:", error);
+  // });
+
+
+  //create html menu block
   const menuVK = document.createElement('div');
   menuVK.style.cssText = `
   position: fixed;
@@ -584,12 +611,12 @@
   async function saveIPAddress() {
     try {
       await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
-      .then(() => {
-        currentInfoItems.myip.domElement.style.color = colors.info02;
-        setTimeout(() => {
-          currentInfoItems.myip.domElement.style.color = colors.info01;
-        }, 1500);
-      });
+        .then(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info02;
+          setTimeout(() => {
+            currentInfoItems.myip.domElement.style.color = colors.info01;
+          }, 1500);
+        });
     } catch (error) {
       const errorInfo = "4: IP адрес не  сохранен! Ошибка: " + error;
       console.error(errorInfo);
@@ -610,39 +637,31 @@
   }
 
   function loadAmountPosts(namePost) {
-    // fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
-    fetch(urlBaseDataStat, {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-        'X-Master-Key': '$2a$10$zJnTlDPb18R8ofDvwx9/4eLzM.kxo6.AVqj0rVK9gg3KipH7i.NNa'
-      },
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        throw new Error("0: Something went wrong!");
-      }
-    })
-    .then(renderInfo => {
-      // console.log("renderInfo: ", renderInfo);
-      const result = renderInfo["record"][`${VKName}${namePost}`].posts;
-      // console.log("record: ", result);
-      const resultFilter = result.filter((pack) => {
-        const currentDate = new Date();
-        const packDate = new Date(pack.date);
-        return (currentDate - packDate) / 3600000 < 12;
+    const docRef = db.collection('vkstat').doc(`${VKName}${namePost}`);
+    docRef.get()
+      .then((doc) => {
+        if (doc.exists) {
+          const renderInfo = doc.data();
+          const result = JSON.parse(renderInfo.data);
+          // console.log("Document data:", result);
+          const resultFilter = result.filter((pack) => {
+            const currentDate = new Date();
+            const packDate = new Date(pack.date);
+            return (currentDate - packDate) / 3600000 < 12;
+          });
+          infoPanelItems[namePost].valueObject = resultFilter;
+          const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+          infoPanelItems[namePost].loadedValue = sumArr;
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("ERR: No such document!");
+        }
+      })
+      .catch((error) => {
+        const errorInfo = "Ошибка получения количества данных статистики с Firestore: " + error;
+        console.error(errorInfo);
+        addLogsInfo(errorInfo, colors.info03);
       });
-      infoPanelItems[namePost].valueObject = resultFilter;
-      const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-      infoPanelItems[namePost].loadedValue = sumArr;
-    })
-    .catch(error => {
-      const errorInfo = "Ошибка получения количества постов с jsonbin.io: " + error;
-      console.error(errorInfo);
-      addLogsInfo(errorInfo, colors.info03);
-    })
   }
 
   function saveAmountPosts(namePost) {
@@ -654,30 +673,22 @@
     const newData = {
       posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
-    fetch(urlBaseDataStat, {
-      method: 'PUT',
-      headers: {
-        'content-type': 'application/json',
-        'X-Master-Key': '$2a$10$zJnTlDPb18R8ofDvwx9/4eLzM.kxo6.AVqj0rVK9gg3KipH7i.NNa',
-        'X-Access-Key': '$2a$10$MbDvvXFLoQswjTE6GbSnkezwa0Tkq4Y0C4oWtBZOKMfCmVI/HvmWe'
-      },
-      body: JSON.stringify(newData)
-    }).then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      throw new Error("2: Something went wrong!");
-    }).then(task => {
-      infoPanelItems[currentNamePost].currentValue = 0;
-      infoPanelItems[currentNamePost].loadedValue += amount;
-      infoPanelItems[currentNamePost].valueObject = newData.posts;
-      infoPanelItems[namePost].domElement.style.color = colors.info02;
-      console.log("2: Данные на сервере обновлены!");
-    }).catch(error => {
-      const errorInfo = "Ошибка сохранения данных опубликованных постов на mockapi: " + error;
-      console.log(errorInfo);
-      addLogsInfo(errorInfo, colors.info03);
-    })
+
+    db.collection('vkstat').doc(`${VKName}${namePost}`).set(newData)
+      .then((res) => {
+        console.log("Document successfully written!");
+        console.log("RES: ", res);
+        infoPanelItems[currentNamePost].currentValue = 0;
+        infoPanelItems[currentNamePost].loadedValue += amount;
+        infoPanelItems[currentNamePost].valueObject = newData.posts;
+        infoPanelItems[namePost].domElement.style.color = colors.info02;
+        console.log("2: Данные на сервере обновлены!");
+      })
+      .catch((error) => {
+        const errorInfo = "Ошибка сохранения данных опубликованных постов на Firestore: " + error;
+        console.log(errorInfo);
+        addLogsInfo(errorInfo, colors.info03);
+      });
   }
 
   function savePosted() {
@@ -782,28 +793,26 @@
   }
 
   function loadPost() {
-    fetch(`https://642dd59966a20ec9cea70c6c.mockapi.io/tasks/${VKName}_${currentNamePost}`, {
-      method: 'GET',
-      headers: {'content-type': 'application/json'},
-    })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      } else {
-        throw new Error("Something went wrong!");
-      }
-    }).then(post => {
-      currentPost = post;
-      // console.log('CURRENT POST: ', currentPost.text);
-      myPostText = currentPost.text.substring(0, 31);
-      savePostToDb();
-    }).catch(error => {
-      const errorInfo = "Ошибка чтения поста с mockapi: " + error;
-      console.log(errorInfo);
-      addLogsInfo(errorInfo, colors.info03);
-      enableButton(buttonsSet.startPosting.domElement);
-      enableMenus();
-    })
+    const docRef = db.collection('posts').doc(`${VKName}_${currentNamePost}`);
+    docRef.get()
+      .then((doc) => {
+        if (doc.exists) {
+          const renderInfo = doc.data();
+          currentPost = JSON.parse(renderInfo.data);
+          myPostText = currentPost.text.substring(0, 31);
+          savePostToDb();
+        } else {
+          console.log("ERR: No such document!");
+          throw new Error("Something went wrong!");
+        }
+      })
+      .catch((error) => {
+        const errorInfo = "Ошибка получения данных с Firestore: " + error;
+        console.error(errorInfo);
+        addLogsInfo(errorInfo, colors.info03);
+        enableButton(buttonsSet.startPosting.domElement);
+        enableMenus();
+      });
   }
 
   function savePostToDb() {
@@ -821,6 +830,7 @@
       const store = transaction.objectStore("posting-draft");
       const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
       const idQuery = store.get(keyStore);
+      console.log()
       idQuery.onsuccess = function () {
         store.put(currentPost, keyStore);
         disableMenus();
@@ -832,7 +842,7 @@
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
-    .postTask(action, {delay: delay});
+      .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
   }
 
@@ -1002,7 +1012,7 @@
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    // IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
+    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
     const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
     console.log("IdFirstPostDiv: ", IdFirstPostDiv);
     if (IdFirstPostDiv) {
