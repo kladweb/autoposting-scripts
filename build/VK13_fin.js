@@ -655,6 +655,8 @@
         } else {
           // doc.data() will be undefined in this case
           console.log("ERR: No such document!");
+          infoPanelItems[namePost].valueObject = [{amount: 0, date: new Date()}];
+          infoPanelItems[namePost].loadedValue = 0;
         }
       })
       .catch((error) => {
