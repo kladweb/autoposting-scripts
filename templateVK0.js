@@ -644,7 +644,7 @@
         if (doc.exists) {
           const renderInfo = doc.data();
           const result = JSON.parse(renderInfo.data);
-          // console.log("Document data:", result);
+          console.log("Document data:", result);
           const resultFilter = result.filter((pack) => {
             const currentDate = new Date();
             const packDate = new Date(pack.date);
@@ -666,22 +666,25 @@
   }
 
   function saveAmountPosts(namePost) {
-    const amount = infoPanelItems[currentNamePost].currentValue;
-    if (!infoPanelItems[currentNamePost] || amount === 0) {
+    const amount = infoPanelItems[namePost].currentValue;
+    if (!infoPanelItems[namePost] || amount === 0) {
       return;
     }
     disableButton(buttonsSet.savePost.domElement);
+    console.log("001: ", infoPanelItems);
     const newData = {
-      posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
+      data: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
+    };
+    const newDataJson = {
+      data: JSON.stringify(newData.data),
     };
 
-    db.collection('vkstat').doc(`${VKName}${namePost}`).set(newData)
-      .then((res) => {
+    db.collection('vkstat').doc(`${VKName}${namePost}`).set(newDataJson)
+      .then(() => {
         console.log("Document successfully written!");
-        console.log("RES: ", res);
-        infoPanelItems[currentNamePost].currentValue = 0;
-        infoPanelItems[currentNamePost].loadedValue += amount;
-        infoPanelItems[currentNamePost].valueObject = newData.posts;
+        infoPanelItems[namePost].currentValue = 0;
+        infoPanelItems[namePost].loadedValue += amount;
+        infoPanelItems[namePost].valueObject = newData.data;
         infoPanelItems[namePost].domElement.style.color = colors.info02;
         console.log("2: Данные на сервере обновлены!");
       })
@@ -1013,7 +1016,7 @@
       checkingPosts.shift();
     }
     checkingPosts.splice(deepAmount);
-    IdFirstPostForSubmitChecking = checkingPosts[0]?.id;
+    IdFirstPostForSubmitChecking = checkingPosts[0]?.id.substring(4);
     const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
     console.log("IdFirstPostDiv: ", IdFirstPostDiv);
     if (IdFirstPostDiv) {
