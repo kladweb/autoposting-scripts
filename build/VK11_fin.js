@@ -15,7 +15,8 @@
   const VKName = "vk11";
 
   // version 1.1.5
-  const urlBaseDataStat = "https://689069c9944bf437b595d196.mockapi.io/vkstat";
+  const urlBaseDataPost = "https://api.jsonbin.io/v3/b/695cc88643b1c97be91c931d";
+  const urlBaseDataStat = "https://api.jsonbin.io/v3/b/695ce2ceae596e708fc88b25";
   const strategy = {
     all: "All groups",
     aftermy: "After my posts",
@@ -583,12 +584,12 @@
   async function saveIPAddress() {
     try {
       await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
-        .then(() => {
-          currentInfoItems.myip.domElement.style.color = colors.info02;
-          setTimeout(() => {
-            currentInfoItems.myip.domElement.style.color = colors.info01;
-          }, 1500);
-        });
+      .then(() => {
+        currentInfoItems.myip.domElement.style.color = colors.info02;
+        setTimeout(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info01;
+        }, 1500);
+      });
     } catch (error) {
       const errorInfo = "4: IP адрес не  сохранен! Ошибка: " + error;
       console.error(errorInfo);
@@ -609,33 +610,39 @@
   }
 
   function loadAmountPosts(namePost) {
-    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+    // fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+    fetch(urlBaseDataStat, {
       method: 'GET',
-      headers: {'content-type': 'application/json'},
+      headers: {
+        'content-type': 'application/json',
+        'X-Master-Key': '$2a$10$zJnTlDPb18R8ofDvwx9/4eLzM.kxo6.AVqj0rVK9gg3KipH7i.NNa'
+      },
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("0: Something went wrong!");
-        }
-      })
-      .then(renderInfo => {
-        const result = renderInfo.posts;
-        const resultFilter = result.filter((pack) => {
-          const currentDate = new Date();
-          const packDate = new Date(pack.date);
-          return (currentDate - packDate) / 3600000 < 12;
-        });
-        infoPanelItems[namePost].valueObject = resultFilter;
-        const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-        infoPanelItems[namePost].loadedValue = sumArr;
-      })
-      .catch(error => {
-        const errorInfo = "Ошибка получения количества постов с mockapi: " + error;
-        console.error(errorInfo);
-        addLogsInfo(errorInfo, colors.info03);
-      })
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("0: Something went wrong!");
+      }
+    })
+    .then(renderInfo => {
+      // console.log("renderInfo: ", renderInfo);
+      const result = renderInfo["record"][`${VKName}${namePost}`].posts;
+      // console.log("record: ", result);
+      const resultFilter = result.filter((pack) => {
+        const currentDate = new Date();
+        const packDate = new Date(pack.date);
+        return (currentDate - packDate) / 3600000 < 12;
+      });
+      infoPanelItems[namePost].valueObject = resultFilter;
+      const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+      infoPanelItems[namePost].loadedValue = sumArr;
+    })
+    .catch(error => {
+      const errorInfo = "Ошибка получения количества постов с jsonbin.io: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
+    })
   }
 
   function saveAmountPosts(namePost) {
@@ -647,9 +654,13 @@
     const newData = {
       posts: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
-    fetch(`${urlBaseDataStat}/${VKName}${namePost}`, {
+    fetch(urlBaseDataStat, {
       method: 'PUT',
-      headers: {'content-type': 'application/json'},
+      headers: {
+        'content-type': 'application/json',
+        'X-Master-Key': '$2a$10$zJnTlDPb18R8ofDvwx9/4eLzM.kxo6.AVqj0rVK9gg3KipH7i.NNa',
+        'X-Access-Key': '$2a$10$MbDvvXFLoQswjTE6GbSnkezwa0Tkq4Y0C4oWtBZOKMfCmVI/HvmWe'
+      },
       body: JSON.stringify(newData)
     }).then(res => {
       if (res.ok) {
@@ -775,13 +786,13 @@
       method: 'GET',
       headers: {'content-type': 'application/json'},
     })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          throw new Error("Something went wrong!");
-        }
-      }).then(post => {
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      } else {
+        throw new Error("Something went wrong!");
+      }
+    }).then(post => {
       currentPost = post;
       // console.log('CURRENT POST: ', currentPost.text);
       myPostText = currentPost.text.substring(0, 31);
@@ -821,7 +832,7 @@
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
-      .postTask(action, {delay: delay});
+    .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
   }
 
