@@ -318,20 +318,6 @@
   const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore(app);
 
-  // const docRef = db.collection("posts").doc("vk0_russkoetv");
-  //
-  // docRef.get().then((doc) => {
-  //   if (doc.exists) {
-  //     console.log("Document data:", doc.data().data.json());
-  //   } else {
-  //     // doc.data() will be undefined in this case
-  //     console.log("No such document!");
-  //   }
-  // }).catch((error) => {
-  //   console.log("Error getting document:", error);
-  // });
-
-
   //create html menu block
   const menuVK = document.createElement('div');
   menuVK.style.cssText = `
@@ -644,7 +630,7 @@
         if (doc.exists) {
           const renderInfo = doc.data();
           const result = JSON.parse(renderInfo.data);
-          console.log("Document data:", result);
+          // console.log("Document data:", result);
           const resultFilter = result.filter((pack) => {
             const currentDate = new Date();
             const packDate = new Date(pack.date);
@@ -673,7 +659,6 @@
       return;
     }
     disableButton(buttonsSet.savePost.domElement);
-    console.log("001: ", infoPanelItems);
     const newData = {
       data: [{amount: amount, date: new Date()}, ...infoPanelItems[namePost].valueObject],
     };
@@ -683,7 +668,6 @@
 
     db.collection('vkstat').doc(`${VKName}${namePost}`).set(newDataJson)
       .then(() => {
-        console.log("Document successfully written!");
         infoPanelItems[namePost].currentValue = 0;
         infoPanelItems[namePost].loadedValue += amount;
         infoPanelItems[namePost].valueObject = newData.data;
@@ -836,7 +820,6 @@
       const store = transaction.objectStore("posting-draft");
       const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
       const idQuery = store.get(keyStore);
-      console.log()
       idQuery.onsuccess = function () {
         store.put(currentPost, keyStore);
         disableMenus();
@@ -944,7 +927,6 @@
           deepAmount = +(key);
         }
       }
-      console.log("deepAmount: ", deepAmount);
       const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
       window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
       if (extraSettings.domElements.fast.checked) {
