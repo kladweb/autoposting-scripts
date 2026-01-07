@@ -12,7 +12,7 @@
   'use strict';
   const idUser = '475628623';
   const posts = {tvteam: "TV.Team"};
-  const VKName = "vk5";
+  const VKName = "VK5";
 
   // === TEMPLATE START ===
   // insert here
