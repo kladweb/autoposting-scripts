@@ -12,7 +12,7 @@
   'use strict';
   const idUser = '475628623';
   const posts = {tvteam: "TV.Team"};
-  const VKName = "VK5";
+  const VKName = "vk5";
 
   // version 1.1.5
   const urlBaseDataStat = "https://api.jsonbin.io/v3/b/695ce2ceae596e708fc88b25";
