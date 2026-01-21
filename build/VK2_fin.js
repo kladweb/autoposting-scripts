@@ -297,10 +297,10 @@
       ["224212394", "club224212394"],// https://vk.com/club224212394 25
       ["17837395", "club17837395"],// https://vk.com/club17837395 22
       ["80802384", "club80802384"],// https://vk.com/club80802384 20
-      ["178793178", "iptvsfera"],// https://vk.com/iptvsfera 19
       ["129923189", "azimuth_tv", "pin"],// https://vk.com/azimuth_tv  18
       ["182276122", "sharaclub_sat_iptv"],// https://vk.com/sharaclub_sat_iptv  18
       ["112843747", "club112843747"],// https://vk.com/club112843747  14
+      // ["178793178", "iptvsfera"],// https://vk.com/iptvsfera 19
     ]
   };
 
