@@ -1135,14 +1135,39 @@
   function clickCreatePostV2() {
     const postCreateSection = document.querySelector('[data-testid="group_publish_block"]');
     if (postCreateSection) {
-      const postCreateButton = document.querySelector('button');
-      if (postCreateButton) {
-        postCreateButton.click();
-        delayAct(clickOpenDraftPost, delayM);
+      const indicatorMarker = postCreateSection.querySelector('.vkuiButton__after');
+      if (!indicatorMarker) {
+        const buttonCreatePost = postCreateSection.querySelector('button');
+        buttonCreatePost.click();
+        delayAct(clickContinuePost, delayL);
         return;
       }
+
+      const vkiButtonIn = postCreateSection.querySelector('.vkuiButton__in');
+      if (vkiButtonIn) {
+        console.log(vkiButtonIn);
+        console.log("КНОПКА ЕСТЬ, делаем hover...");
+        vkiButtonIn.dispatchEvent(new MouseEvent("mouseover", {
+          bubbles: true,
+          cancelable: true
+        }));
+        delayAct(clickCreatePostV2NextActon, delayM);
+      }
+    } else {
+      delayAct(submitGroup, delayM);
     }
-    delayAct(submitGroup, delayM);
+  }
+
+  function clickCreatePostV2NextActon() {
+    const buttonPost = document.evaluate(`//node()[normalize-space(text())='Пост']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (buttonPost) {
+      console.log("КНОПКА ЕСТЬ, кликаем...");
+      buttonPost.click();
+      delayAct(clickContinuePost, delayL);
+    } else {
+      console.log("Кнопка не найдена, возвращаемся");
+      delayAct(submitGroup, delayM);
+    }
   }
 
   function submitGroup() {
@@ -1178,7 +1203,14 @@
   }
 
   function clickContinuePost() {
-    nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
+    const buttonContinue = document.evaluate(`//node()[normalize-space(text())='Далее']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (buttonContinue) {
+      buttonContinue.click();
+      delayAct(clickSavePost, delayM);
+    } else {
+      delayAct(clickContinuePost, delayL);
+    }
+    // nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
   }
 
   function clickSavePost() {
@@ -1187,7 +1219,15 @@
       isSkipCurrPost = false;
       delayAct(clickCloseDraftPost, delayM);
     } else {
-      nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
+      // nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
+      const buttonSave = document.evaluate(`//node()[normalize-space(text())='Опубликовать']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      if (buttonSave) {
+        buttonSave.click();
+        delayAct(checkPostSubmit, delayM);
+      } else {
+        console.log("Не могу сохранить пост...");
+        delayAct(clickSavePost, delayL);
+      }
     }
   }
 
