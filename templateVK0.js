@@ -1127,9 +1127,22 @@
       postCreateButton.click();
       delayAct(clickOpenDraftPost, delayM);
     } else {
-      delayAct(submitGroup, delayM);
+      delayAct(clickCreatePostV2, delayM);
     }
     // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
+  }
+
+  function clickCreatePostV2() {
+    const postCreateSection = document.querySelector('[data-testid="group_publish_block"]');
+    if (postCreateSection) {
+      const postCreateButton = document.querySelector('button');
+      if (postCreateButton) {
+        postCreateButton.click();
+        delayAct(clickOpenDraftPost, delayM);
+        return;
+      }
+    }
+    delayAct(submitGroup, delayM);
   }
 
   function submitGroup() {
