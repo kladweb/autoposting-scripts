@@ -638,6 +638,7 @@
           infoPanelItems[namePost].valueObject = resultFilter;
           const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
           infoPanelItems[namePost].loadedValue = sumArr;
+          addLogsInfo("Data: OK", colors.info01);
         } else {
           // doc.data() will be undefined in this case
           console.log("ERR: No such document!");
@@ -987,7 +988,7 @@
     }
 
     let checkingPosts = Array.from(document.querySelectorAll('.post'));
-    let isFirstPin = checkingPosts[0]?.querySelector('.PostHeaderTitle__pin');
+    let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
     if (!checkingPosts.length) {
       checkingPosts = Array.from(document.querySelectorAll('article'));
       isFirstPin = checkingPosts[0]?.querySelector('.vkuiGroup__header');
