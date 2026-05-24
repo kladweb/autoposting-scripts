@@ -999,7 +999,7 @@
     let currentStrategy = null;
     for (const key in strategyMenu.domElements) {
       if (strategyMenu.domElements[key].checked) {
-        currentStrategy = key;
+        currentStrategy = key;scro
         break;
       }
     }
@@ -1053,6 +1053,7 @@
     let avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('.vkitInternalRichAvatar') : avatarRichFirst;
     if (!avatarRichFirst) {
+      window.scrollBy(0, 1500);
       console.log("Не найден avatarRichFirst, попробуем снова...");
       delayAct(checkNecessityPosting, delayL);
       return;
@@ -1079,6 +1080,7 @@
       let avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       avatarRich = !avatarRich ? checkingPosts[i].querySelector('.vkitInternalRichAvatar') : avatarRich;
       if (!avatarRich) {
+        window.scrollBy(0, 1500);
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
         delayAct(checkNecessityPosting, delayL);
         return;
