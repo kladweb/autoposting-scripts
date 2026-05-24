@@ -929,7 +929,8 @@
       console.log("Didn't find group: ", groupHref);
       console.log("Scrolling page...");
       window.scrollBy(0, 1500);
-      delayAct(checkLoadGroupPage, delayM);
+      delayAct(enterToCurrentGroup, delayM);
+      // delayAct(checkLoadGroupPage, delayM);
     }
   }
 
@@ -962,6 +963,8 @@
         }
       } else {
         console.log("ТАБ вкладка не найдена!");
+        functionRepetitions++;
+        delayAct(checkCurrentGroup, delayM);
       }
     }
   }
