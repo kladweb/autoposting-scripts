@@ -958,7 +958,7 @@
           checkScrollingAction();
         } else {
           allPostsTab.click();
-          // delayAct(checkScrollingAction, delayM);
+          delayAct(checkScrollingAction, delayM);
         }
       } else {
         console.log("ТАБ вкладка не найдена!");
