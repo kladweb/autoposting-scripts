@@ -597,12 +597,12 @@
   async function saveIPAddress() {
     try {
       await navigator.clipboard.writeText(currentInfoItems.myip.domElement.innerText)
-        .then(() => {
-          currentInfoItems.myip.domElement.style.color = colors.info02;
-          setTimeout(() => {
-            currentInfoItems.myip.domElement.style.color = colors.info01;
-          }, 1500);
-        });
+      .then(() => {
+        currentInfoItems.myip.domElement.style.color = colors.info02;
+        setTimeout(() => {
+          currentInfoItems.myip.domElement.style.color = colors.info01;
+        }, 1500);
+      });
     } catch (error) {
       const errorInfo = "4: IP адрес не  сохранен! Ошибка: " + error;
       console.error(errorInfo);
@@ -625,32 +625,32 @@
   function loadAmountPosts(namePost) {
     const docRef = db.collection('vkstat').doc(`${VKName}${namePost}`);
     docRef.get()
-      .then((doc) => {
-        if (doc.exists) {
-          const renderInfo = doc.data();
-          const result = JSON.parse(renderInfo.data);
-          // console.log("Document data:", result);
-          const resultFilter = result.filter((pack) => {
-            const currentDate = new Date();
-            const packDate = new Date(pack.date);
-            return (currentDate - packDate) / 3600000 < 12;
-          });
-          infoPanelItems[namePost].valueObject = resultFilter;
-          const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
-          infoPanelItems[namePost].loadedValue = sumArr;
-          addLogsInfo("Data: OK", colors.info01);
-        } else {
-          // doc.data() will be undefined in this case
-          console.log("ERR: No such document!");
-          infoPanelItems[namePost].valueObject = [{amount: 0, date: new Date()}];
-          infoPanelItems[namePost].loadedValue = 0;
-        }
-      })
-      .catch((error) => {
-        const errorInfo = "Ошибка получения количества данных статистики с Firestore: " + error;
-        console.error(errorInfo);
-        addLogsInfo(errorInfo, colors.info03);
-      });
+    .then((doc) => {
+      if (doc.exists) {
+        const renderInfo = doc.data();
+        const result = JSON.parse(renderInfo.data);
+        // console.log("Document data:", result);
+        const resultFilter = result.filter((pack) => {
+          const currentDate = new Date();
+          const packDate = new Date(pack.date);
+          return (currentDate - packDate) / 3600000 < 12;
+        });
+        infoPanelItems[namePost].valueObject = resultFilter;
+        const sumArr = resultFilter.reduce((accum, currentValue) => accum + currentValue.amount, 0);
+        infoPanelItems[namePost].loadedValue = sumArr;
+        addLogsInfo("Data: OK", colors.info01);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("ERR: No such document!");
+        infoPanelItems[namePost].valueObject = [{amount: 0, date: new Date()}];
+        infoPanelItems[namePost].loadedValue = 0;
+      }
+    })
+    .catch((error) => {
+      const errorInfo = "Ошибка получения количества данных статистики с Firestore: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
+    });
   }
 
   function saveAmountPosts(namePost) {
@@ -667,18 +667,18 @@
     };
 
     db.collection('vkstat').doc(`${VKName}${namePost}`).set(newDataJson)
-      .then(() => {
-        infoPanelItems[namePost].currentValue = 0;
-        infoPanelItems[namePost].loadedValue += amount;
-        infoPanelItems[namePost].valueObject = newData.data;
-        infoPanelItems[namePost].domElement.style.color = colors.info02;
-        console.log("2: Данные на сервере обновлены!");
-      })
-      .catch((error) => {
-        const errorInfo = "Ошибка сохранения данных опубликованных постов на Firestore: " + error;
-        console.log(errorInfo);
-        addLogsInfo(errorInfo, colors.info03);
-      });
+    .then(() => {
+      infoPanelItems[namePost].currentValue = 0;
+      infoPanelItems[namePost].loadedValue += amount;
+      infoPanelItems[namePost].valueObject = newData.data;
+      infoPanelItems[namePost].domElement.style.color = colors.info02;
+      console.log("2: Данные на сервере обновлены!");
+    })
+    .catch((error) => {
+      const errorInfo = "Ошибка сохранения данных опубликованных постов на Firestore: " + error;
+      console.log(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
+    });
   }
 
   function savePosted() {
@@ -785,24 +785,24 @@
   function loadPost() {
     const docRef = db.collection('posts').doc(`${VKName}_${currentNamePost}`);
     docRef.get()
-      .then((doc) => {
-        if (doc.exists) {
-          const renderInfo = doc.data();
-          currentPost = JSON.parse(renderInfo.data);
-          myPostText = currentPost.text.substring(0, 31);
-          savePostToDb();
-        } else {
-          console.log("ERR: No such document!");
-          throw new Error("Something went wrong!");
-        }
-      })
-      .catch((error) => {
-        const errorInfo = "Ошибка получения данных с Firestore: " + error;
-        console.error(errorInfo);
-        addLogsInfo(errorInfo, colors.info03);
-        enableButton(buttonsSet.startPosting.domElement);
-        enableMenus();
-      });
+    .then((doc) => {
+      if (doc.exists) {
+        const renderInfo = doc.data();
+        currentPost = JSON.parse(renderInfo.data);
+        myPostText = currentPost.text.substring(0, 31);
+        savePostToDb();
+      } else {
+        console.log("ERR: No such document!");
+        throw new Error("Something went wrong!");
+      }
+    })
+    .catch((error) => {
+      const errorInfo = "Ошибка получения данных с Firestore: " + error;
+      console.error(errorInfo);
+      addLogsInfo(errorInfo, colors.info03);
+      enableButton(buttonsSet.startPosting.domElement);
+      enableMenus();
+    });
   }
 
   function savePostToDb() {
@@ -831,7 +831,7 @@
   function delayAct(action, delay) {
     console.log(action.name);
     scheduler
-      .postTask(action, {delay: delay});
+    .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
   }
 
@@ -893,28 +893,28 @@
       delayAct(checkLoadGroupPage, delayL);
     }
   }
+
   const delay = 1000;
 
+  // const fieldsData = {
+  //   "ng-tns-c81-23": "KLADKEVICH",
+  //   "ng-tns-c81-24": "PAVAIBA",
+  //   "ng-tns-c81-25": "VOLHA"
+  // };
 
-  const fieldsData = {
-    "ng-tns-c81-23": "KLADKEVICH",
-    "ng-tns-c81-24": "PAVAIBA",
-    "ng-tns-c81-25": "VOLHA"
-  };
+  // function delayAct(action) {
+  //   return setTimeout(action, delay);
+  // }
 
-  function delayAct(action) {
-    return setTimeout(action, delay);
-  }
+  // const keys = Object.keys(fieldsData);
 
-  const keys = Object.keys(fieldsData);
-
-  for (let i = 0; i < keys.length; i++) {
-    const action = () => {
-      const inputField = document.querySelector(`.${keys[i]}`);
-      console.log(inputField);
-    }
-    delayAct(action);
-  }
+  // for (let i = 0; i < keys.length; i++) {
+  //   const action = () => {
+  //     const inputField = document.querySelector(`.${keys[i]}`);
+  //     console.log(inputField);
+  //   }
+  //   delayAct(action);
+  // }
 
   function enterToCurrentGroup() {
     enableButton(buttonsSet.skipPost.domElement);
@@ -935,7 +935,7 @@
   function checkCurrentGroup() {
     const URLHash = window.location.href;
     if (URLHash === 'https://vk.com/bookmarks?type=group') {
-      if (functionRepetitions > 10) {
+      if (functionRepetitions > 7) {
         functionRepetitions = 0;
         delayAct(enterToCurrentGroup, delayM);
       } else {
@@ -949,13 +949,26 @@
           deepAmount = +(key);
         }
       }
-      const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
-      window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
-      if (extraSettings.domElements.fast.checked) {
-        delayAct(checkNecessityPosting, delayM);
-      } else {
-        delayAct(scrollPageBack, delayM);
+      const allPostsTab = document.querySelector(".vkuiTabs__in a");
+      if (allPostsTab) {
+        const isAllTabSelected = allPostsTab.getAttribute("aria-selected");
+        if (isAllTabSelected) {
+          checkScrollingAction();
+        } else {
+          allPostsTab.click();
+          delayAct(checkScrollingAction, delayM);
+        }
       }
+    }
+  }
+
+  function checkScrollingAction() {
+    const scrollBehavior = extraSettings.domElements.fast.checked ? 'auto' : 'smooth';
+    window.scrollBy({top: deepAmount * 500, left: 0, behavior: scrollBehavior});
+    if (extraSettings.domElements.fast.checked) {
+      delayAct(checkNecessityPosting, delayM);
+    } else {
+      delayAct(scrollPageBack, delayM);
     }
   }
 
