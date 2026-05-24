@@ -296,8 +296,8 @@
       ["17837395", "club17837395"],// https://vk.com/club17837395 22
       ["80802384", "club80802384"],// https://vk.com/club80802384 20
       ["129923189", "azimuth_tv", "pin"],// https://vk.com/azimuth_tv  18
-      ["182276122", "sharaclub_sat_iptv"],// https://vk.com/sharaclub_sat_iptv  18
       ["112843747", "club112843747"],// https://vk.com/club112843747  14
+      ["182276122", "sharaclub_sat_iptv"],// https://vk.com/sharaclub_sat_iptv  18
       // ["133880267", "club133880267"],// https://vk.com/club133880267 29
       // ["50585401", "club50585401"],// https://vk.com/club50585401  31
       // ["178793178", "iptvsfera"],// https://vk.com/iptvsfera 19
@@ -951,13 +951,16 @@
       }
       const allPostsTab = document.querySelector(".vkuiTabs__in a");
       if (allPostsTab) {
-        const isAllTabSelected = allPostsTab.getAttribute("aria-selected");
+        const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
+        console.log("isAllTabSelected: ", isAllTabSelected);
         if (isAllTabSelected) {
           checkScrollingAction();
         } else {
           allPostsTab.click();
-          delayAct(checkScrollingAction, delayM);
+          // delayAct(checkScrollingAction, delayM);
         }
+      } else {
+        console.log("ТАБ вкладка не найдена!");
       }
     }
   }
