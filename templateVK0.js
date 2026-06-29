@@ -999,7 +999,7 @@
     let currentStrategy = null;
     for (const key in strategyMenu.domElements) {
       if (strategyMenu.domElements[key].checked) {
-        currentStrategy = key;scro
+        currentStrategy = key;
         break;
       }
     }
