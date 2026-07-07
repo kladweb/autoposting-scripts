@@ -815,6 +815,15 @@
       enableButton(buttonsSet.startPosting.domElement);
       enableMenus();
     };
+
+    request.onupgradeneeded = function (event) {
+      const db = event.target.result;
+
+      if (!db.objectStoreNames.contains("posting-draft")) {
+        db.createObjectStore("posting-draft");
+      }
+    };
+
     request.onsuccess = function () {
       const db = request.result;
       const transaction = db.transaction("posting-draft", "readwrite");
