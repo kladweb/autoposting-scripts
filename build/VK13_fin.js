@@ -806,7 +806,7 @@
   }
 
   function savePostToDb() {
-    const request = indexedDB.open("posting-draft-v1", 1);
+    const request = indexedDB.open("posting-draft", 1);
     request.onerror = function (event) {
       const errorInfo = "An error occurred with IndexedDB, " + event;
       console.error(errorInfo);
