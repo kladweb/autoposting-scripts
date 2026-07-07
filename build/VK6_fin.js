@@ -806,7 +806,7 @@
   }
 
   function savePostToDb() {
-    const request = indexedDB.open("posting-draft", 1);
+    const request = indexedDB.open("posting-draft-v1", 1);
     request.onerror = function (event) {
       const errorInfo = "An error occurred with IndexedDB, " + event;
       console.error(errorInfo);
@@ -816,8 +816,8 @@
     };
     request.onsuccess = function () {
       const db = request.result;
-      const transaction = db.transaction("posting-draft", "readwrite");
-      const store = transaction.objectStore("posting-draft");
+      const transaction = db.transaction("posting-draft-v1", "readwrite");
+      const store = transaction.objectStore("posting-draft-v1");
       const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
       const idQuery = store.get(keyStore);
       idQuery.onsuccess = function () {
