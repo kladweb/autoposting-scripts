@@ -817,13 +817,13 @@
     };
     request.onsuccess = function () {
       const db = request.result;
-      const transaction = db.transaction("posting-draft-v1", "readwrite");
-      const store = transaction.objectStore("posting-draft-v1");
+      const transaction = db.transaction("posting-draft", "readwrite");
+      const store = transaction.objectStore("posting-draft");
       const keyStore = `${idUser}--${groupsForPublish[currentNumberGr][0]}`;
       const idQuery = store.get(keyStore);
       idQuery.onsuccess = function () {
         store.put(currentPost, keyStore);
-        disableMenus();
+        // disableMenus();
         checkEnterToBookMarks();
       };
     };
