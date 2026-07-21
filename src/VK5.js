@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoRepVK_5_mod05_remote
 // @author       kladweb
-// @match        https://vk.com/*
+// @match        https://vk.ru/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-body
 // @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK5_fin.js

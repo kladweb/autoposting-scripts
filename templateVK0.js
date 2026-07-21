@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AutoRepVK_0_mod04
 // @author       You
-// @match        https://vk.com/*
+// @match        https://vk.ru/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
 // @run-at       document-end
 // @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/build/VK0_fin.js
@@ -67,6 +67,7 @@
   let IdFirstPostForSubmitChecking = null;
   let myPostText = null;
   let isMinimize = false;
+  let startVersionDB = 2;
 
 
   const strategyMenu = {headName: "STRATEGY", type: "radio", domElements: {}}
@@ -807,7 +808,8 @@
   }
 
   function savePostToDb() {
-    const request = indexedDB.open("posting-draft-v1", 1);
+    const request = indexedDB.open("posting-draft-v1", startVersionDB);
+
     request.onerror = function (event) {
       const errorInfo = "An error occurred with IndexedDB, " + event;
       console.error(errorInfo);
@@ -815,6 +817,14 @@
       enableButton(buttonsSet.startPosting.domElement);
       enableMenus();
     };
+
+    request.onupgradeneeded = function (event) {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains("posting-draft")) {
+        db.createObjectStore("posting-draft");
+      }
+    };
+
     request.onsuccess = function () {
       const db = request.result;
       const transaction = db.transaction("posting-draft", "readwrite");
@@ -850,7 +860,7 @@
 
   function checkEnterToBookMarks() {
     const URLHash = window.location.href;
-    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+    if (URLHash === 'https://vk.ru/bookmarks?type=group') {
       checkLoadGroupsList();
     } else {
       enterToBookMarks();
@@ -886,7 +896,7 @@
       enterToBookMarks();
       return;
     }
-    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+    if (URLHash === 'https://vk.ru/bookmarks?type=group') {
       functionRepetitions = 0;
       delayAct(enterToCurrentGroup, delayM);
     } else {
@@ -936,7 +946,7 @@
 
   function checkCurrentGroup() {
     const URLHash = window.location.href;
-    if (URLHash === 'https://vk.com/bookmarks?type=group') {
+    if (URLHash === 'https://vk.ru/bookmarks?type=group') {
       if (functionRepetitions > 7) {
         functionRepetitions = 0;
         delayAct(enterToCurrentGroup, delayM);
