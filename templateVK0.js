@@ -905,28 +905,6 @@
     }
   }
 
-  const delay = 1000;
-
-  // const fieldsData = {
-  //   "ng-tns-c81-23": "KLADKEVICH",
-  //   "ng-tns-c81-24": "PAVAIBA",
-  //   "ng-tns-c81-25": "VOLHA"
-  // };
-
-  // function delayAct(action) {
-  //   return setTimeout(action, delay);
-  // }
-
-  // const keys = Object.keys(fieldsData);
-
-  // for (let i = 0; i < keys.length; i++) {
-  //   const action = () => {
-  //     const inputField = document.querySelector(`.${keys[i]}`);
-  //     console.log(inputField);
-  //   }
-  //   delayAct(action);
-  // }
-
   function enterToCurrentGroup() {
     enableButton(buttonsSet.skipPost.domElement);
     const groupHref = `/${groupsForPublish[currentNumberGr][1]}`;
