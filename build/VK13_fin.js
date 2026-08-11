@@ -876,7 +876,7 @@
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       loadNarrativeList();
     } else {
-      delayAct(checkLoadGroupPage, delayL);
+      delayAct(checkLoadGroupsList2, delayL);
     }
   }
 
@@ -886,6 +886,16 @@
 
   function loadGroupsList() {
     nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
+  }
+
+  function checkLoadGroupsList2() {
+    const bookmarkPageItems = document.querySelectorAll('.bookmark_page_item');
+    const bookmarkPageItemsArr = Array.from(bookmarkPageItems);
+    if (bookmarkPageItemsArr.length < 35) {
+      loadNarrativeList();
+    } else {
+      delayAct(checkLoadGroupPage, delayL);
+    }
   }
 
   function checkLoadGroupPage() {
@@ -1018,10 +1028,6 @@
 
     let checkingPosts = Array.from(document.querySelectorAll('article'));
     let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
-    if (!checkingPosts.length) {
-      checkingPosts = Array.from(document.querySelectorAll('article'));
-      isFirstPin = checkingPosts[0]?.querySelector('.vkuiGroup__header');
-    }
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     if (isFirstPin) {
       checkingPosts[0].remove();
