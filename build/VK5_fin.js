@@ -1016,7 +1016,7 @@
       }
     }
 
-    let checkingPosts = Array.from(document.querySelectorAll('.post'));
+    let checkingPosts = Array.from(document.querySelectorAll('article'));
     let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
     if (!checkingPosts.length) {
       checkingPosts = Array.from(document.querySelectorAll('article'));
@@ -1047,14 +1047,18 @@
     }
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
     let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
-    let messageText = " ";
+    console.log("blockTextPostFirst: ", blockTextPostFirst);
     if (blockTextPostFirst) {
-      messageText = blockTextPostFirst.innerText.includes(myPostText);
-    }
-    if (postUserIdFirst.substring(3) === idUser && messageText) {
-      console.log("Опаньки... Мой пост уже есть! Уходим!");
-      skipPosting();
-      return;
+      // console.log("FirstTEXT: ", blockTextPostFirst.outerText);
+      console.log("Проверяем, наш ли пост...");
+      let messageText = blockTextPostFirst.outerText.includes(myPostText);
+      if (postUserIdFirst.substring(16) === idUser && messageText) {
+        console.log("Опаньки... Мой пост уже есть! Уходим!");
+        skipPosting();
+        return;
+      }
+    } else {
+      console.log("НЕТУ blockTextPostFirst");
     }
 
     if (currentStrategy === "all") {
