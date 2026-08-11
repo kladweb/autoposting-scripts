@@ -1051,8 +1051,8 @@
     if (blockTextPostFirst) {
       // console.log("FirstTEXT: ", blockTextPostFirst.outerText);
       console.log("Проверяем, наш ли пост...");
-      let messageText = blockTextPostFirst.outerText.includes(myPostText);
-      if (postUserIdFirst.substring(16) === idUser && messageText) {
+      let isOurMessageText = blockTextPostFirst.outerText.includes(myPostText);
+      if ((postUserIdFirst.substring(16) === idUser) && isOurMessageText) {
         console.log("Опаньки... Мой пост уже есть! Уходим!");
         skipPosting();
         return;
