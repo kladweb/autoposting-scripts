@@ -1297,6 +1297,10 @@
       return;
     }
     const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
+    if (!IdCurrentPostDiv) {
+      delayAct(checkPostSubmit, delayL);
+      return;
+    }
     const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
     console.log("POST 1: ", IdFirstPostForSubmitChecking);
     console.log("POST 2: ", IdCurrentPostForSubmitChecking);
