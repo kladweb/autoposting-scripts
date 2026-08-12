@@ -837,7 +837,7 @@
   }
 
   function delayAct(action, delay) {
-    console.log(action.name);
+    console.log(action?.name);
     scheduler
     .postTask(action, {delay: delay});
     // return (setTimeout(action, delay));
@@ -1028,7 +1028,7 @@
     let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
     if (isFirstPin) {
-      checkingPosts[0].remove();
+      // checkingPosts[0].remove();
       console.log("*** There is PIN ***");
       checkingPosts.shift();
     }
