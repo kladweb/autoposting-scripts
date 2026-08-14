@@ -874,7 +874,7 @@
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       loadNarrativeList();
     } else {
-      delayAct(checkLoadGroupsList2, delayL);
+      delayAct(checkLoadGroupPage, delayL);
     }
   }
 
@@ -884,16 +884,6 @@
 
   function loadGroupsList() {
     nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
-  }
-
-  function checkLoadGroupsList2() {
-    const bookmarkPageItems = document.querySelectorAll('.bookmark_page_item');
-    const bookmarkPageItemsArr = Array.from(bookmarkPageItems);
-    if (bookmarkPageItemsArr.length < 35) {
-      loadNarrativeList();
-    } else {
-      delayAct(checkLoadGroupPage, delayL);
-    }
   }
 
   function checkLoadGroupPage() {
@@ -912,6 +902,16 @@
     }
   }
 
+  function checkLoadGroupsList2() {
+    const bookmarkPageItems = document.querySelectorAll('.bookmark_page_item');
+    const bookmarkPageItemsArr = Array.from(bookmarkPageItems);
+    if (bookmarkPageItemsArr.length < 35) {
+      loadNarrativeList();
+    } else {
+      delayAct(enterToCurrentGroup, delayL);
+    }
+  }
+
   function enterToCurrentGroup() {
     enableButton(buttonsSet.skipPost.domElement);
     const groupHref = `/${groupsForPublish[currentNumberGr][1]}`;
@@ -924,8 +924,8 @@
       console.log("Didn't find group: ", groupHref);
       console.log("Scrolling page...");
       window.scrollBy(0, 1500);
-      delayAct(enterToCurrentGroup, delayM);
-      // delayAct(checkLoadGroupPage, delayM);
+      delayAct(checkLoadGroupsList2, delayM);
+      // delayAct(enterToCurrentGroup, delayM);
     }
   }
 
@@ -1024,9 +1024,10 @@
       }
     }
 
-    let checkingPosts = Array.from(document.querySelectorAll('article'));
-    let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
+    let checkingPostsNod = Array.from(document.querySelectorAll('article'));
+    let isFirstPin = checkingPostsNod[0]?.querySelector('.vkuiIcon--pin_12');
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
+    let checkingPosts = [...checkingPostsNod];
     if (isFirstPin) {
       // checkingPosts[0].remove();
       console.log("*** There is PIN ***");
