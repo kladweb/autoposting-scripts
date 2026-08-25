@@ -1052,14 +1052,19 @@
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
     let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
     console.log("blockTextPostFirst: ", blockTextPostFirst);
+    console.log("ПОДГОТОВКА К ПРОВЕРКЕ.")
+    console.log(blockTextPostFirst);
     if (blockTextPostFirst) {
-      // console.log("FirstTEXT: ", blockTextPostFirst.outerText);
       console.log("Проверяем, наш ли пост...");
+      console.log(myPostText);
+      console.log(blockTextPostFirst.outerText)
       let isOurMessageText = blockTextPostFirst.outerText.includes(myPostText);
-      if ((postUserIdFirst.substring(16) === idUser) && isOurMessageText) {
+      if ((postUserIdFirst.slice(-9) === idUser) && isOurMessageText) {
         console.log("Опаньки... Мой пост уже есть! Уходим!");
         skipPosting();
         return;
+      } else {
+        console.log("Нашего поста мы не нашли!");
       }
     } else {
       console.log("НЕТУ blockTextPostFirst");
