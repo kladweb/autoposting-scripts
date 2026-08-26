@@ -1059,7 +1059,7 @@
     if (blockTextPostFirst) {
       console.log("Проверяем, наш ли пост...");
       console.log(myPostText);
-      console.log(blockTextPostFirst.outerText)
+      console.log(blockTextPostFirst.outerText);
       let isOurMessageText = blockTextPostFirst.outerText.includes(myPostText);
       if ((postUserIdFirst.slice(-9) === idUser) && isOurMessageText) {
         console.log("Опаньки... Мой пост уже есть! Уходим!");
