@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ГГПК Расписание ПГБ-121 → Telegram
 // @namespace    schedule-watcher-pgb121
-// @version      3.0
-// @description  Проверяет расписание ПГБ-121 на странице ггпк.by каждые 30 минут (сам перезагружает страницу) и шлёт изменения в Telegram
+// @version      3.1
+// @description  Проверяет расписание ПГБ-121 на странице ггпк.by каждые 15 минут (сам перезагружает страницу) и шлёт изменения в Telegram
 // @match        http://ggpk.by/Raspisanie/Files/P_KURS.html*
 // @match        https://ggpk.by/Raspisanie/Files/P_KURS.html*
 // @grant        GM_setValue
@@ -11,8 +11,8 @@
 // @grant        GM_registerMenuCommand
 // @connect      api.telegram.org
 // @run-at       document-idle
-// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/schedule/schedule-watcher.js
-// @downloadURL  https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/schedule/schedule-watcher.js
+// @updateURL    https://raw.githubusercontent.com/ВСТАВЬ_СЮДА/РЕПОЗИТОРИЙ/main/schedule-watcher.user.js
+// @downloadURL  https://raw.githubusercontent.com/ВСТАВЬ_СЮДА/РЕПОЗИТОРИЙ/main/schedule-watcher.user.js
 // ==/UserScript==
 
 (function () {
@@ -25,8 +25,7 @@
   // раз через пункт меню "⚙️ Настроить Telegram" и хранятся локально через
   // GM_setValue — обновление скрипта с GitHub их не затрагивает.
 
-  const CHECK_INTERVAL_MS = 15 * 60 * 1000; // 15 минут между проверками — скрипт сам перезагружает страницу с этим
-  // интервалом
+  const CHECK_INTERVAL_MS = 15 * 60 * 1000; // 15 минут между проверками — скрипт сам перезагружает страницу с этим интервалом
   // ===========================================================
 
   // ---------------- Парсинг таблицы (rowspan/colspan) ----------------
@@ -205,9 +204,8 @@
   }
 
   // ---------------- Отправка в Telegram (через GM_xmlhttpRequest — обходит CORS) ----------------
-  function sendTelegramMessage(text) {
+  function sendToChat(chatId, text) {
     const token = GM_getValue('telegramBotToken', '');
-    const chatId = GM_getValue('telegramChatId', '');
     if (!token || !chatId) {
       return Promise.reject(
         new Error('Telegram не настроен — используй меню «⚙️ Настроить Telegram»')
@@ -239,6 +237,22 @@
       });
 
     return chunks.reduce((p, chunk) => p.then(() => sendOne(chunk)), Promise.resolve());
+  }
+
+  // Реальное расписание — в общий чат/группу (видят все подписчики).
+  function sendTelegramMessage(text) {
+    return sendToChat(GM_getValue('telegramChatId', ''), text);
+  }
+
+  // Системные сообщения (ошибки и т.п.) — только в личку с ботом,
+  // чтобы не спамить подписчиков группы служебными сообщениями.
+  function sendSystemMessage(text) {
+    const chatIdBot = GM_getValue('telegramChatIdBot', '');
+    if (!chatIdBot) {
+      console.warn('[Расписание ПГБ-121] telegramChatIdBot не настроен — системное сообщение не отправлено:', text);
+      return Promise.resolve();
+    }
+    return sendToChat(chatIdBot, text);
   }
 
   // ---------------- Основная проверка ----------------
@@ -291,7 +305,7 @@
     } catch (err) {
       log('Ошибка: ' + err.message, true);
       try {
-        await sendTelegramMessage(`⚠️ Ошибка в проверке расписания (Tampermonkey): ${err.message}`);
+        await sendSystemMessage(`⚠️ Ошибка в проверке расписания (Tampermonkey): ${err.message}`);
       } catch (e) {
         /* если и телеграм недоступен — просто молчим, ошибка уже в консоли */
       }
@@ -327,14 +341,18 @@
     GM_registerMenuCommand('⚙️ Настроить Telegram', () => {
       const currentToken = GM_getValue('telegramBotToken', '');
       const currentChatId = GM_getValue('telegramChatId', '');
+      const currentChatIdBot = GM_getValue('telegramChatIdBot', '');
 
       const token = prompt('Токен Telegram-бота:', currentToken);
       if (token === null) return; // отменили
-      const chatId = prompt('Chat ID:', currentChatId);
+      const chatId = prompt('Chat ID группы (куда идёт расписание):', currentChatId);
       if (chatId === null) return;
+      const chatIdBot = prompt('Chat ID для системных сообщений (личка с ботом, ошибки видит только тут):', currentChatIdBot);
+      if (chatIdBot === null) return;
 
       GM_setValue('telegramBotToken', token.trim());
       GM_setValue('telegramChatId', chatId.trim());
+      GM_setValue('telegramChatIdBot', chatIdBot.trim());
       log('Настройки Telegram сохранены.');
     });
 
