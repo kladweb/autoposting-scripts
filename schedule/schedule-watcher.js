@@ -11,8 +11,8 @@
 // @grant        GM_registerMenuCommand
 // @connect      api.telegram.org
 // @run-at       document-idle
-// @updateURL    https://raw.githubusercontent.com/ВСТАВЬ_СЮДА/РЕПОЗИТОРИЙ/main/schedule-watcher.user.js
-// @downloadURL  https://raw.githubusercontent.com/ВСТАВЬ_СЮДА/РЕПОЗИТОРИЙ/main/schedule-watcher.user.js
+// @updateURL    https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/schedule/schedule-watcher.js
+// @downloadURL  https://raw.githubusercontent.com/kladweb/autoposting-scripts/refs/heads/main/schedule/schedule-watcher.js
 // ==/UserScript==
 
 (function () {
