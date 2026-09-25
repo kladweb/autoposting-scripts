@@ -948,21 +948,25 @@
           deepAmount = +(key);
         }
       }
-      const allPostsTab = document.querySelector(".vkuiTabs__in a");
-      if (allPostsTab) {
-        const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
-        console.log("isAllTabSelected: ", isAllTabSelected);
-        if (isAllTabSelected) {
-          checkScrollingAction();
-        } else {
-          allPostsTab.click();
-          delayAct(checkScrollingAction, delayM);
-        }
-      } else {
-        console.log("ТАБ вкладка не найдена!");
-        functionRepetitions++;
-        delayAct(checkCurrentGroup, delayM);
-      }
+      // const allPostsTab = document.querySelector(".vkuiTabs__in a");
+      // const el = document.querySelector('div[data-testid="dropdownactionsheet-content"]');
+      // const allPostsTab = document.querySelector('button[data-testid="group_publish_create_button"]');
+      delayAct(checkScrollingAction, delayM);
+
+      // if (allPostsTab) {
+      //   const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
+      //   console.log("isAllTabSelected: ", isAllTabSelected);
+      //   if (isAllTabSelected) {
+      //     checkScrollingAction();
+      //   } else {
+      //     allPostsTab.click();
+      //     delayAct(checkScrollingAction, delayM);
+      //   }
+      // } else {
+      //   console.log("ТАБ вкладка не найдена!");
+      //   functionRepetitions++;
+      //   delayAct(checkCurrentGroup, delayM);
+      // }
     }
   }
 
@@ -1296,27 +1300,30 @@
   }
 
   function checkPostSubmit() {
-    const currentFirstPost = document.querySelector('.post') ?
-      document.querySelector('.post') : document.querySelector('article');
-    if (!currentFirstPost) {
-      delayAct(checkPostSubmit, delayL);
-      return;
-    }
-    const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
-    if (!IdCurrentPostDiv) {
-      delayAct(checkPostSubmit, delayL);
-      return;
-    }
-    const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
-    console.log("POST 1: ", IdFirstPostForSubmitChecking);
-    console.log("POST 2: ", IdCurrentPostForSubmitChecking);
-    if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
       infoPanelItems[currentNamePost].currentValue++;
       enableButton(buttonsSet.savePost.domElement);
       delayAct(startNewCycle, delayM);
-    } else {
-      delayAct(checkPostSubmit, delayM);
-    }
+    // const currentFirstPost = document.querySelector('.post') ?
+    //   document.querySelector('.post') : document.querySelector('article');
+    // if (!currentFirstPost) {
+    //   delayAct(checkPostSubmit, delayL);
+    //   return;
+    // }
+    // const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
+    // if (!IdCurrentPostDiv) {
+    //   delayAct(checkPostSubmit, delayL);
+    //   return;
+    // }
+    // const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
+    // console.log("POST 1: ", IdFirstPostForSubmitChecking);
+    // console.log("POST 2: ", IdCurrentPostForSubmitChecking);
+    // if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
+    //   infoPanelItems[currentNamePost].currentValue++;
+    //   enableButton(buttonsSet.savePost.domElement);
+    //   delayAct(startNewCycle, delayM);
+    // } else {
+    //   delayAct(checkPostSubmit, delayM);
+    // }
   }
 
   function startNewCycle(newDelay = delayXL) {
