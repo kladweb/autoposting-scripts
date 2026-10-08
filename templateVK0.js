@@ -23,14 +23,15 @@
     firstWordPostSkip: "Skip post starts input"
   };
   const competitors = {
-    id358923511: "Анна Егорова",
-    diwissmio: "Diwiss Iptv",
     id620542842: "Иван Смирнов",
+    id358923511: "Анна Егорова",
+    pasha_dubrovsky: "Паша Дубровский",
+    satiptv: "Людвиг Ванбетховен",
+    id498222294: "My Bbktv (cbilling)",
+    diwissmio: "Diwiss Iptv",
     sergent771: "Сергей Щепетов",
     id469457210: "Алексей Гвоздев",
     st77sh: "Стас Щербаков",
-    pasha_dubrovsky: "Паша Дубровский",
-    satiptv: "Людвиг Ванбетховен",
     id387929772: "Дмитрий (ILook)",
     id91715443: "Владислав Рыбалко",
     lukadubovic: "Вася Обломов"
