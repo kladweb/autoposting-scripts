@@ -30,12 +30,12 @@
     id498222294: "My Bbktv (cbilling)",
     diwissmio: "Diwiss Iptv",
     id28464576: "Vadym Kolomiets",
+    lukadubovic: "Вася Обломов"
     // sergent771: "Сергей Щепетов",
     // id469457210: "Алексей Гвоздев",
     // st77sh: "Стас Щербаков",
     // id387929772: "Дмитрий (ILook)",
     // id91715443: "Владислав Рыбалко",
-    // lukadubovic: "Вася Обломов"
   }
   const comrades = {
     id476124794: "VK0: Екатерина Менкина",
@@ -1300,9 +1300,9 @@
   }
 
   function checkPostSubmit() {
-      infoPanelItems[currentNamePost].currentValue++;
-      enableButton(buttonsSet.savePost.domElement);
-      delayAct(startNewCycle, delayM);
+    infoPanelItems[currentNamePost].currentValue++;
+    enableButton(buttonsSet.savePost.domElement);
+    delayAct(startNewCycle, delayM);
     // const currentFirstPost = document.querySelector('.post') ?
     //   document.querySelector('.post') : document.querySelector('article');
     // if (!currentFirstPost) {
