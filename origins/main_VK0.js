@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Connect external script
 // @author       Pavel
-// @match        https://vk.com/*
+// @match        https://vk.ru/*
 // @grant        none
 // @run-at       document-end
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=vk.com
