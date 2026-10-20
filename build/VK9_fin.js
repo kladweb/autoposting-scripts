@@ -25,17 +25,19 @@
     firstWordPostSkip: "Skip post starts input"
   };
   const competitors = {
-    id358923511: "Анна Егорова",
-    diwissmio: "Diwiss Iptv",
     id620542842: "Иван Смирнов",
-    sergent771: "Сергей Щепетов",
-    id469457210: "Алексей Гвоздев",
-    st77sh: "Стас Щербаков",
+    id358923511: "Анна Егорова",
     pasha_dubrovsky: "Паша Дубровский",
     satiptv: "Людвиг Ванбетховен",
-    id387929772: "Дмитрий (ILook)",
-    id91715443: "Владислав Рыбалко",
+    id498222294: "My Bbktv (cbilling)",
+    diwissmio: "Diwiss Iptv",
+    id28464576: "Vadym Kolomiets",
     lukadubovic: "Вася Обломов"
+    // sergent771: "Сергей Щепетов",
+    // id469457210: "Алексей Гвоздев",
+    // st77sh: "Стас Щербаков",
+    // id387929772: "Дмитрий (ILook)",
+    // id91715443: "Владислав Рыбалко",
   }
   const comrades = {
     id476124794: "VK0: Екатерина Менкина",
@@ -876,7 +878,7 @@
     if (emptyFeed || (bookmarksGroup && bookmarksGroup.innerText.includes("Добавляйте"))) {
       loadNarrativeList();
     } else {
-      delayAct(checkLoadGroupsList2, delayL);
+      delayAct(checkLoadGroupPage, delayL);
     }
   }
 
@@ -886,16 +888,6 @@
 
   function loadGroupsList() {
     nextClickAction('#ui_rmenu_group', enterToBookMarks, delayL);
-  }
-
-  function checkLoadGroupsList2() {
-    const bookmarkPageItems = document.querySelectorAll('.bookmark_page_item');
-    const bookmarkPageItemsArr = Array.from(bookmarkPageItems);
-    if (bookmarkPageItemsArr.length < 35) {
-      loadNarrativeList();
-    } else {
-      delayAct(checkLoadGroupPage, delayL);
-    }
   }
 
   function checkLoadGroupPage() {
@@ -914,6 +906,16 @@
     }
   }
 
+  function checkLoadGroupsList2() {
+    const bookmarkPageItems = document.querySelectorAll('.bookmark_page_item');
+    const bookmarkPageItemsArr = Array.from(bookmarkPageItems);
+    if (bookmarkPageItemsArr.length < 35) {
+      loadNarrativeList();
+    } else {
+      delayAct(enterToCurrentGroup, delayL);
+    }
+  }
+
   function enterToCurrentGroup() {
     enableButton(buttonsSet.skipPost.domElement);
     const groupHref = `/${groupsForPublish[currentNumberGr][1]}`;
@@ -926,8 +928,8 @@
       console.log("Didn't find group: ", groupHref);
       console.log("Scrolling page...");
       window.scrollBy(0, 1500);
-      delayAct(enterToCurrentGroup, delayM);
-      // delayAct(checkLoadGroupPage, delayM);
+      delayAct(checkLoadGroupsList2, delayM);
+      // delayAct(enterToCurrentGroup, delayM);
     }
   }
 
@@ -948,21 +950,25 @@
           deepAmount = +(key);
         }
       }
-      const allPostsTab = document.querySelector(".vkuiTabs__in a");
-      if (allPostsTab) {
-        const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
-        console.log("isAllTabSelected: ", isAllTabSelected);
-        if (isAllTabSelected) {
-          checkScrollingAction();
-        } else {
-          allPostsTab.click();
-          delayAct(checkScrollingAction, delayM);
-        }
-      } else {
-        console.log("ТАБ вкладка не найдена!");
-        functionRepetitions++;
-        delayAct(checkCurrentGroup, delayM);
-      }
+      // const allPostsTab = document.querySelector(".vkuiTabs__in a");
+      // const el = document.querySelector('div[data-testid="dropdownactionsheet-content"]');
+      // const allPostsTab = document.querySelector('button[data-testid="group_publish_create_button"]');
+      delayAct(checkScrollingAction, delayM);
+
+      // if (allPostsTab) {
+      //   const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
+      //   console.log("isAllTabSelected: ", isAllTabSelected);
+      //   if (isAllTabSelected) {
+      //     checkScrollingAction();
+      //   } else {
+      //     allPostsTab.click();
+      //     delayAct(checkScrollingAction, delayM);
+      //   }
+      // } else {
+      //   console.log("ТАБ вкладка не найдена!");
+      //   functionRepetitions++;
+      //   delayAct(checkCurrentGroup, delayM);
+      // }
     }
   }
 
@@ -1026,9 +1032,10 @@
       }
     }
 
-    let checkingPosts = Array.from(document.querySelectorAll('article'));
-    let isFirstPin = checkingPosts[0]?.querySelector('.vkuiIcon--pin_12');
+    let checkingPostsNod = Array.from(document.querySelectorAll('article'));
+    let isFirstPin = checkingPostsNod[0]?.querySelector('.vkuiIcon--pin_12');
     //check "pin" in the group, if yes, then we increase deepAmount by 1;
+    let checkingPosts = [...checkingPostsNod];
     if (isFirstPin) {
       // checkingPosts[0].remove();
       console.log("*** There is PIN ***");
@@ -1295,27 +1302,30 @@
   }
 
   function checkPostSubmit() {
-    const currentFirstPost = document.querySelector('.post') ?
-      document.querySelector('.post') : document.querySelector('article');
-    if (!currentFirstPost) {
-      delayAct(checkPostSubmit, delayL);
-      return;
-    }
-    const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
-    if (!IdCurrentPostDiv) {
-      delayAct(checkPostSubmit, delayL);
-      return;
-    }
-    const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
-    console.log("POST 1: ", IdFirstPostForSubmitChecking);
-    console.log("POST 2: ", IdCurrentPostForSubmitChecking);
-    if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
-      infoPanelItems[currentNamePost].currentValue++;
-      enableButton(buttonsSet.savePost.domElement);
-      delayAct(startNewCycle, delayM);
-    } else {
-      delayAct(checkPostSubmit, delayM);
-    }
+    infoPanelItems[currentNamePost].currentValue++;
+    enableButton(buttonsSet.savePost.domElement);
+    delayAct(startNewCycle, delayM);
+    // const currentFirstPost = document.querySelector('.post') ?
+    //   document.querySelector('.post') : document.querySelector('article');
+    // if (!currentFirstPost) {
+    //   delayAct(checkPostSubmit, delayL);
+    //   return;
+    // }
+    // const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
+    // if (!IdCurrentPostDiv) {
+    //   delayAct(checkPostSubmit, delayL);
+    //   return;
+    // }
+    // const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
+    // console.log("POST 1: ", IdFirstPostForSubmitChecking);
+    // console.log("POST 2: ", IdCurrentPostForSubmitChecking);
+    // if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
+    //   infoPanelItems[currentNamePost].currentValue++;
+    //   enableButton(buttonsSet.savePost.domElement);
+    //   delayAct(startNewCycle, delayM);
+    // } else {
+    //   delayAct(checkPostSubmit, delayM);
+    // }
   }
 
   function startNewCycle(newDelay = delayXL) {
