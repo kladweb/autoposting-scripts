@@ -1,0 +1,99 @@
+{
+  "id": "vk6_iedemtv",
+  "inner_type": "wall_wallpost",
+  "attachments": [
+    {
+      "type": "link",
+      "source_url": "https://iedemtv.netlify.app/",
+      "link": {
+        "url": "https://iedemtv.netlify.app/",
+        "caption": "IEDEM-TV",
+        "id": "",
+        "is_favorite": false,
+        "photo": {
+          "album_id": -27,
+          "date": 1792580279,
+          "id": 457569384,
+          "owner_id": 2000057865,
+          "sizes": [
+            {
+              "height": 37,
+              "type": "s",
+              "width": 75,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=75x37&quality=96&sign=bb5451c0f1fb11a849680b8454c96f03&c_uniq_tag=1WQaas3HxZ-9MxnqPuM43Knb8PeejzatwjVED73RE-E&type=share"
+            },
+            {
+              "height": 65,
+              "type": "m",
+              "width": 130,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=130x65&quality=96&sign=e5e150ed63bebb239f0c1128f0128a03&c_uniq_tag=IwSvKCuGMUrYLhaIPNNdr-f1c5wv-7my-NLrN9Tf7C8&type=share"
+            },
+            {
+              "height": 75,
+              "type": "x",
+              "width": 150,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=150x75&quality=96&sign=4a0990469acce5891607c5531e294b4b&c_uniq_tag=OSqVPc2_48pAu2o3y-aZR_w36iUqkJL_W0Fa2NABEGM&type=share"
+            },
+            {
+              "height": 400,
+              "type": "y",
+              "width": 800,
+              "url": "https://sun9-4.vkuserphoto.ru/MCcKvs-bE3m-qvxYx61-rHDSFLhP16jtFsHBxQ/4b71lVxu0mw.jpg"
+            },
+            {
+              "height": 87,
+              "type": "o",
+              "width": 130,
+              "url": "https://sun9-53.vkuserphoto.ru/aJQFUy56XD7XnHBMxybn60qRIUkfcgB4i0Pm_A/LboqvBmhZV4.jpg"
+            },
+            {
+              "height": 140,
+              "type": "p",
+              "width": 260,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=260x140&quality=96&crop=28,0,743,400&sign=43478cfad3b1d3835b6784a1adb0fbde&c_uniq_tag=EM_SzP__nNavnfunDEpwsQ0I4fqgfFrepYKPbS7EcyM&type=share"
+            },
+            {
+              "height": 213,
+              "type": "q",
+              "width": 320,
+              "url": "https://sun9-81.vkuserphoto.ru/BJqroL0EbWua3zZC0lPSllaGipRdbrTLXKfVHg/-MqzNuOLe1o.jpg"
+            },
+            {
+              "height": 340,
+              "type": "r",
+              "width": 510,
+              "url": "https://sun9-2.vkuserphoto.ru/U7-SKJ1FD2l3eKLcMM_cpwINoIszg6l-Oo_Rag/ISvDxhNwvBo.jpg"
+            },
+            {
+              "height": 240,
+              "type": "l",
+              "width": 537,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=537x240&quality=96&crop=0,0,800,358&sign=d8c3ce18e8899c1d2f14166be752f652&c_uniq_tag=fIGyNmV_xPGDEf71SmlafWQGAIPCPUmntsLagc7ewos&type=share"
+            },
+            {
+              "height": 400,
+              "type": "k",
+              "width": 800,
+              "url": "https://sun9-15.vkuserphoto.ru/impg/EX0c6YY5Nm9sba5Kaf5_YZL-XIWmfYT2dkvO6Q/6EdoNJJPk0I.jpg?size=800x400&quality=96&sign=4dd9eee6d5fa96de496e55a4788a4011&c_uniq_tag=tgrHA6gvJBiUIRaAll1ROnWQlSxf17HLd5QIz-Jdbd0&type=share"
+            }
+          ],
+          "text": "",
+          "web_view_token": "138f072c92d4ee17fc",
+          "has_tags": false
+        },
+        "preview_page": "",
+        "preview_url": "",
+        "title": "IEdem.TV",
+        "target": "internal"
+      },
+      "parsed": true
+    }
+  ],
+  "text": "📺 Более 4 000 каналов — всего за $2 в месяц!\n🌍 Любимое ТВ из любой точки мира!\n🎬 Кино, спорт, мультфильмы и 10 000 фильмов!\n🎁 72 часа БЕСПЛАТНО — попробуй прямо сейчас!\n⏪ Архив передач до 7 дней.\nhttps://iedemtv.netlify.app/",
+  "_attachments_list": [],
+  "_commentsEnabled": true,
+  "_notificationsEnabled": true,
+  "_attachmentsViewKey": "CAROUSEL",
+  "_photoAttachmentsCropByRatio": {},
+  "_coOwnersIds": []
+}

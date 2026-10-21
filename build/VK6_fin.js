@@ -11,7 +11,7 @@
 (function () {
   'use strict';
   const idUser = '463839444';
-  const posts = {viplime: "VipLime", ilooktv: 'ILookTV'};
+  const posts = {viplime: "VipLime", iedemtv: "iedem-tv", ilooktv: 'ILookTV'};
   const VKName = "vk6";
 
   // version 1.1.5
