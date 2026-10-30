@@ -1050,6 +1050,7 @@
 
     let avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
     avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('.vkitInternalRichAvatar') : avatarRichFirst;
+    avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('[data-testid="post-header-avatar"]') : avatarRichFirst;
     if (!avatarRichFirst) {
       window.scrollBy(0, 1500);
       console.log("Не найден avatarRichFirst, попробуем снова...");
@@ -1086,6 +1087,8 @@
     for (let i = 0; i < checkingPosts.length; i++) {
       let avatarRich = checkingPosts[i].querySelector('.AvatarRich');
       avatarRich = !avatarRich ? checkingPosts[i].querySelector('.vkitInternalRichAvatar') : avatarRich;
+      avatarRich = !avatarRich ? checkingPosts[i].querySelector('[data-testid="post-header-avatar"]') : avatarRich;
+
       if (!avatarRich) {
         window.scrollBy(0, 1500);
         console.log("Didn't find AvatarRich. checkingPosts: ", checkingPosts);
