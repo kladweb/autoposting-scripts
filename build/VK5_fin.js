@@ -1186,7 +1186,7 @@
       delayAct(checkAdditionalClick, delayM);
     } else {
       console.log("Не нашли кнопку создать")
-      delayAct(clickCreatePost(), delayL);
+      delayAct(enterToBookMarks, delayL);
     }
     // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
   }
