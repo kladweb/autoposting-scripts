@@ -1050,9 +1050,8 @@
       console.log("IdFirstPostForSubmitChecking", IdFirstPostForSubmitChecking);
     }
 
-    let avatarRichFirst = checkingPosts[0]?.querySelector('.AvatarRich');
-    avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('.vkitInternalRichAvatar') : avatarRichFirst;
-    avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('[data-testid="post-header-avatar"]') : avatarRichFirst;
+    let avatarRichFirst = checkingPosts[0]?.querySelector('a[href^="/id"]');
+    // avatarRichFirst = !avatarRichFirst ? checkingPosts[0]?.querySelector('[data-testid="post-header-avatar"]') : avatarRichFirst;
     if (!avatarRichFirst) {
       window.scrollBy(0, 1500);
       console.log("Не найден avatarRichFirst, попробуем снова...");
@@ -1087,9 +1086,9 @@
 
     let isNecessityPosting = false;
     for (let i = 0; i < checkingPosts.length; i++) {
-      let avatarRich = checkingPosts[i].querySelector('.AvatarRich');
-      avatarRich = !avatarRich ? checkingPosts[i].querySelector('.vkitInternalRichAvatar') : avatarRich;
-      avatarRich = !avatarRich ? checkingPosts[i].querySelector('[data-testid="post-header-avatar"]') : avatarRich;
+      // let avatarRich = checkingPosts[i].querySelector('.AvatarRich');
+      let avatarRich = checkingPosts[i].querySelector('a[href^="/id"]');
+      // avatarRich = !avatarRich ? checkingPosts[i].querySelector('[data-testid="post-header-avatar"]') : avatarRich;
 
       if (!avatarRich) {
         window.scrollBy(0, 1500);
@@ -1178,71 +1177,88 @@
   }
 
   function clickCreatePost() {
-    const postCreateButton = document.querySelector('[data-testid="posting_create_post_button"]');
+    // const postCreateButton = document.querySelector('[data-testid="posting_create_post_button"]');
+    const postCreateButton = [...document.querySelectorAll('button')]
+    .find(el => el.textContent.trim() === 'Создать');
+
     if (postCreateButton) {
       postCreateButton.click();
-      delayAct(clickOpenDraftPost, delayM);
+      delayAct(checkAdditionalClick, delayM);
     } else {
-      delayAct(clickCreatePostV2, delayM);
+      console.log("Не нашли кнопку создать")
+      delayAct(clickCreatePost(), delayL);
     }
     // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
   }
 
-  function clickCreatePostV2() {
-    const postCreateSection = document.querySelector('[data-testid="group_publish_block"]');
-    if (postCreateSection) {
-      const indicatorMarker = postCreateSection.querySelector('.vkuiButton__after');
-      if (!indicatorMarker) {
-        const buttonCreatePost = postCreateSection.querySelector('button');
-        buttonCreatePost.click();
-        delayAct(clickContinuePost, delayL);
-        return;
-      }
-
-      const vkiButtonIn = postCreateSection.querySelector('.vkuiButton__in');
-      if (vkiButtonIn) {
-        console.log(vkiButtonIn);
-        console.log("КНОПКА ЕСТЬ, делаем hover...");
-        vkiButtonIn.dispatchEvent(new MouseEvent("mouseover", {
-          bubbles: true,
-          cancelable: true
-        }));
-        delayAct(clickCreatePostV2NextActon, delayM);
-      }
-    } else {
-      delayAct(submitGroup, delayM);
-    }
-  }
-
-  function clickCreatePostV2NextActon() {
-    const buttonPost = document.evaluate(`//node()[normalize-space(text())='Пост']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  function checkAdditionalClick() {
+    const buttonPost = [...document.querySelectorAll('div[role="button"]')]
+    .find(el => el.textContent.trim() === 'Пост');
     if (buttonPost) {
-      console.log("КНОПКА ЕСТЬ, кликаем...");
       buttonPost.click();
-      delayAct(clickContinuePost, delayL);
-    } else {
-      console.log("Кнопка не найдена, возвращаемся");
-      delayAct(submitGroup, delayM);
     }
+    delayAct(clickOpenDraftPost, delayM);
   }
 
-  function submitGroup() {
-    const submitButton = document.querySelector('[data-testid="group-subscribe-button"]');
-    if (submitButton) {
-      submitButton.click();
-      delayAct(clickCreatePost, delayM);
-    } else {
-      console.log("Кнопка ПОДПИСАТЬСЯ не найдена");
-      delayAct(clickCreatePost, delayM);
-    }
-  }
+
+  // function clickCreatePostV2() {
+  //   const postCreateSection = document.querySelector('[data-testid="group_publish_block"]');
+  //   if (postCreateSection) {
+  //     const indicatorMarker = postCreateSection.querySelector('.vkuiButton__after');
+  //     if (!indicatorMarker) {
+  //       const buttonCreatePost = postCreateSection.querySelector('button');
+  //       buttonCreatePost.click();
+  //       delayAct(clickContinuePost, delayL);
+  //       return;
+  //     }
+  //
+  //     const vkiButtonIn = postCreateSection.querySelector('.vkuiButton__in');
+  //     if (vkiButtonIn) {
+  //       console.log(vkiButtonIn);
+  //       console.log("КНОПКА ЕСТЬ, делаем hover...");
+  //       vkiButtonIn.dispatchEvent(new MouseEvent("mouseover", {
+  //         bubbles: true,
+  //         cancelable: true
+  //       }));
+  //       delayAct(clickCreatePostV2NextActon, delayM);
+  //     }
+  //   } else {
+  //     delayAct(submitGroup, delayM);
+  //   }
+  // }
+
+  // function submitGroup() {
+  //   const submitButton = document.querySelector('[data-testid="group-subscribe-button"]');
+  //   if (submitButton) {
+  //     submitButton.click();
+  //     delayAct(clickCreatePost, delayM);
+  //   } else {
+  //     console.log("Кнопка ПОДПИСАТЬСЯ не найдена");
+  //     delayAct(clickCreatePost, delayM);
+  //   }
+  // }
+
+  // function clickCreatePostV2NextActon() {
+  //   const buttonPost = document.evaluate(`//node()[normalize-space(text())='Пост']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  //   if (buttonPost) {
+  //     console.log("КНОПКА ЕСТЬ, кликаем...");
+  //     buttonPost.click();
+  //     delayAct(clickOpenDraftPost, delayL);
+  //   } else {
+  //     console.log("Кнопка не найдена, возвращаемся");
+  //     delayAct(submitGroup, delayM);
+  //   }
+  // }
 
   function clickOpenDraftPost() {
-    const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
+    // const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
+
+    const openDraft = [...document.querySelectorAll('button')].find(el => el.textContent.trim() === 'Далее');
+
     if (openDraft) {
       openDraft.click();
       functionRepetitions = 0;
-      delayAct(clickContinuePost, delayL);
+      delayAct(clickSavePost, delayL);
     } else {
       console.log('Button Открыть черновик didn\'t find!');
       if (functionRepetitions > 5) {
@@ -1258,16 +1274,16 @@
     }
   }
 
-  function clickContinuePost() {
-    const buttonContinue = document.evaluate(`//node()[normalize-space(text())='Далее']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-    if (buttonContinue) {
-      buttonContinue.click();
-      delayAct(clickSavePost, delayM);
-    } else {
-      delayAct(clickContinuePost, delayL);
-    }
-    // nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
-  }
+  // function clickContinuePost() {
+  //   const buttonContinue = document.evaluate(`//node()[normalize-space(text())='Далее']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  //   if (buttonContinue) {
+  //     buttonContinue.click();
+  //     delayAct(clickSavePost, delayM);
+  //   } else {
+  //     delayAct(clickContinuePost, delayL);
+  //   }
+  //   // nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
+  // }
 
   function clickSavePost() {
     if (isSkipCurrPost) {
@@ -1276,7 +1292,9 @@
       delayAct(clickCloseDraftPost, delayM);
     } else {
       // nextClickAction('[data-testid="posting_submit_button"]', checkPostSubmit, delayL);
-      const buttonSave = document.evaluate(`//node()[normalize-space(text())='Опубликовать']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      // const buttonSave = document.evaluate(`//node()[normalize-space(text())='Опубликовать']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      const buttonSave = [...document.querySelectorAll('button')].find(el => el.textContent.trim() === 'Опубликовать');
+
       if (buttonSave) {
         buttonSave.click();
         delayAct(checkPostSubmit, delayM);
@@ -1293,7 +1311,11 @@
       startNewCycle(delayM);
       return;
     }
-    const closeButton = document.querySelector('[data-testid="modal-close-button"]');
+    // const closeButton = document.querySelector('[data-testid="modal-close-button"]');
+    const closeButton = [...document.querySelectorAll('div[role="button"]')]
+    .find(el => el.textContent.trim() === 'Закрыть');
+
+    console.log(closeButton);
     if (closeButton) {
       closeButton.click();
       functionRepetitions = 0;
