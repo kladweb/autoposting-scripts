@@ -1043,6 +1043,7 @@
     }
     checkingPosts.splice(deepAmount);
     IdFirstPostForSubmitChecking = checkingPosts[0]?.id.substring(4);
+    // const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
     const IdFirstPostDiv = checkingPosts[0]?.querySelector('div[data-post-id]');
     console.log("IdFirstPostDiv: ", IdFirstPostDiv);
     if (IdFirstPostDiv) {
@@ -1059,7 +1060,9 @@
       return;
     }
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
-    let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
+    // let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
+    let blockTextPostFirst = checkingPosts[0].querySelector('[id^="text-"]');
+
     console.log("blockTextPostFirst: ", blockTextPostFirst);
     console.log("ПОДГОТОВКА К ПРОВЕРКЕ.")
     console.log(blockTextPostFirst);
