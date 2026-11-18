@@ -953,20 +953,6 @@
       // const allPostsTab = document.querySelector('button[data-testid="group_publish_create_button"]');
       delayAct(checkScrollingAction, delayM);
 
-      // if (allPostsTab) {
-      //   const isAllTabSelected = allPostsTab.getAttribute("aria-selected") === "true";
-      //   console.log("isAllTabSelected: ", isAllTabSelected);
-      //   if (isAllTabSelected) {
-      //     checkScrollingAction();
-      //   } else {
-      //     allPostsTab.click();
-      //     delayAct(checkScrollingAction, delayM);
-      //   }
-      // } else {
-      //   console.log("ТАБ вкладка не найдена!");
-      //   functionRepetitions++;
-      //   delayAct(checkCurrentGroup, delayM);
-      // }
     }
   }
 
@@ -1189,7 +1175,6 @@
       console.log("Не нашли кнопку создать")
       delayAct(enterToBookMarks, delayL);
     }
-    // nextClickAction('[data-testid="posting_create_post_button"]', clickOpenDraftPost, delayM);
   }
 
   function checkAdditionalClick() {
@@ -1201,59 +1186,8 @@
     delayAct(clickOpenDraftPost, delayM);
   }
 
-
-  // function clickCreatePostV2() {
-  //   const postCreateSection = document.querySelector('[data-testid="group_publish_block"]');
-  //   if (postCreateSection) {
-  //     const indicatorMarker = postCreateSection.querySelector('.vkuiButton__after');
-  //     if (!indicatorMarker) {
-  //       const buttonCreatePost = postCreateSection.querySelector('button');
-  //       buttonCreatePost.click();
-  //       delayAct(clickContinuePost, delayL);
-  //       return;
-  //     }
-  //
-  //     const vkiButtonIn = postCreateSection.querySelector('.vkuiButton__in');
-  //     if (vkiButtonIn) {
-  //       console.log(vkiButtonIn);
-  //       console.log("КНОПКА ЕСТЬ, делаем hover...");
-  //       vkiButtonIn.dispatchEvent(new MouseEvent("mouseover", {
-  //         bubbles: true,
-  //         cancelable: true
-  //       }));
-  //       delayAct(clickCreatePostV2NextActon, delayM);
-  //     }
-  //   } else {
-  //     delayAct(submitGroup, delayM);
-  //   }
-  // }
-
-  // function submitGroup() {
-  //   const submitButton = document.querySelector('[data-testid="group-subscribe-button"]');
-  //   if (submitButton) {
-  //     submitButton.click();
-  //     delayAct(clickCreatePost, delayM);
-  //   } else {
-  //     console.log("Кнопка ПОДПИСАТЬСЯ не найдена");
-  //     delayAct(clickCreatePost, delayM);
-  //   }
-  // }
-
-  // function clickCreatePostV2NextActon() {
-  //   const buttonPost = document.evaluate(`//node()[normalize-space(text())='Пост']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-  //   if (buttonPost) {
-  //     console.log("КНОПКА ЕСТЬ, кликаем...");
-  //     buttonPost.click();
-  //     delayAct(clickOpenDraftPost, delayL);
-  //   } else {
-  //     console.log("Кнопка не найдена, возвращаемся");
-  //     delayAct(submitGroup, delayM);
-  //   }
-  // }
-
   function clickOpenDraftPost() {
     // const openDraft = document.querySelector('.box_controls_buttons .FlatButton--primary');
-
     const openDraft = [...document.querySelectorAll('button')].find(el => el.textContent.trim() === 'Далее');
 
     if (openDraft) {
@@ -1274,17 +1208,6 @@
       }
     }
   }
-
-  // function clickContinuePost() {
-  //   const buttonContinue = document.evaluate(`//node()[normalize-space(text())='Далее']`, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-  //   if (buttonContinue) {
-  //     buttonContinue.click();
-  //     delayAct(clickSavePost, delayM);
-  //   } else {
-  //     delayAct(clickContinuePost, delayL);
-  //   }
-  //   // nextClickAction('[data-testid="posting_base_screen_next"]', clickSavePost, delayL);
-  // }
 
   function clickSavePost() {
     if (isSkipCurrPost) {
@@ -1331,27 +1254,6 @@
     infoPanelItems[currentNamePost].currentValue++;
     enableButton(buttonsSet.savePost.domElement);
     delayAct(startNewCycle, delayM);
-    // const currentFirstPost = document.querySelector('.post') ?
-    //   document.querySelector('.post') : document.querySelector('article');
-    // if (!currentFirstPost) {
-    //   delayAct(checkPostSubmit, delayL);
-    //   return;
-    // }
-    // const IdCurrentPostDiv = document.querySelector('div[data-post-id]');
-    // if (!IdCurrentPostDiv) {
-    //   delayAct(checkPostSubmit, delayL);
-    //   return;
-    // }
-    // const IdCurrentPostForSubmitChecking = IdCurrentPostDiv.dataset.postId;
-    // console.log("POST 1: ", IdFirstPostForSubmitChecking);
-    // console.log("POST 2: ", IdCurrentPostForSubmitChecking);
-    // if (IdFirstPostForSubmitChecking !== IdCurrentPostForSubmitChecking) {
-    //   infoPanelItems[currentNamePost].currentValue++;
-    //   enableButton(buttonsSet.savePost.domElement);
-    //   delayAct(startNewCycle, delayM);
-    // } else {
-    //   delayAct(checkPostSubmit, delayM);
-    // }
   }
 
   function startNewCycle(newDelay = delayXL) {
