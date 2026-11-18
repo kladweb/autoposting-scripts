@@ -1048,7 +1048,6 @@
     const postUserIdFirst = avatarRichFirst.getAttribute('href');
     // let blockTextPostFirst = checkingPosts[0].querySelector('[data-testid="showmoretext"]');
     let blockTextPostFirst = checkingPosts[0].querySelector('[id^="text-"]');
-
     console.log("blockTextPostFirst: ", blockTextPostFirst);
     console.log("ПОДГОТОВКА К ПРОВЕРКЕ.")
     console.log(blockTextPostFirst);
